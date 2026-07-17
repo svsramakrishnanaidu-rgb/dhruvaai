@@ -5,16 +5,12 @@ import { Sprout } from "lucide-react";
 const NAMES = ["Bhaskar", "Ravi", "Ramakrishna", "Vinay"];
 
 export function CinematicLoader() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [phase, setPhase] = useState<0 | 1 | 2>(0);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    // show once per session
-    if (sessionStorage.getItem("agri.intro") === "done") {
-      setVisible(false);
-      return;
-    }
+    if (sessionStorage.getItem("agri.intro") === "done") return;
+    setVisible(true);
     const t1 = setTimeout(() => setPhase(1), 900);
     const t2 = setTimeout(() => setPhase(2), 1900);
     const t3 = setTimeout(() => {
