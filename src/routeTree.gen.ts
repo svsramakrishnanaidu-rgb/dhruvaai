@@ -9,38 +9,248 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WeatherRouteImport } from './routes/weather'
+import { Route as SchemesRouteImport } from './routes/schemes'
+import { Route as RotationRouteImport } from './routes/rotation'
+import { Route as MarketRouteImport } from './routes/market'
+import { Route as FertilizerRouteImport } from './routes/fertilizer'
+import { Route as DistrictsRouteImport } from './routes/districts'
+import { Route as DiseasesRouteImport } from './routes/diseases'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CropsIndexRouteImport } from './routes/crops.index'
+import { Route as CropsSlugRouteImport } from './routes/crops.$slug'
 
+const WeatherRoute = WeatherRouteImport.update({
+  id: '/weather',
+  path: '/weather',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchemesRoute = SchemesRouteImport.update({
+  id: '/schemes',
+  path: '/schemes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RotationRoute = RotationRouteImport.update({
+  id: '/rotation',
+  path: '/rotation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketRoute = MarketRouteImport.update({
+  id: '/market',
+  path: '/market',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FertilizerRoute = FertilizerRouteImport.update({
+  id: '/fertilizer',
+  path: '/fertilizer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DistrictsRoute = DistrictsRouteImport.update({
+  id: '/districts',
+  path: '/districts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiseasesRoute = DiseasesRouteImport.update({
+  id: '/diseases',
+  path: '/diseases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CropsIndexRoute = CropsIndexRouteImport.update({
+  id: '/crops/',
+  path: '/crops/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CropsSlugRoute = CropsSlugRouteImport.update({
+  id: '/crops/$slug',
+  path: '/crops/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/diseases': typeof DiseasesRoute
+  '/districts': typeof DistrictsRoute
+  '/fertilizer': typeof FertilizerRoute
+  '/market': typeof MarketRoute
+  '/rotation': typeof RotationRoute
+  '/schemes': typeof SchemesRoute
+  '/weather': typeof WeatherRoute
+  '/crops/$slug': typeof CropsSlugRoute
+  '/crops/': typeof CropsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/diseases': typeof DiseasesRoute
+  '/districts': typeof DistrictsRoute
+  '/fertilizer': typeof FertilizerRoute
+  '/market': typeof MarketRoute
+  '/rotation': typeof RotationRoute
+  '/schemes': typeof SchemesRoute
+  '/weather': typeof WeatherRoute
+  '/crops/$slug': typeof CropsSlugRoute
+  '/crops': typeof CropsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/diseases': typeof DiseasesRoute
+  '/districts': typeof DistrictsRoute
+  '/fertilizer': typeof FertilizerRoute
+  '/market': typeof MarketRoute
+  '/rotation': typeof RotationRoute
+  '/schemes': typeof SchemesRoute
+  '/weather': typeof WeatherRoute
+  '/crops/$slug': typeof CropsSlugRoute
+  '/crops/': typeof CropsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/diseases'
+    | '/districts'
+    | '/fertilizer'
+    | '/market'
+    | '/rotation'
+    | '/schemes'
+    | '/weather'
+    | '/crops/$slug'
+    | '/crops/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/diseases'
+    | '/districts'
+    | '/fertilizer'
+    | '/market'
+    | '/rotation'
+    | '/schemes'
+    | '/weather'
+    | '/crops/$slug'
+    | '/crops'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/diseases'
+    | '/districts'
+    | '/fertilizer'
+    | '/market'
+    | '/rotation'
+    | '/schemes'
+    | '/weather'
+    | '/crops/$slug'
+    | '/crops/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ContactRoute: typeof ContactRoute
+  DiseasesRoute: typeof DiseasesRoute
+  DistrictsRoute: typeof DistrictsRoute
+  FertilizerRoute: typeof FertilizerRoute
+  MarketRoute: typeof MarketRoute
+  RotationRoute: typeof RotationRoute
+  SchemesRoute: typeof SchemesRoute
+  WeatherRoute: typeof WeatherRoute
+  CropsSlugRoute: typeof CropsSlugRoute
+  CropsIndexRoute: typeof CropsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/weather': {
+      id: '/weather'
+      path: '/weather'
+      fullPath: '/weather'
+      preLoaderRoute: typeof WeatherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schemes': {
+      id: '/schemes'
+      path: '/schemes'
+      fullPath: '/schemes'
+      preLoaderRoute: typeof SchemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rotation': {
+      id: '/rotation'
+      path: '/rotation'
+      fullPath: '/rotation'
+      preLoaderRoute: typeof RotationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/market': {
+      id: '/market'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof MarketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fertilizer': {
+      id: '/fertilizer'
+      path: '/fertilizer'
+      fullPath: '/fertilizer'
+      preLoaderRoute: typeof FertilizerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/districts': {
+      id: '/districts'
+      path: '/districts'
+      fullPath: '/districts'
+      preLoaderRoute: typeof DistrictsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diseases': {
+      id: '/diseases'
+      path: '/diseases'
+      fullPath: '/diseases'
+      preLoaderRoute: typeof DiseasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +258,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/crops/': {
+      id: '/crops/'
+      path: '/crops'
+      fullPath: '/crops/'
+      preLoaderRoute: typeof CropsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crops/$slug': {
+      id: '/crops/$slug'
+      path: '/crops/$slug'
+      fullPath: '/crops/$slug'
+      preLoaderRoute: typeof CropsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ContactRoute: ContactRoute,
+  DiseasesRoute: DiseasesRoute,
+  DistrictsRoute: DistrictsRoute,
+  FertilizerRoute: FertilizerRoute,
+  MarketRoute: MarketRoute,
+  RotationRoute: RotationRoute,
+  SchemesRoute: SchemesRoute,
+  WeatherRoute: WeatherRoute,
+  CropsSlugRoute: CropsSlugRoute,
+  CropsIndexRoute: CropsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
