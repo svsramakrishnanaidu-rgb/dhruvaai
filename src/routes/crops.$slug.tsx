@@ -28,7 +28,7 @@ export const Route = createFileRoute("/crops/$slug")({
 });
 
 function CropDetail() {
-  const c = Route.useLoaderData();
+  const c = Route.useLoaderData() as Crop;
 
   return (
     <div>
