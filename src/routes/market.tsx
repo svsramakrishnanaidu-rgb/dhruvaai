@@ -3,6 +3,7 @@ import { CROP_LIST } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { useLocation } from "@/lib/location-store";
+import { profileFor } from "@/lib/district-profiles";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
 export const Route = createFileRoute("/market")({
@@ -17,20 +18,31 @@ export const Route = createFileRoute("/market")({
 
 function Market() {
   const loc = useLocation();
+  const p = profileFor(loc.district);
+  const mod = 1 + p.priceModifier;
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
       <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Insights</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Insights · {p.state}</span>
         <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-6xl">Market Prices</h1>
-        <p className="mt-3 text-muted-foreground">Nearby mandis in {loc.district}. Track today's price, MSP and 7-day trend.</p>
+        <p className="mt-3 text-muted-foreground">
+          Nearby mandis in {loc.district}. Regional adjustment{" "}
+          <b className={p.priceModifier >= 0 ? "text-primary" : "text-destructive"}>
+            {p.priceModifier >= 0 ? "+" : ""}{(p.priceModifier * 100).toFixed(0)}%
+          </b>{" "}
+          applied to national reference price.
+        </p>
       </Reveal>
 
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         {CROP_LIST.map((c) => {
-          const first = c.marketPrice.trend[0].price;
-          const last = c.marketPrice.trend[c.marketPrice.trend.length - 1].price;
+          const first = c.marketPrice.trend[0].price * mod;
+          const last = c.marketPrice.trend[c.marketPrice.trend.length - 1].price * mod;
           const up = last >= first;
           const delta = (((last - first) / first) * 100).toFixed(1);
+          const price = Math.round(c.marketPrice.price * mod);
+          const trend = c.marketPrice.trend.map((t) => ({ ...t, price: Math.round(t.price * mod) }));
           return (
             <Reveal key={c.slug}>
               <div className="card-elegant hover-lift p-6">
@@ -40,7 +52,7 @@ function Market() {
                       <span className="text-2xl">{c.emoji}</span>
                       <h3 className="font-display text-xl font-bold">{c.name}</h3>
                     </div>
-                    <div className="mt-2 font-display text-3xl font-black tabular-nums">₹{c.marketPrice.price.toLocaleString()}</div>
+                    <div className="mt-2 font-display text-3xl font-black tabular-nums">₹{price.toLocaleString()}</div>
                     <div className="mt-1 text-xs text-muted-foreground">{c.marketPrice.unit} · MSP ₹{c.marketPrice.msp.toLocaleString()}</div>
                   </div>
                   <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
@@ -52,7 +64,7 @@ function Market() {
                 </div>
                 <div className="mt-4 h-24">
                   <ResponsiveContainer>
-                    <LineChart data={c.marketPrice.trend}>
+                    <LineChart data={trend}>
                       <XAxis dataKey="day" hide />
                       <YAxis hide domain={["auto", "auto"]} />
                       <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }} />
