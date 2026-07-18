@@ -129,7 +129,13 @@ function Home() {
 
       {/* FEATURE STRIP */}
       <section className="mx-auto max-w-7xl px-6 py-20">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <FeatureCard
+            icon={<BarChart3 className="h-5 w-5" />}
+            title="India Crop Atlas"
+            copy="Ministry of Agriculture 2025-26 Advance Estimates — district area, production and yield across 9 states, fully interactive."
+            to="/analytics"
+          />
           <FeatureCard
             icon={<Sprout className="h-5 w-5" />}
             title="Land-to-market playbooks"
