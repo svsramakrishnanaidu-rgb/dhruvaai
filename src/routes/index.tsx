@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Search, MapPin, Cloud, Sprout, Sun, TrendingUp, Leaf, Droplets } from "lucide-react";
+import { ArrowRight, Search, MapPin, Cloud, Sprout, Sun, TrendingUp, Leaf, Droplets, BarChart3 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { CropCard } from "@/components/CropCard";
 import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
 import { useLocation } from "@/lib/location-store";
+import { profileFor } from "@/lib/district-profiles";
 import heroImg from "@/assets/hero-farm.jpg";
 
 export const Route = createFileRoute("/")({
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const loc = useLocation();
+  const p = profileFor(loc.district);
   const stats = [
     { value: 128, suffix: "K+", label: "Farmers advised" },
     { value: 42, suffix: "", label: "Crops covered" },
@@ -78,10 +80,10 @@ function Home() {
 
           <Reveal delay={480}>
             <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <MiniCard icon={<Cloud className="h-5 w-5" />} label="Today" value="28°C · Partly cloudy" tag="Weather" />
-              <MiniCard icon={<Sun className="h-5 w-5" />} label="Season" value="Kharif · Week 6" tag="Growing" />
-              <MiniCard icon={<Leaf className="h-5 w-5" />} label="Soil" value="Red loam · pH 6.4" tag="Ideal for legumes" />
-              <MiniCard icon={<Droplets className="h-5 w-5" />} label="Rainfall" value="812 mm YTD" tag="+12% vs avg" />
+              <MiniCard icon={<Cloud className="h-5 w-5" />} label="Today" value={`${p.tempC}°C · ${p.sky}`} tag="Weather" />
+              <MiniCard icon={<Sun className="h-5 w-5" />} label="Season" value={p.season} tag={p.climate} />
+              <MiniCard icon={<Leaf className="h-5 w-5" />} label="Soil" value={`${p.soil} · pH ${p.soilPh}`} tag="Local profile" />
+              <MiniCard icon={<Droplets className="h-5 w-5" />} label="Rainfall" value={`${p.rainfallYtdMm} mm YTD`} tag={`${p.rainfallDeltaPct >= 0 ? "+" : ""}${p.rainfallDeltaPct}% vs avg`} />
             </div>
           </Reveal>
         </div>
