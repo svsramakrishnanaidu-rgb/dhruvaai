@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-export function CountUp({ value, duration = 1400, suffix = "" }: { value: number; duration?: number; suffix?: string }) {
+export function CountUp({ value, duration = 1400, suffix = "", precision = 0 }: { value: number; duration?: number; suffix?: string; precision?: number }) {
   const [n, setN] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const started = useRef(false);
@@ -17,7 +17,7 @@ export function CountUp({ value, duration = 1400, suffix = "" }: { value: number
           const tick = (t: number) => {
             const p = Math.min(1, (t - t0) / duration);
             const eased = 1 - Math.pow(1 - p, 3);
-            setN(Math.round(value * eased));
+            setN(value * eased);
             if (p < 1) requestAnimationFrame(tick);
           };
           requestAnimationFrame(tick);
@@ -28,5 +28,6 @@ export function CountUp({ value, duration = 1400, suffix = "" }: { value: number
     return () => obs.disconnect();
   }, [value, duration]);
 
-  return <span ref={ref}>{n.toLocaleString()}{suffix}</span>;
+  const shown = precision > 0 ? n.toLocaleString(undefined, { minimumFractionDigits: precision, maximumFractionDigits: precision }) : Math.round(n).toLocaleString();
+  return <span ref={ref}>{shown}{suffix}</span>;
 }

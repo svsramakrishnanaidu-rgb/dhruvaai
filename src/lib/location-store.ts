@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { DISTRICTS } from "@/data/pdf-data";
 
 export type Location = { state: string; district: string; mandal?: string };
 
@@ -37,13 +38,26 @@ export function useLocation(): Location {
   );
 }
 
-export const STATES: Record<string, string[]> = {
+// Base AP/TS districts (KrishiSense heritage crops) unioned with every state /
+// district explicitly named in the source PDF so the picker covers both.
+const BASE: Record<string, string[]> = {
   "Andhra Pradesh": [
     "Guntur", "Krishna", "West Godavari", "East Godavari", "Anantapur",
-    "Kurnool", "Chittoor", "Nellore", "Prakasam", "Visakhapatnam",
+    "Kurnool", "Chittoor", "Nellore", "Prakasam", "Visakhapatnam", "Kadapa",
   ],
   Telangana: [
     "Hyderabad", "Warangal", "Karimnagar", "Nizamabad", "Khammam",
     "Mahbubnagar", "Nalgonda", "Adilabad", "Medak", "Rangareddy",
   ],
 };
+
+// Merge every district that appears in the PDF into STATES so the picker is
+// exhaustive without a second config.
+const merged: Record<string, string[]> = { ...BASE };
+for (const row of DISTRICTS) {
+  const list = merged[row.state] ?? [];
+  if (!list.includes(row.district)) list.push(row.district);
+  merged[row.state] = list;
+}
+
+export const STATES: Record<string, string[]> = merged;

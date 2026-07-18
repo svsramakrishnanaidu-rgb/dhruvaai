@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X, Search, Moon, Sun, Sprout, MapPin } from "lucide-react";
+import { Menu, X, Search, Moon, Sun, Sprout } from "lucide-react";
 import { useTheme } from "@/lib/theme";
-import { useLocation } from "@/lib/location-store";
+import { DistrictPicker } from "@/components/DistrictPicker";
 
 const NAV = [
   { to: "/", label: "Home" },
+  { to: "/analytics", label: "Analytics" },
   { to: "/crops", label: "Crops" },
   { to: "/rotation", label: "Rotation" },
   { to: "/fertilizer", label: "Fertilizer" },
@@ -15,7 +16,6 @@ const NAV = [
   { to: "/diseases", label: "Diseases" },
   { to: "/schemes", label: "Schemes" },
   { to: "/districts", label: "Districts" },
-  { to: "/about", label: "About" },
 ] as const;
 
 export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
@@ -23,7 +23,6 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const loc = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -89,14 +88,9 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
           </nav>
 
           <div className="ml-auto flex items-center gap-1">
-            <Link
-              to="/districts"
-              className="hidden items-center gap-1.5 rounded-full border border-border/60 bg-secondary/40 px-3 py-1.5 text-xs font-medium hover:border-primary/60 sm:inline-flex"
-              aria-label="Change location"
-            >
-              <MapPin className="h-3.5 w-3.5 text-primary" />
-              <span className="max-w-[120px] truncate">{loc.district}</span>
-            </Link>
+            <div className="hidden sm:block">
+              <DistrictPicker />
+            </div>
             <button
               onClick={onSearchOpen}
               aria-label="Open search"
