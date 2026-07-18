@@ -346,7 +346,7 @@ function Analytics() {
               <XAxis dataKey="state" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} interval={0} angle={-20} textAnchor="end" height={60} />
               <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} tickFormatter={(v) => (v / 1_000_000).toFixed(1) + "M"} />
               <Tooltip
-                formatter={(v: number) => [fmt(v) + " MT", "Production"]}
+                formatter={(v: any) => [fmt(Number(v)) + " MT", "Production"]}
                 contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }}
               />
               <Bar dataKey="production" radius={[10, 10, 0, 0]}>
@@ -378,7 +378,7 @@ function Analytics() {
               <XAxis type="number" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
               <YAxis type="category" dataKey="district" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} width={100} />
               <Tooltip
-                formatter={(v: number) => [fmt(v) + " kg/ha", "Yield"]}
+                formatter={(v: any) => [fmt(Number(v)) + " kg/ha", "Yield"]}
                 labelFormatter={(l, p: any) => `${l} · ${p?.[0]?.payload?.crop ?? ""}`}
                 contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }}
               />
@@ -404,7 +404,7 @@ function Analytics() {
                 <Tooltip
                   cursor={{ strokeDasharray: "3 3" }}
                   contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }}
-                  formatter={(v: number, k: string) => k === "z" ? [fmt(v) + " MT", "Production"] : [fmt(v), k === "x" ? "Area (ha)" : "Yield (kg/ha)"]}
+                  formatter={(v: any, k: any) => k === "z" ? [fmt(v) + " MT", "Production"] : [fmt(v), k === "x" ? "Area (ha)" : "Yield (kg/ha)"]}
                   labelFormatter={() => ""}
                   content={({ payload }: any) => {
                     const p = payload?.[0]?.payload;
