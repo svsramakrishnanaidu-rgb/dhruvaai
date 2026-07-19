@@ -18,6 +18,7 @@ import { CinematicLoader } from "@/components/CinematicLoader";
 import { SearchDialog } from "@/components/SearchDialog";
 import { LeoAssistant } from "@/components/LeoAssistant";
 import { I18nProvider } from "@/lib/i18n";
+import { TranslationProvider } from "@/lib/translate-cache";
 
 function NotFoundComponent() {
   return (
