@@ -260,7 +260,7 @@ export function LeoAssistant() {
       setOpen(true);
       const g = GREETING[langRef.current];
       setCaptionLeo(g);
-      historyRef.current = [{ role: "assistant", content: g }];
+      historyRef.current = []; pushHistory("assistant", g);
       speak(g, () => {
         // Hand the mic to the user immediately after the greeting.
         if (conversationRef.current) setTimeout(startListening, 300);
