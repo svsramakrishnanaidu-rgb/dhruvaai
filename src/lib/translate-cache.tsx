@@ -13,7 +13,15 @@ import { useServerFn } from "@tanstack/react-start";
 import { translateBatch } from "./translate.functions";
 import { useI18n, type Lang } from "./i18n";
 
-const STORAGE_KEY = "krishi.translate.v1";
+/**
+ * Bump CONTENT_VERSION whenever crop / weed / disease / pest bodies change
+ * meaningfully. The cache key embeds this version, so stale translations for
+ * outdated source text are ignored and re-fetched on next access. Old-version
+ * blobs are pruned from localStorage on load.
+ */
+const CONTENT_VERSION = "v3";
+const STORAGE_PREFIX = "krishi.translate";
+const STORAGE_KEY = `${STORAGE_PREFIX}.${CONTENT_VERSION}`;
 const MAX_CACHE = 4000;
 
 type CacheMap = Record<string, string>; // key = `${lang}::${text}`
@@ -21,6 +29,13 @@ type CacheMap = Record<string, string>; // key = `${lang}::${text}`
 function loadCache(): CacheMap {
   if (typeof window === "undefined") return {};
   try {
+    // Purge any legacy versions.
+    for (let i = window.localStorage.length - 1; i >= 0; i--) {
+      const k = window.localStorage.key(i);
+      if (k && k.startsWith(`${STORAGE_PREFIX}.`) && k !== STORAGE_KEY) {
+        window.localStorage.removeItem(k);
+      }
+    }
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
     const obj = JSON.parse(raw);
@@ -33,7 +48,6 @@ function saveCache(cache: CacheMap) {
   try {
     const keys = Object.keys(cache);
     if (keys.length > MAX_CACHE) {
-      // Drop oldest ~25%
       const drop = keys.slice(0, Math.floor(keys.length * 0.25));
       for (const k of drop) delete cache[k];
     }
