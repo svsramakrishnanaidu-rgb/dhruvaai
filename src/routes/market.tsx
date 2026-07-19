@@ -74,6 +74,7 @@ function Market() {
             </Reveal>
           );
         })}
+        </div>
       </div>
     </div>
   );
