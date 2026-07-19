@@ -185,3 +185,58 @@ function ToggleRow({ label, hint, value, onChange }: { label: string; hint?: str
     </section>
   );
 }
+
+function WakePhrasesEditor({ phrases }: { phrases: string[] }) {
+  const [draft, setDraft] = useState("");
+  const add = () => {
+    const v = draft.trim().toLowerCase();
+    if (!v) return;
+    if (phrases.map((p) => p.toLowerCase()).includes(v)) { setDraft(""); return; }
+    leoSettings.set({ wakePhrases: [...phrases, v] });
+    setDraft("");
+  };
+  const remove = (idx: number) => {
+    const next = phrases.filter((_, i) => i !== idx);
+    leoSettings.set({ wakePhrases: next.length ? next : ["hey leo"] });
+  };
+  return (
+    <section>
+      <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        Your wake phrases
+      </label>
+      <p className="mb-2 text-[11px] text-muted-foreground">
+        Add nicknames or multilingual triggers (e.g. "hey leo", "namaste leo", "నమస్తే లియో"). Saved across sessions.
+      </p>
+      <ul className="mb-2 space-y-1.5">
+        {phrases.map((p, i) => (
+          <li key={`${p}-${i}`} className="flex items-center justify-between rounded-lg border border-border/60 bg-secondary/60 px-3 py-1.5">
+            <span className="text-sm">{p}</span>
+            <button
+              aria-label={`Remove ${p}`}
+              onClick={() => remove(i)}
+              className="rounded-full p-1.5 text-muted-foreground hover:bg-background hover:text-destructive"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="flex items-center gap-2">
+        <input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
+          placeholder="e.g. hey leo"
+          className="flex-1 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm"
+        />
+        <button
+          onClick={add}
+          disabled={!draft.trim()}
+          className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-40"
+        >
+          <Plus className="h-3.5 w-3.5" /> Add
+        </button>
+      </div>
+    </section>
+  );
+}
