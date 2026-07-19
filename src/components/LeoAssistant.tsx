@@ -1,27 +1,26 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { Mic, MicOff, X, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { Mic, MicOff, X, Sparkles, Volume2, VolumeX, Camera, Loader2, Star } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { leoChat } from "@/lib/leo.functions";
+import { leoChat, leoIdentify } from "@/lib/leo.functions";
 import { useI18n, type Lang } from "@/lib/i18n";
 import { locationStore, useLocation } from "@/lib/location-store";
+import { leoMemory, useLeoMemory } from "@/lib/leo-memory";
+import { CROP_LIST } from "@/data/crops";
 
 type Intent =
-  | { type: "navigate"; path: string }
+  | { type: "navigate"; path: string; highlight?: string }
   | { type: "setDistrict"; district: string }
   | { type: "setLanguage"; lang: Lang }
   | { type: "openSearch" }
   | { type: "toggleTheme" }
+  | { type: "favorite"; slug: string }
   | null;
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-const LANG_TO_BCP47: Record<Lang, string> = {
-  en: "en-IN",
-  te: "te-IN",
-  hi: "hi-IN",
-};
+const LANG_TO_BCP47: Record<Lang, string> = { en: "en-IN", te: "te-IN", hi: "hi-IN" };
 
 const GREETING: Record<Lang, string> = {
   en: "Hello! I am LEO, your AI farming assistant. Ask me about crops, diseases, fertilizers, or say 'open cotton' to explore.",
@@ -29,28 +28,44 @@ const GREETING: Record<Lang, string> = {
   hi: "नमस्ते! मैं लियो हूँ, आपका AI कृषि सहायक। फसलों, बीमारियों, उर्वरकों के बारे में पूछें।",
 };
 
+const CROP_SLUGS = CROP_LIST.map((c) => c.slug);
+
 export function LeoAssistant() {
-  const { lang } = useI18n();
+  const { lang, setLang } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
+  const memory = useLeoMemory();
   const chat = useServerFn(leoChat);
+  const identify = useServerFn(leoIdentify);
 
   const [open, setOpen] = useState(false);
   const [listening, setListening] = useState(false);
   const [thinking, setThinking] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [caption, setCaption] = useState("");
-  const [userCaption, setUserCaption] = useState("");
+  const [captionUser, setCaptionUser] = useState("");
+  const [captionLeo, setCaptionLeo] = useState("");
   const [history, setHistory] = useState<Msg[]>([]);
   const [supported, setSupported] = useState(true);
   const [greeted, setGreeted] = useState(false);
+  const [identifying, setIdentifying] = useState(false);
+  const [idResult, setIdResult] = useState<any>(null);
 
   const recRef = useRef<any>(null);
+  const interruptRef = useRef<any>(null);
   const langRef = useRef<Lang>(lang);
   langRef.current = lang;
+  const speakingRef = useRef(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
-  // Speech synthesis
+  // === TTS ===
+  const stopSpeaking = useCallback(() => {
+    try { window.speechSynthesis?.cancel(); } catch {}
+    setSpeaking(false);
+    speakingRef.current = false;
+    try { interruptRef.current?.stop(); } catch {}
+  }, []);
+
   const speak = useCallback((text: string) => {
     if (muted || typeof window === "undefined" || !("speechSynthesis" in window)) return;
     try {
@@ -59,19 +74,25 @@ export function LeoAssistant() {
       u.lang = LANG_TO_BCP47[langRef.current];
       u.rate = 1;
       u.pitch = 1;
-      u.onstart = () => setSpeaking(true);
-      u.onend = () => setSpeaking(false);
-      u.onerror = () => setSpeaking(false);
+      u.onstart = () => { setSpeaking(true); speakingRef.current = true; };
+      u.onend = () => { setSpeaking(false); speakingRef.current = false; };
+      u.onerror = () => { setSpeaking(false); speakingRef.current = false; };
       window.speechSynthesis.speak(u);
     } catch {}
   }, [muted]);
 
+  // === Intents ===
   const runIntent = useCallback((intent: Intent) => {
     if (!intent) return;
     switch (intent.type) {
       case "navigate":
         if (typeof intent.path === "string" && intent.path.startsWith("/")) {
+          if (intent.highlight) {
+            try { sessionStorage.setItem("leo.highlight", intent.highlight); } catch {}
+          }
           navigate({ to: intent.path as any }).catch(() => {});
+          const m = intent.path.match(/^\/crops\/([\w-]+)$/);
+          if (m) leoMemory.recordCrop(m[1]);
         }
         break;
       case "setDistrict":
@@ -79,8 +100,7 @@ export function LeoAssistant() {
         break;
       case "setLanguage":
         if (intent.lang === "en" || intent.lang === "te" || intent.lang === "hi") {
-          try { localStorage.setItem("agri.lang", intent.lang); } catch {}
-          window.location.reload();
+          setLang(intent.lang); // instant, no reload
         }
         break;
       case "toggleTheme":
@@ -89,13 +109,18 @@ export function LeoAssistant() {
       case "openSearch":
         window.dispatchEvent(new CustomEvent("leo:openSearch"));
         break;
+      case "favorite":
+        if (intent.slug) leoMemory.toggleFavorite(intent.slug);
+        break;
     }
-  }, [navigate]);
+  }, [navigate, setLang]);
 
+  // === Ask ===
   const ask = useCallback(async (message: string) => {
     if (!message.trim()) return;
     setThinking(true);
-    setCaption("");
+    setCaptionLeo("");
+    leoMemory.setLastQuery(message);
     const next = [...history, { role: "user" as const, content: message }];
     setHistory(next);
     try {
@@ -104,29 +129,35 @@ export function LeoAssistant() {
           message,
           lang: langRef.current,
           history: next.slice(-6),
-          context: { district: location.district, state: location.state },
+          context: {
+            district: location.district,
+            state: location.state,
+            recentCrops: memory.recentCrops,
+            favorites: memory.favorites,
+          },
+          cropSlugs: CROP_SLUGS,
         },
       });
       setThinking(false);
-      setCaption(res.speak);
+      setCaptionLeo(res.speak);
       setHistory((h) => [...h, { role: "assistant", content: res.speak }]);
       speak(res.speak);
       runIntent(res.intent as Intent);
-    } catch (e: any) {
+    } catch {
       setThinking(false);
       const msg = "I couldn't reach the server. Please try again.";
-      setCaption(msg);
+      setCaptionLeo(msg);
       speak(msg);
     }
-  }, [chat, history, location.district, location.state, runIntent, speak]);
+  }, [chat, history, location.district, location.state, memory.recentCrops, memory.favorites, runIntent, speak]);
 
-  // Speech recognition
+  // === Main STT ===
   const startListening = useCallback(() => {
     if (typeof window === "undefined") return;
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR) { setSupported(false); return; }
+    stopSpeaking();
     try {
-      window.speechSynthesis?.cancel();
       const rec = new SR();
       rec.lang = LANG_TO_BCP47[langRef.current];
       rec.interimResults = true;
@@ -140,9 +171,9 @@ export function LeoAssistant() {
           if (r.isFinal) finalT += r[0].transcript;
           else interim += r[0].transcript;
         }
-        setUserCaption(finalT || interim);
+        setCaptionUser(finalT || interim);
         if (finalT) {
-          rec.stop();
+          try { rec.stop(); } catch {}
           ask(finalT);
         }
       };
@@ -150,37 +181,71 @@ export function LeoAssistant() {
       rec.onend = () => setListening(false);
       recRef.current = rec;
       rec.start();
-    } catch {
-      setListening(false);
-    }
-  }, [ask]);
+    } catch { setListening(false); }
+  }, [ask, stopSpeaking]);
 
   const stopListening = useCallback(() => {
     try { recRef.current?.stop(); } catch {}
     setListening(false);
   }, []);
 
-  // Auto-greet on first open per session
+  // === Voice interruption: listen for speech while LEO is speaking ===
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const seen = sessionStorage.getItem("leo.greeted");
-    if (!seen) {
-      const timer = setTimeout(() => {
-        setOpen(true);
-        const g = GREETING[langRef.current];
-        setCaption(g);
-        setHistory([{ role: "assistant", content: g }]);
-        speak(g);
-        sessionStorage.setItem("leo.greeted", "1");
-        setGreeted(true);
-      }, 3800); // wait for cinematic loader
-      return () => clearTimeout(timer);
-    } else {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR || !speaking) return;
+    let rec: any;
+    try {
+      rec = new SR();
+      rec.lang = LANG_TO_BCP47[langRef.current];
+      rec.continuous = true;
+      rec.interimResults = true;
+      let triggered = false;
+      rec.onresult = (e: any) => {
+        // Any interim transcript longer than a few chars means the user is speaking over LEO.
+        const t = Array.from(e.results as any).map((r: any) => r[0].transcript).join("").trim();
+        if (!triggered && t.length > 3) {
+          triggered = true;
+          try { rec.stop(); } catch {}
+          stopSpeaking();
+          setTimeout(startListening, 150);
+        }
+      };
+      rec.onerror = () => {};
+      rec.onend = () => {};
+      interruptRef.current = rec;
+      rec.start();
+    } catch {}
+    return () => { try { rec?.stop(); } catch {} };
+  }, [speaking, startListening, stopSpeaking]);
+
+  // === Auto-greet ===
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (sessionStorage.getItem("leo.greeted")) { setGreeted(true); return; }
+    const timer = setTimeout(() => {
+      setOpen(true);
+      const g = GREETING[langRef.current];
+      setCaptionLeo(g);
+      setHistory([{ role: "assistant", content: g }]);
+      speak(g);
+      sessionStorage.setItem("leo.greeted", "1");
       setGreeted(true);
-    }
+    }, 3800);
+    return () => clearTimeout(timer);
   }, [speak]);
 
-  // Wake word support: "Hey LEO"
+  // === Re-greet on language change (after greeted) ===
+  useEffect(() => {
+    if (!greeted) return;
+    stopSpeaking();
+    // Silent update — do not re-announce unless user is listening
+    if (typeof window !== "undefined") {
+      try { document.documentElement.lang = lang; } catch {}
+    }
+  }, [lang, greeted, stopSpeaking]);
+
+  // === Wake word "Hey LEO" ===
   useEffect(() => {
     if (typeof window === "undefined") return;
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -188,7 +253,7 @@ export function LeoAssistant() {
     let stopped = false;
     let wake: any;
     const start = () => {
-      if (stopped || listening || thinking || speaking) return;
+      if (stopped || listening || thinking || speakingRef.current) return;
       try {
         wake = new SR();
         wake.lang = "en-IN";
@@ -196,25 +261,75 @@ export function LeoAssistant() {
         wake.interimResults = true;
         wake.onresult = (e: any) => {
           const t = Array.from(e.results as any).map((r: any) => r[0].transcript).join(" ").toLowerCase();
-          if (/\b(hey|hi|hello)\s+leo\b/.test(t) || /\bleo\b/.test(t) && t.length < 20) {
+          if (/\b(hey|hi|hello)\s+leo\b/.test(t)) {
             try { wake.stop(); } catch {}
             setOpen(true);
-            setTimeout(startListening, 300);
+            setTimeout(startListening, 250);
           }
         };
         wake.onerror = () => { try { wake.stop(); } catch {} };
-        wake.onend = () => { if (!stopped) setTimeout(start, 1200); };
+        wake.onend = () => { if (!stopped) setTimeout(start, 1500); };
         wake.start();
       } catch {}
     };
-    // Only enable wake word if user has clicked once (autoplay policy safe)
     const enable = () => { window.removeEventListener("click", enable); start(); };
     window.addEventListener("click", enable, { once: true });
     return () => { stopped = true; try { wake?.stop(); } catch {}; window.removeEventListener("click", enable); };
-  }, [greeted, startListening, listening, thinking, speaking]);
+  }, [greeted, startListening, listening, thinking]);
+
+  // === Image identification ===
+  const handleFile = useCallback(async (file: File) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    if (file.size > 8 * 1024 * 1024) {
+      setCaptionLeo("Image too large — please pick one under 8MB.");
+      return;
+    }
+    setIdentifying(true);
+    setIdResult(null);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const dataUrl = String(reader.result || "");
+        const res = await identify({ data: { imageDataUrl: dataUrl, lang: langRef.current, kind: "any" } });
+        setIdResult(res);
+        setIdentifying(false);
+        setCaptionLeo(res.summary);
+        setHistory((h) => [...h, { role: "assistant", content: `[Photo ID] ${res.summary}` }]);
+        speak(`${res.summary}. ${res.advice}`);
+        if (res.topMatches?.[0]?.name) leoMemory.recordDisease(res.topMatches[0].name);
+      } catch {
+        setIdentifying(false);
+        const msg = "I couldn't analyze that photo. Try a clearer close-up.";
+        setCaptionLeo(msg);
+        speak(msg);
+      }
+    };
+    reader.readAsDataURL(file);
+  }, [identify, speak]);
+
+  // === Auto-record crop route visits (TanStack Router aware) ===
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useEffect(() => {
+    const m = pathname.match(/^\/crops\/([\w-]+)$/);
+    if (m) leoMemory.recordCrop(m[1]);
+  }, [pathname]);
 
   return (
     <>
+      {/* Live captions overlay */}
+      {(captionUser || captionLeo || thinking) && (open || speaking || listening) && (
+        <div className="pointer-events-none fixed inset-x-0 top-[76px] z-[68] flex justify-center px-3">
+          <div className="max-w-3xl space-y-1 rounded-2xl border border-border/50 bg-background/70 px-4 py-2 text-center text-sm shadow-lg backdrop-blur-xl">
+            {captionUser && listening && (
+              <p className="text-primary"><span className="opacity-60">You:</span> {captionUser}</p>
+            )}
+            {(captionLeo || thinking) && (
+              <p><span className="opacity-60">LEO:</span> {thinking ? "…" : captionLeo}</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Floating launcher */}
       <button
         aria-label="Open LEO assistant"
@@ -232,7 +347,7 @@ export function LeoAssistant() {
         <div className="fixed inset-x-0 bottom-0 z-[71] flex justify-end p-2 sm:inset-auto sm:bottom-24 sm:right-5">
           <div
             className="w-full max-w-sm overflow-hidden rounded-3xl border border-border/60 shadow-2xl backdrop-blur-xl"
-            style={{ background: "color-mix(in oklab, var(--background) 85%, transparent)" }}
+            style={{ background: "color-mix(in oklab, var(--background) 88%, transparent)" }}
             role="dialog"
             aria-label="LEO AI assistant"
           >
@@ -244,14 +359,14 @@ export function LeoAssistant() {
                 <div>
                   <div className="text-sm font-semibold">LEO</div>
                   <div className="text-[11px] uppercase tracking-widest text-muted-foreground">
-                    {thinking ? "Thinking…" : listening ? "Listening…" : speaking ? "Speaking…" : "Live"}
+                    {thinking ? "Thinking…" : listening ? "Listening…" : speaking ? "Speaking…" : identifying ? "Analyzing…" : "Live"}
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-1">
                 <button
                   aria-label={muted ? "Unmute" : "Mute"}
-                  onClick={() => { setMuted((m) => !m); window.speechSynthesis?.cancel(); }}
+                  onClick={() => { setMuted((m) => !m); stopSpeaking(); }}
                   className="rounded-full p-2 hover:bg-secondary"
                 >
                   {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -262,27 +377,60 @@ export function LeoAssistant() {
               </div>
             </header>
 
-            <div className="max-h-[45dvh] overflow-y-auto px-4 py-3 text-sm">
+            {/* Memory strip */}
+            {(memory.recentCrops.length > 0 || memory.favorites.length > 0) && (
+              <div className="flex flex-wrap gap-1 border-b border-border/50 px-3 py-2 text-xs">
+                {memory.favorites.slice(0, 3).map((s) => (
+                  <button key={"f"+s} onClick={() => navigate({ to: `/crops/${s}` as any })} className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-amber-500">
+                    <Star className="h-3 w-3 fill-current" />{s}
+                  </button>
+                ))}
+                {memory.recentCrops.slice(0, 4).map((s) => (
+                  <button key={"r"+s} onClick={() => navigate({ to: `/crops/${s}` as any })} className="rounded-full bg-secondary px-2 py-0.5 text-muted-foreground hover:text-foreground">
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="max-h-[40dvh] overflow-y-auto px-4 py-3 text-sm">
               {history.length === 0 && (
                 <p className="text-muted-foreground">{GREETING[lang]}</p>
               )}
               <ul className="space-y-2">
                 {history.slice(-8).map((m, i) => (
                   <li key={i} className={m.role === "user" ? "text-right" : ""}>
-                    <span
-                      className={
-                        m.role === "user"
-                          ? "inline-block max-w-[85%] rounded-2xl rounded-br-md bg-primary/15 px-3 py-2 text-foreground"
-                          : "inline-block max-w-[95%] rounded-2xl rounded-bl-md bg-secondary px-3 py-2 text-foreground"
-                      }
-                    >
+                    <span className={m.role === "user"
+                      ? "inline-block max-w-[85%] rounded-2xl rounded-br-md bg-primary/15 px-3 py-2"
+                      : "inline-block max-w-[95%] rounded-2xl rounded-bl-md bg-secondary px-3 py-2"}>
                       {m.content}
                     </span>
                   </li>
                 ))}
               </ul>
-              {userCaption && listening && (
-                <p className="mt-2 text-right text-xs italic text-muted-foreground">"{userCaption}"</p>
+
+              {identifying && (
+                <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="h-3 w-3 animate-spin" /> Analyzing photo…
+                </div>
+              )}
+              {idResult && idResult.topMatches?.length > 0 && (
+                <div className="mt-3 space-y-2 rounded-xl border border-border/60 bg-background/40 p-3 text-xs">
+                  <div className="font-semibold text-foreground">Top matches</div>
+                  {idResult.topMatches.map((t: any, i: number) => (
+                    <div key={i} className="rounded-lg bg-secondary/70 p-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">{t.name}</span>
+                        <span className="text-muted-foreground">{t.confidence}%</span>
+                      </div>
+                      {t.scientificName && <div className="italic text-muted-foreground">{t.scientificName}</div>}
+                      {t.symptoms && <div className="mt-1"><b>Symptoms:</b> {t.symptoms}</div>}
+                      {t.organicControl && <div><b>Organic:</b> {t.organicControl}</div>}
+                      {t.chemicalControl && <div><b>Chemical:</b> {t.chemicalControl}</div>}
+                    </div>
+                  ))}
+                  {idResult.advice && <p className="text-muted-foreground">{idResult.advice}</p>}
+                </div>
               )}
             </div>
 
@@ -298,6 +446,21 @@ export function LeoAssistant() {
               >
                 {listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
               </button>
+              <button
+                aria-label="Identify plant from photo"
+                onClick={() => fileRef.current?.click()}
+                className="grid h-11 w-11 place-items-center rounded-full border border-border/60 hover:bg-secondary"
+              >
+                <Camera className="h-4 w-4" />
+              </button>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
+              />
               <form
                 className="flex-1"
                 onSubmit={(e) => {
@@ -310,7 +473,7 @@ export function LeoAssistant() {
               >
                 <input
                   name="q"
-                  placeholder={supported ? "Speak or type…" : "Type your question…"}
+                  placeholder={supported ? "Speak, type, or upload a photo…" : "Type your question…"}
                   className="w-full rounded-full border border-border/60 bg-background/60 px-4 py-2 text-sm outline-none focus:border-primary"
                   autoComplete="off"
                 />
@@ -337,13 +500,7 @@ function LeoAvatar({ active, small = false }: { active: boolean; small?: boolean
         </radialGradient>
       </defs>
       <circle cx="16" cy="16" r="14" fill="url(#leo-eye)" opacity="0.15" />
-      <circle
-        cx="16"
-        cy="16"
-        r={active ? 8 : 6}
-        fill="url(#leo-eye)"
-        style={{ transition: "r 0.3s ease" }}
-      />
+      <circle cx="16" cy="16" r={active ? 8 : 6} fill="url(#leo-eye)" style={{ transition: "r 0.3s ease" }} />
       <circle cx="16" cy="16" r="3" fill="#052e16">
         <animate attributeName="r" values="3;3.6;3" dur="2.4s" repeatCount="indefinite" />
       </circle>
