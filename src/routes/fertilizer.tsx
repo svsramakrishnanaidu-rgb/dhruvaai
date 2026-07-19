@@ -105,5 +105,6 @@ function Fertilizer() {
         </div>
       </div>
     </div>
+    </div>
   );
 }
