@@ -277,7 +277,7 @@ export function LeoAssistant() {
       setCaptionLeo(g); setLastReply(g);
       historyRef.current = []; pushHistory("assistant", g);
       if (settingsRef.current.autoSpeak) {
-        speak(g, () => { if (conversationRef.current) setTimeout(startListening, 300); });
+        speak(g);
       }
       sessionStorage.setItem("leo.greeted", "1");
       setGreeted(true);
