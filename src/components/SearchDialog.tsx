@@ -21,7 +21,7 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
       );
     });
     out.push({ title: "Fertilizer Calculator", sub: "Tool", to: "/fertilizer", kind: "tool" });
-    out.push({ title: "Weather", sub: "Module", to: "/weather", kind: "module" });
+    
     out.push({ title: "Market Prices", sub: "Module", to: "/market", kind: "module" });
     out.push({ title: "Crop Rotation", sub: "Tool", to: "/rotation", kind: "tool" });
     return out;

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Search, MapPin, Cloud, Sprout, Sun, TrendingUp, Leaf, Droplets, BarChart3 } from "lucide-react";
+import { ArrowRight, Search, MapPin, Sprout, Sun, TrendingUp, Leaf, Droplets, BarChart3 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { CropCard } from "@/components/CropCard";
 import { Reveal } from "@/components/Reveal";
@@ -79,8 +79,7 @@ function Home() {
           </Reveal>
 
           <Reveal delay={480}>
-            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <MiniCard icon={<Cloud className="h-5 w-5" />} label="Today" value={`${p.tempC}°C · ${p.sky}`} tag="Weather" />
+            <div className="mt-14 grid gap-4 sm:grid-cols-3">
               <MiniCard icon={<Sun className="h-5 w-5" />} label="Season" value={p.season} tag={p.climate} />
               <MiniCard icon={<Leaf className="h-5 w-5" />} label="Soil" value={`${p.soil} · pH ${p.soilPh}`} tag="Local profile" />
               <MiniCard icon={<Droplets className="h-5 w-5" />} label="Rainfall" value={`${p.rainfallYtdMm} mm YTD`} tag={`${p.rainfallDeltaPct >= 0 ? "+" : ""}${p.rainfallDeltaPct}% vs avg`} />

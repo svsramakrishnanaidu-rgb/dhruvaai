@@ -21,6 +21,33 @@ import catLeafy from "@/assets/cat-leafy.jpg";
 import catRoot from "@/assets/cat-root.jpg";
 import catGourd from "@/assets/cat-gourd.jpg";
 
+// Per-slug crop images matching the crop name. Anything not listed here
+// falls back to the category image below.
+import imgWheat from "@/assets/crop-wheat.jpg";
+import imgPotato from "@/assets/crop-potato.jpg";
+import imgSoybean from "@/assets/crop-soybean.jpg";
+import imgSunflower from "@/assets/crop-sunflower.jpg";
+import imgMustard from "@/assets/crop-mustard.jpg";
+import imgCabbage from "@/assets/crop-cabbage.jpg";
+import imgBrinjal from "@/assets/crop-brinjal.jpg";
+import imgOkra from "@/assets/crop-okra.jpg";
+import imgCarrot from "@/assets/crop-carrot.jpg";
+import imgCoconut from "@/assets/crop-coconut.jpg";
+import imgCoffee from "@/assets/crop-coffee.jpg";
+import imgTea from "@/assets/crop-tea.jpg";
+import imgGuava from "@/assets/crop-guava.jpg";
+import imgGrapes from "@/assets/crop-grapes.jpg";
+import imgMarigold from "@/assets/crop-marigold.jpg";
+import imgRose from "@/assets/crop-rose.jpg";
+import imgGinger from "@/assets/crop-ginger.jpg";
+import imgGarlic from "@/assets/crop-garlic.jpg";
+import imgBlackPepper from "@/assets/crop-black-pepper.jpg";
+import imgCardamom from "@/assets/crop-cardamom.jpg";
+import imgPapaya from "@/assets/crop-papaya.jpg";
+import imgPomegranate from "@/assets/crop-pomegranate.jpg";
+import imgJasmine from "@/assets/crop-jasmine.jpg";
+import imgCashew from "@/assets/crop-cashew.jpg";
+
 type ImgKey =
   | "cereal" | "pulse" | "millet" | "oilseed" | "vegetable" | "fruit"
   | "spice" | "plantation" | "fodder" | "flower" | "medicinal"
@@ -31,6 +58,16 @@ const IMG: Record<ImgKey, string> = {
   vegetable: catVegetable, fruit: catFruit, spice: catSpice, plantation: catPlantation,
   fodder: catFodder, flower: catFlower, medicinal: catMedicinal,
   leafy: catLeafy, root: catRoot, gourd: catGourd,
+};
+
+const SLUG_IMG: Record<string, string> = {
+  wheat: imgWheat, potato: imgPotato, soybean: imgSoybean, sunflower: imgSunflower,
+  mustard: imgMustard, cabbage: imgCabbage, brinjal: imgBrinjal, okra: imgOkra,
+  carrot: imgCarrot, coconut: imgCoconut, coffee: imgCoffee, tea: imgTea,
+  guava: imgGuava, grapes: imgGrapes, marigold: imgMarigold, rose: imgRose,
+  ginger: imgGinger, garlic: imgGarlic, "black-pepper": imgBlackPepper,
+  cardamom: imgCardamom, papaya: imgPapaya, pomegranate: imgPomegranate,
+  jasmine: imgJasmine, cashew: imgCashew,
 };
 
 const defaultLandPrep: LandPrepStep[] = [
@@ -94,7 +131,7 @@ function make(s: Spec): Crop {
     slug: s.slug,
     name: s.name,
     scientificName: s.sci,
-    image: IMG[s.img],
+    image: SLUG_IMG[s.slug] ?? IMG[s.img],
     emoji: s.emoji,
     season: s.season,
     suitableDistricts: s.districts,
