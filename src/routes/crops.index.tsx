@@ -187,8 +187,17 @@ function CropLibrary() {
   );
 }
 
-function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
+function Select({
+  label, value, onChange, options, tKey,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+  tKey?: (v: string) => string;
+}) {
   const active = value !== "All";
+  const fmt = tKey ?? ((v: string) => v);
   return (
     <label
       className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs transition ${
@@ -201,10 +210,11 @@ function Select({ label, value, onChange, options }: { label: string; value: str
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        aria-label={label}
         className={`flex-1 bg-transparent text-sm outline-none ${active ? "font-semibold text-primary" : "text-white"}`}
       >
         {options.map((o) => (
-          <option key={o} value={o}>{o}</option>
+          <option key={o} value={o}>{fmt(o)}</option>
         ))}
       </select>
     </label>
