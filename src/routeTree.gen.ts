@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as RotationRouteImport } from './routes/rotation'
 import { Route as PaddyFutureRouteImport } from './routes/paddy-future'
@@ -25,11 +24,6 @@ import { Route as CropsIndexRouteImport } from './routes/crops.index'
 import { Route as DistrictsSlugRouteImport } from './routes/districts.$slug'
 import { Route as CropsSlugRouteImport } from './routes/crops.$slug'
 
-const WeatherRoute = WeatherRouteImport.update({
-  id: '/weather',
-  path: '/weather',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SchemesRoute = SchemesRouteImport.update({
   id: '/schemes',
   path: '/schemes',
@@ -112,7 +106,6 @@ export interface FileRoutesByFullPath {
   '/paddy-future': typeof PaddyFutureRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
-  '/weather': typeof WeatherRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
   '/crops/': typeof CropsIndexRoute
@@ -129,7 +122,6 @@ export interface FileRoutesByTo {
   '/paddy-future': typeof PaddyFutureRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
-  '/weather': typeof WeatherRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
   '/crops': typeof CropsIndexRoute
@@ -147,7 +139,6 @@ export interface FileRoutesById {
   '/paddy-future': typeof PaddyFutureRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
-  '/weather': typeof WeatherRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
   '/crops/': typeof CropsIndexRoute
@@ -166,7 +157,6 @@ export interface FileRouteTypes {
     | '/paddy-future'
     | '/rotation'
     | '/schemes'
-    | '/weather'
     | '/crops/$slug'
     | '/districts/$slug'
     | '/crops/'
@@ -183,7 +173,6 @@ export interface FileRouteTypes {
     | '/paddy-future'
     | '/rotation'
     | '/schemes'
-    | '/weather'
     | '/crops/$slug'
     | '/districts/$slug'
     | '/crops'
@@ -200,7 +189,6 @@ export interface FileRouteTypes {
     | '/paddy-future'
     | '/rotation'
     | '/schemes'
-    | '/weather'
     | '/crops/$slug'
     | '/districts/$slug'
     | '/crops/'
@@ -218,7 +206,6 @@ export interface RootRouteChildren {
   PaddyFutureRoute: typeof PaddyFutureRoute
   RotationRoute: typeof RotationRoute
   SchemesRoute: typeof SchemesRoute
-  WeatherRoute: typeof WeatherRoute
   CropsSlugRoute: typeof CropsSlugRoute
   DistrictsSlugRoute: typeof DistrictsSlugRoute
   CropsIndexRoute: typeof CropsIndexRoute
@@ -227,13 +214,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/weather': {
-      id: '/weather'
-      path: '/weather'
-      fullPath: '/weather'
-      preLoaderRoute: typeof WeatherRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/schemes': {
       id: '/schemes'
       path: '/schemes'
@@ -346,7 +326,6 @@ const rootRouteChildren: RootRouteChildren = {
   PaddyFutureRoute: PaddyFutureRoute,
   RotationRoute: RotationRoute,
   SchemesRoute: SchemesRoute,
-  WeatherRoute: WeatherRoute,
   CropsSlugRoute: CropsSlugRoute,
   DistrictsSlugRoute: DistrictsSlugRoute,
   CropsIndexRoute: CropsIndexRoute,
