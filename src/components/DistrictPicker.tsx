@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, MapPin, Check } from "lucide-react";
 import { STATES, locationStore, useLocation } from "@/lib/location-store";
+import { useT } from "@/lib/i18n";
 
 /**
  * Global district picker rendered in the navbar. Setting a district updates
@@ -11,6 +12,7 @@ import { STATES, locationStore, useLocation } from "@/lib/location-store";
  */
 export function DistrictPicker() {
   const loc = useLocation();
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [state, setState] = useState(loc.state);
   const ref = useRef<HTMLDivElement>(null);
@@ -38,7 +40,7 @@ export function DistrictPicker() {
       <button
         onClick={() => setOpen((o) => !o)}
         className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-secondary/40 px-3 py-1.5 text-xs font-medium hover:border-primary/60"
-        aria-label="Change district"
+        aria-label={t("aria.changeDistrict")}
         aria-expanded={open}
       >
         <MapPin className="h-3.5 w-3.5 text-primary" />

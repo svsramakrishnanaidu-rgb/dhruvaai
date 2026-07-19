@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Languages, Check } from "lucide-react";
-import { LANGS, useI18n } from "@/lib/i18n";
+import { LANGS, useI18n, useT } from "@/lib/i18n";
 
 export function LanguageSwitcher() {
   const { lang, setLang } = useI18n();
+  const t = useT();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -22,7 +23,9 @@ export function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Change language"
+        aria-label={t("aria.changeLanguage")}
+        aria-expanded={open}
+        aria-haspopup="listbox"
         className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
       >
         <Languages className="h-4 w-4" />
