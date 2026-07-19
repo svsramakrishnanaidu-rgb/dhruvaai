@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Search, MapPin, Sprout, Sun, TrendingUp, Leaf, Droplets, BarChart3 } from "lucide-react";
+import {
+  ArrowRight, MapPin, Sprout, Sun, TrendingUp, Leaf, Droplets,
+  BarChart3, Search, Compass, LineChart, ShieldCheck,
+} from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
-import { CropCard } from "@/components/CropCard";
 import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
 import { useLocation } from "@/lib/location-store";
@@ -12,7 +14,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "KrishiSense — Smart Agricultural Advisory Platform" },
-      { name: "description", content: "Cinematic crop advisory: trending crops, live weather, market prices, fertilizer calculator and disease library for Indian farmers." },
+      { name: "description", content: "A cinematic bento dashboard for Indian farmers: trending crops, live soil and rainfall, market prices, fertilizer planner, disease library and district atlas." },
     ],
   }),
   component: Home,
@@ -21,169 +23,287 @@ export const Route = createFileRoute("/")({
 function Home() {
   const loc = useLocation();
   const p = profileFor(loc.district);
-  const stats = [
-    { value: 128, suffix: "K+", label: "Farmers advised" },
-    { value: 42, suffix: "", label: "Crops covered" },
-    { value: 26, suffix: "", label: "Districts live" },
-    { value: 99, suffix: "%", label: "Uptime" },
-  ];
+  const trending = CROP_LIST.filter((c) => c.trending).slice(0, 6);
+  const featured = trending[0] ?? CROP_LIST[0];
 
   return (
-    <div>
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <img src={heroImg} alt="" className="h-full w-full object-cover opacity-40" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/40 to-background" />
+    <div className="mx-auto max-w-7xl px-4 pb-24 pt-8 sm:px-6 md:pt-10">
+      {/* Location strip */}
+      <Reveal>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/40 px-3 py-1 text-xs backdrop-blur">
+            <span className="grid h-4 w-4 place-items-center rounded-full bg-primary text-[9px] text-primary-foreground">✓</span>
+            Live for <b className="font-semibold text-foreground">{loc.district}, {loc.state}</b>
+          </span>
+          <Link
+            to="/districts"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-background/40 px-3 py-1 text-xs backdrop-blur transition hover:bg-secondary tap"
+          >
+            <MapPin className="h-3.5 w-3.5 text-primary" /> Change district
+          </Link>
         </div>
+      </Reveal>
 
-        <div className="mx-auto max-w-7xl px-6 pt-16 pb-24 md:pt-24 md:pb-32">
-          <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/40 px-3 py-1 text-xs backdrop-blur">
-              <span className="grid h-4 w-4 place-items-center rounded-full bg-primary text-[9px] text-primary-foreground">✓</span>
-              Live for <b className="font-semibold text-foreground">{loc.district}, {loc.state}</b>
-            </span>
-          </Reveal>
-
-          <Reveal delay={80}>
-            <h1 className="mt-6 max-w-5xl font-display text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-7xl lg:text-8xl">
-              Smart <span className="text-gradient">Agricultural</span>{" "}
-              Advisory Platform
-            </h1>
-          </Reveal>
-
-          <Reveal delay={200}>
-            <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-              Cinematic, science-backed guidance for every acre. Choose your district, pick a crop,
-              and unlock a full playbook — from land prep to market price.
-            </p>
-          </Reveal>
-
-          <Reveal delay={320}>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                to="/crops"
-                className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg transition hover:brightness-110"
-                style={{ boxShadow: "var(--shadow-glow)" }}
-              >
-                Explore crops
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-              <Link
-                to="/districts"
-                className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/40 px-6 py-3 text-sm font-semibold backdrop-blur transition hover:bg-secondary"
-              >
-                <MapPin className="h-4 w-4 text-primary" /> Set your district
-              </Link>
-            </div>
-          </Reveal>
-
-          <Reveal delay={480}>
-            <div className="mt-14 grid gap-4 sm:grid-cols-3">
-              <MiniCard icon={<Sun className="h-5 w-5" />} label="Season" value={p.season} tag={p.climate} />
-              <MiniCard icon={<Leaf className="h-5 w-5" />} label="Soil" value={`${p.soil} · pH ${p.soilPh}`} tag="Local profile" />
-              <MiniCard icon={<Droplets className="h-5 w-5" />} label="Rainfall" value={`${p.rainfallYtdMm} mm YTD`} tag={`${p.rainfallDeltaPct >= 0 ? "+" : ""}${p.rainfallDeltaPct}% vs avg`} />
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* STATS */}
-      <section className="mx-auto max-w-7xl px-6 py-8">
-        <div className="grid grid-cols-2 gap-4 rounded-3xl border border-border/60 bg-card/40 p-6 backdrop-blur md:grid-cols-4">
-          {stats.map((s, i) => (
-            <Reveal key={s.label} delay={i * 80}>
-              <div className="text-center md:text-left">
-                <div className="font-display text-4xl font-black tracking-tight md:text-5xl">
-                  <CountUp value={s.value} suffix={s.suffix} />
+      {/* BENTO GRID */}
+      <div className="mt-6 grid auto-rows-[minmax(140px,auto)] grid-cols-2 gap-4 md:grid-cols-6 md:gap-5">
+        {/* Hero (spans 4x2 desktop, full width mobile) */}
+        <Reveal className="col-span-2 md:col-span-4 md:row-span-2">
+          <div className="relative h-full overflow-hidden rounded-3xl border border-border/60 bg-card">
+            <img src={heroImg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-55" />
+            <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/40 to-transparent" />
+            <div className="relative flex h-full flex-col justify-between p-6 md:p-10">
+              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border/60 bg-background/50 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] backdrop-blur">
+                <Sprout className="h-3.5 w-3.5 text-primary" /> Advisory platform
+              </span>
+              <div>
+                <h1 className="font-display text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                  Grow with <span className="text-gradient">clarity.</span>
+                </h1>
+                <p className="mt-4 max-w-xl text-sm text-muted-foreground md:text-base">
+                  A cinematic, science-backed playbook for every acre — soil to market, tuned to {loc.district}.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  <Link
+                    to="/crops"
+                    className="group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg transition hover:brightness-110 tap"
+                    style={{ boxShadow: "var(--shadow-glow)" }}
+                  >
+                    Explore crops
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                  <Link
+                    to="/analytics"
+                    className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/50 px-5 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-secondary tap"
+                  >
+                    <BarChart3 className="h-4 w-4 text-primary" /> India atlas
+                  </Link>
                 </div>
-                <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{s.label}</div>
               </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* TRENDING */}
-      <section className="mx-auto max-w-7xl px-6 py-20">
-        <Reveal>
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div className="min-w-0">
-              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Trending</span>
-              <h2 className="mt-2 font-display text-3xl font-black tracking-tight sm:text-4xl md:text-5xl">
-                Crops moving this season
-              </h2>
             </div>
-            <Link to="/crops" className="story-link text-sm text-muted-foreground">
-              See all →
-            </Link>
           </div>
         </Reveal>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {CROP_LIST.map((c, i) => (
-            <CropCard key={c.slug} crop={c} index={i} />
-          ))}
-        </div>
-      </section>
 
-      {/* FEATURE STRIP */}
-      <section className="mx-auto max-w-7xl px-6 py-20">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <FeatureCard
-            icon={<BarChart3 className="h-5 w-5" />}
-            title="India Crop Atlas"
-            copy="Ministry of Agriculture 2025-26 Advance Estimates — district area, production and yield across 9 states, fully interactive."
-            to="/analytics"
-          />
-          <FeatureCard
-            icon={<Sprout className="h-5 w-5" />}
-            title="Land-to-market playbooks"
-            copy="Every crop ships with land prep, seed, spacing, irrigation, fertilizer, weeds, pests, harvest and storage — isolated per crop, never mixed."
-            to="/crops"
-          />
-          <FeatureCard
-            icon={<TrendingUp className="h-5 w-5" />}
-            title="Live market + MSP"
-            copy="Track today's mandi price, 7-day trend, and profit estimation against your acreage and yield."
-            to="/market"
-          />
-          <FeatureCard
-            icon={<Search className="h-5 w-5" />}
-            title="Instant global search"
-            copy="Voice-enabled search across crops, diseases, tools and districts. Press ⌘K anywhere."
-            to="/diseases"
-          />
-        </div>
-      </section>
+        {/* Season tile */}
+        <BentoTile
+          className="col-span-1 md:col-span-2"
+          icon={<Sun className="h-4 w-4" />}
+          tag="Season"
+          title={p.season}
+          sub={p.climate}
+        />
+
+        {/* Soil tile */}
+        <BentoTile
+          className="col-span-1 md:col-span-2"
+          icon={<Leaf className="h-4 w-4" />}
+          tag="Soil"
+          title={p.soil}
+          sub={`pH ${p.soilPh}`}
+        />
+
+        {/* Rainfall tile — larger */}
+        <Reveal className="col-span-2 md:col-span-2">
+          <div className="card-elegant hover-lift flex h-full flex-col justify-between p-5">
+            <div className="flex items-center justify-between">
+              <div className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-primary">
+                <Droplets className="h-4 w-4" />
+              </div>
+              <span className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                Rainfall
+              </span>
+            </div>
+            <div>
+              <div className="font-display text-3xl font-black tracking-tight">
+                <CountUp value={p.rainfallYtdMm} suffix=" mm" />
+              </div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                YTD · <span className={p.rainfallDeltaPct >= 0 ? "text-primary" : "text-destructive"}>
+                  {p.rainfallDeltaPct >= 0 ? "+" : ""}{p.rainfallDeltaPct}% vs avg
+                </span>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Trending row */}
+        <Reveal className="col-span-2 md:col-span-4">
+          <div className="card-elegant flex h-full flex-col p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-primary">Trending</span>
+                <h2 className="mt-1 font-display text-xl font-bold tracking-tight md:text-2xl">Crops moving this season</h2>
+              </div>
+              <Link to="/crops" className="story-link text-xs text-muted-foreground">See all →</Link>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-6">
+              {trending.map((c) => (
+                <Link
+                  key={c.slug}
+                  to="/crops/$slug"
+                  params={{ slug: c.slug }}
+                  className="group relative aspect-square overflow-hidden rounded-2xl border border-border/60"
+                >
+                  <img src={c.image} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-2">
+                    <div className="truncate text-[11px] font-semibold">{c.name}</div>
+                    <div className="text-[9px] text-primary">+{c.profitPct}%</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Featured crop */}
+        <Reveal className="col-span-2 md:col-span-3 md:row-span-2">
+          <Link
+            to="/crops/$slug"
+            params={{ slug: featured.slug }}
+            className="group relative block h-full min-h-[280px] overflow-hidden rounded-3xl border border-border/60"
+          >
+            <img src={featured.image} alt={featured.name} className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+            <div className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full glass text-2xl">
+              {featured.emoji}
+            </div>
+            <span className="absolute left-4 top-4 rounded-full bg-primary/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary-foreground">
+              Featured
+            </span>
+            <div className="absolute inset-x-0 bottom-0 p-6">
+              <h3 className="font-display text-3xl font-black tracking-tight md:text-4xl">{featured.name}</h3>
+              <p className="text-xs italic text-muted-foreground">{featured.scientificName}</p>
+              <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
+                <Pill>+{featured.profitPct}% profit</Pill>
+                <Pill>{featured.waterNeed} water</Pill>
+                <Pill>{featured.season.split(" ")[0]}</Pill>
+              </div>
+            </div>
+          </Link>
+        </Reveal>
+
+        {/* Market mini card */}
+        <BentoLink
+          to="/market"
+          className="col-span-1 md:col-span-3"
+          icon={<TrendingUp className="h-4 w-4" />}
+          tag="Live"
+          title="Market prices"
+          sub="Mandi trends & MSP"
+        />
+
+        {/* Fertilizer mini card */}
+        <BentoLink
+          to="/fertilizer"
+          className="col-span-1 md:col-span-3"
+          icon={<LineChart className="h-4 w-4" />}
+          tag="Planner"
+          title="Fertilizer calculator"
+          sub="Per acre / hectare"
+        />
+
+        {/* Stats strip */}
+        <Reveal className="col-span-2 md:col-span-6">
+          <div className="grid grid-cols-2 gap-4 rounded-3xl border border-border/60 bg-card/40 p-6 backdrop-blur md:grid-cols-4">
+            {[
+              { value: 128, suffix: "K+", label: "Farmers advised" },
+              { value: CROP_LIST.length, suffix: "", label: "Crops covered" },
+              { value: 26, suffix: "", label: "Districts live" },
+              { value: 99, suffix: "%", label: "Uptime" },
+            ].map((s) => (
+              <div key={s.label} className="text-center md:text-left">
+                <div className="font-display text-3xl font-black tracking-tight md:text-4xl">
+                  <CountUp value={s.value} suffix={s.suffix} />
+                </div>
+                <div className="mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+
+        {/* Feature cards */}
+        <FeatureBento
+          className="col-span-2 md:col-span-2"
+          to="/analytics"
+          icon={<BarChart3 className="h-4 w-4" />}
+          title="India Crop Atlas"
+          copy="2025-26 estimates across 9 states, fully interactive."
+        />
+        <FeatureBento
+          className="col-span-2 md:col-span-2"
+          to="/rotation"
+          icon={<Compass className="h-4 w-4" />}
+          title="Rotation wheel"
+          copy="Plan sequences that rebuild soil and profit."
+        />
+        <FeatureBento
+          className="col-span-2 md:col-span-2"
+          to="/diseases"
+          icon={<ShieldCheck className="h-4 w-4" />}
+          title="Disease library"
+          copy="Identify symptoms, organic and chemical remedies."
+        />
+      </div>
     </div>
   );
 }
 
-function MiniCard({ icon, label, value, tag }: { icon: React.ReactNode; label: string; value: string; tag: string }) {
+function BentoTile({ className = "", icon, tag, title, sub }: { className?: string; icon: React.ReactNode; tag: string; title: string; sub: string }) {
   return (
-    <div className="glass hover-lift rounded-2xl p-5">
-      <div className="flex items-center justify-between">
-        <div className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-primary">{icon}</div>
-        <span className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">{tag}</span>
+    <Reveal className={className}>
+      <div className="card-elegant hover-lift flex h-full flex-col justify-between p-5">
+        <div className="flex items-center justify-between">
+          <div className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-primary">{icon}</div>
+          <span className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">{tag}</span>
+        </div>
+        <div>
+          <div className="font-display text-xl font-bold tracking-tight">{title}</div>
+          <div className="mt-0.5 text-xs text-muted-foreground">{sub}</div>
+        </div>
       </div>
-      <div className="mt-4 text-xs uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className="mt-1 text-lg font-semibold">{value}</div>
-    </div>
+    </Reveal>
   );
 }
 
-function FeatureCard({ icon, title, copy, to }: { icon: React.ReactNode; title: string; copy: string; to: string }) {
+function BentoLink({ to, className = "", icon, tag, title, sub }: { to: string; className?: string; icon: React.ReactNode; tag: string; title: string; sub: string }) {
   return (
-    <Link to={to} className="group card-elegant hover-lift block p-8">
-      <div className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground">
-        {icon}
-      </div>
-      <h3 className="mt-5 font-display text-2xl font-bold">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{copy}</p>
-      <div className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary">
-        Learn more
-        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-      </div>
-    </Link>
+    <Reveal className={className}>
+      <Link to={to} className="card-elegant hover-lift group flex h-full items-center justify-between gap-4 p-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground">{icon}</div>
+          <div className="min-w-0">
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{tag}</div>
+            <div className="truncate font-display text-lg font-bold">{title}</div>
+            <div className="truncate text-xs text-muted-foreground">{sub}</div>
+          </div>
+        </div>
+        <ArrowRight className="h-4 w-4 shrink-0 text-primary transition-transform group-hover:translate-x-1" />
+      </Link>
+    </Reveal>
+  );
+}
+
+function FeatureBento({ to, className = "", icon, title, copy }: { to: string; className?: string; icon: React.ReactNode; title: string; copy: string }) {
+  return (
+    <Reveal className={className}>
+      <Link to={to} className="card-elegant hover-lift group flex h-full flex-col justify-between p-5">
+        <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground">{icon}</div>
+        <div className="mt-4">
+          <h3 className="font-display text-lg font-bold tracking-tight">{title}</h3>
+          <p className="mt-1 text-xs text-muted-foreground">{copy}</p>
+        </div>
+        <div className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-primary">
+          Open <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+        </div>
+      </Link>
+    </Reveal>
+  );
+}
+
+function Pill({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-[10px] font-medium backdrop-blur">
+      {children}
+    </span>
   );
 }
