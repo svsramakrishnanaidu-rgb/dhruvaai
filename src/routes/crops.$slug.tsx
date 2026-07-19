@@ -113,7 +113,7 @@ function CropDetail() {
 
       <div className="mx-auto max-w-7xl space-y-24 px-6 pb-16">
         {/* Land prep timeline */}
-        <Section id="land-prep" eyebrow="Step 1" title="Land Preparation">
+        <Section id="land-prep" eyebrow="Step 1" title="Land Preparation" banner={landPrepImg}>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {c.landPrep.map((s, i) => (
               <Reveal key={s.title} delay={i * 60}>
@@ -130,7 +130,7 @@ function CropDetail() {
         </Section>
 
         {/* Seed & sowing */}
-        <Section id="seed" eyebrow="Step 2" title="Seed & Sowing">
+        <Section id="seed" eyebrow="Step 2" title="Seed &amp; Sowing" banner={sowingImg}>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <InfoCard label="Seed rate" value={c.seedRate} />
             <InfoCard label="Seed treatment" value={c.seedTreatment} />
@@ -140,7 +140,7 @@ function CropDetail() {
         </Section>
 
         {/* Irrigation */}
-        <Section id="irrigation" eyebrow="Step 3" title="Irrigation Schedule" icon={<Droplets />}>
+        <Section id="irrigation" eyebrow="Step 3" title="Irrigation Schedule" icon={<Droplets />} banner={irrigationImg}>
           <ul className="grid gap-3 md:grid-cols-3">
             {c.irrigation.map((i, idx) => (
               <li key={idx} className="glass rounded-2xl p-5 text-sm">
@@ -266,7 +266,7 @@ function CropDetail() {
 
         {/* Weed library */}
         {extras.weeds.length > 0 && (
-          <Section id="weeds" eyebrow="Field enemies" title="Weed Identification & Control" icon={<Leaf />}>
+          <Section id="weeds" eyebrow="Field enemies" title="Weed Identification &amp; Control" icon={<Leaf />} banner={weedsImg}>
             <div className="grid gap-5 md:grid-cols-2">
               {extras.weeds.map((w, i) => (
                 <Reveal key={w.name} delay={i * 60}>
@@ -380,7 +380,7 @@ function CropDetail() {
         </Section>
 
         {/* Harvest & storage */}
-        <Section id="harvest" eyebrow="Post-harvest" title="Harvest & Storage" icon={<Wheat />}>
+        <Section id="harvest" eyebrow="Post-harvest" title="Harvest &amp; Storage" icon={<Wheat />} banner={harvestImg}>
           <div className="grid gap-4 md:grid-cols-2">
             <InfoCard label="Harvesting" value={c.harvesting} />
             <InfoCard label="Storage" value={c.storage} />
