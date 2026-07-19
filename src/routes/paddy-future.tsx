@@ -61,16 +61,16 @@ function PaddyFuture() {
       {/* KPIs */}
       <div className="mt-12 grid gap-4 md:grid-cols-4">
         {[
-          { label: "Projected 2030 MSP (₹/qtl)", value: 2980, prefix: "₹" },
-          { label: "Projected 2030 yield (kg/ha)", value: 3280 },
+          { label: "Projected 2030 MSP (₹/qtl)", value: 2980, suffix: "" },
+          { label: "Projected 2030 yield (kg/ha)", value: 3280, suffix: "" },
           { label: "Export share by 2030", value: 42, suffix: "%" },
-          { label: "Climate-stress districts", value: 118 },
+          { label: "Climate-stress districts", value: 118, suffix: "" },
         ].map((k, i) => (
           <Reveal key={k.label} delay={i * 80}>
             <div className="card-elegant p-5">
               <div className="text-xs uppercase tracking-widest text-muted-foreground">{k.label}</div>
               <div className="mt-2 font-display text-3xl font-black">
-                <CountUp end={k.value} prefix={k.prefix} suffix={k.suffix} />
+                <CountUp value={k.value} suffix={k.suffix} />
               </div>
             </div>
           </Reveal>
