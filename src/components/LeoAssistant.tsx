@@ -257,7 +257,7 @@ export function LeoAssistant() {
           triggered = true;
           try { rec.stop(); } catch {}
           stopSpeaking();
-          setTimeout(startListening, 120);
+          // No auto-restart of mic; user taps the mic to reply.
         }
       };
       rec.onerror = () => {}; rec.onend = () => {};
