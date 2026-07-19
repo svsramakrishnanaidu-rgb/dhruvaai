@@ -435,8 +435,14 @@ export function LeoAssistant() {
         onClick={() => {
           const nowOpen = !open;
           setOpen(nowOpen);
-          if (nowOpen && !listening && !speaking) setTimeout(startListening, 150);
-          if (!nowOpen) { stopListening(); stopSpeaking(); }
+          if (nowOpen) {
+            // Don't auto-start the mic — user taps the mic when ready.
+            // This prevents cutting off LEO's greeting and prevents the mic
+            // from capturing LEO's own voice.
+          } else {
+            stopListening(); stopSpeaking();
+            setCaptionUser(""); setCaptionLeo(""); setLastReply(""); setIdResult(null);
+          }
         }}
         className="fixed bottom-5 right-5 z-[70] grid h-16 w-16 place-items-center overflow-hidden rounded-full text-primary-foreground shadow-2xl transition hover:scale-105 active:scale-95"
         style={{
