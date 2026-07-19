@@ -175,6 +175,7 @@ function PaddyFuture() {
         </div>
       </section>
     </div>
+    </div>
   );
 }
 
