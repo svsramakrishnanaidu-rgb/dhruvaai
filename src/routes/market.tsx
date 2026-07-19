@@ -4,7 +4,9 @@ import { Reveal } from "@/components/Reveal";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { useLocation } from "@/lib/location-store";
 import { profileFor } from "@/lib/district-profiles";
+import { HeroBanner } from "@/components/HeroBanner";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import heroImg from "@/assets/heroes/market.jpg";
 
 export const Route = createFileRoute("/market")({
   head: () => ({
@@ -22,20 +24,16 @@ function Market() {
   const mod = 1 + p.priceModifier;
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Insights · {p.state}</span>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-6xl">Market Prices</h1>
-        <p className="mt-3 text-muted-foreground">
-          Nearby mandis in {loc.district}. Regional adjustment{" "}
-          <b className={p.priceModifier >= 0 ? "text-primary" : "text-destructive"}>
-            {p.priceModifier >= 0 ? "+" : ""}{(p.priceModifier * 100).toFixed(0)}%
-          </b>{" "}
-          applied to national reference price.
-        </p>
-      </Reveal>
+    <div>
+      <HeroBanner
+        image={heroImg}
+        eyebrow={`Insights · ${p.state}`}
+        title="Market Prices"
+        description={`Nearby mandis in ${loc.district}. Regional adjustment ${p.priceModifier >= 0 ? "+" : ""}${(p.priceModifier * 100).toFixed(0)}% applied to national reference price.`}
+      />
+      <div className="mx-auto max-w-7xl px-6 py-16">
+        <div className="grid gap-6 md:grid-cols-2">
 
-      <div className="mt-10 grid gap-6 md:grid-cols-2">
         {CROP_LIST.map((c) => {
           const first = c.marketPrice.trend[0].price * mod;
           const last = c.marketPrice.trend[c.marketPrice.trend.length - 1].price * mod;
