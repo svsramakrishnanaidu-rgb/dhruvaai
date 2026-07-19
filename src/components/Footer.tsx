@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { Sprout, Github, Twitter, Youtube } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 export function Footer() {
+  const t = useT();
   return (
     <footer className="mt-24 border-t border-border/50 pt-16 pb-10">
       <div className="mx-auto max-w-7xl px-6">
@@ -16,32 +18,33 @@ export function Footer() {
               </span>
             </div>
             <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-              Cinematic, science-backed advisory that turns every farmer into a data-driven agronomist.
+              {t("footer.tagline")}
             </p>
           </div>
           <FooterCol
-            title="Platform"
+            title={t("footer.platform")}
             links={[
-              { to: "/crops", label: "Crop Library" },
-              { to: "/rotation", label: "Rotation" },
-              { to: "/fertilizer", label: "Fertilizer" },
-              { to: "/diseases", label: "Diseases" },
+              { to: "/crops", label: t("nav.crops") },
+              { to: "/paddy-future", label: t("nav.paddyFuture") },
+              { to: "/rotation", label: t("nav.rotation") },
+              { to: "/fertilizer", label: t("nav.fertilizer") },
+              { to: "/diseases", label: t("nav.diseases") },
             ]}
           />
           <FooterCol
-            title="Insights"
+            title={t("footer.insights")}
             links={[
-              { to: "/weather", label: "Weather" },
-              { to: "/market", label: "Market Prices" },
-              { to: "/schemes", label: "Govt Schemes" },
-              { to: "/districts", label: "Districts" },
+              { to: "/weather", label: t("nav.weather") },
+              { to: "/market", label: t("nav.market") },
+              { to: "/schemes", label: t("nav.schemes") },
+              { to: "/districts", label: t("nav.districts") },
             ]}
           />
           <FooterCol
-            title="Company"
+            title={t("footer.company")}
             links={[
-              { to: "/about", label: "About" },
-              { to: "/contact", label: "Contact" },
+              { to: "/about", label: t("nav.about") },
+              { to: "/contact", label: t("nav.contact") },
             ]}
           />
         </div>
