@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { DISTRICTS } from "@/data/pdf-data";
+import { AP_DISTRICTS } from "@/data/ap-districts";
 
 export type Location = { state: string; district: string; mandal?: string };
 
@@ -38,21 +39,16 @@ export function useLocation(): Location {
   );
 }
 
-// Base AP/TS districts (KrishiSense heritage crops) unioned with every state /
-// district explicitly named in the source PDF so the picker covers both.
+// Full 26-district AP registry drives the base list; other states get their
+// districts from the PDF dataset.
 const BASE: Record<string, string[]> = {
-  "Andhra Pradesh": [
-    "Guntur", "Krishna", "West Godavari", "East Godavari", "Anantapur",
-    "Kurnool", "Chittoor", "Nellore", "Prakasam", "Visakhapatnam", "Kadapa",
-  ],
+  "Andhra Pradesh": AP_DISTRICTS.map((d) => d.name),
   Telangana: [
     "Hyderabad", "Warangal", "Karimnagar", "Nizamabad", "Khammam",
     "Mahbubnagar", "Nalgonda", "Adilabad", "Medak", "Rangareddy",
   ],
 };
 
-// Merge every district that appears in the PDF into STATES so the picker is
-// exhaustive without a second config.
 const merged: Record<string, string[]> = { ...BASE };
 for (const row of DISTRICTS) {
   const list = merged[row.state] ?? [];
