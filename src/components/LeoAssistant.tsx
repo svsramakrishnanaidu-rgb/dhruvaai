@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { Mic, MicOff, X, Sparkles, Volume2, VolumeX, Camera, Loader2, Star } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { leoChat, leoIdentify } from "@/lib/leo.functions";
