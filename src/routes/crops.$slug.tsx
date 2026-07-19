@@ -130,7 +130,7 @@ function CropDetail() {
         </Section>
 
         {/* Seed & sowing */}
-        <Section id="seed" eyebrow="Step 2" title="Seed &amp; Sowing" banner={sowingImg}>
+        <Section id="seed" eyebrow="Step 2" title="Seed & Sowing" banner={sowingImg}>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <InfoCard label="Seed rate" value={c.seedRate} />
             <InfoCard label="Seed treatment" value={c.seedTreatment} />
@@ -266,7 +266,7 @@ function CropDetail() {
 
         {/* Weed library */}
         {extras.weeds.length > 0 && (
-          <Section id="weeds" eyebrow="Field enemies" title="Weed Identification &amp; Control" icon={<Leaf />} banner={weedsImg}>
+          <Section id="weeds" eyebrow="Field enemies" title="Weed Identification & Control" icon={<Leaf />} banner={weedsImg}>
             <div className="grid gap-5 md:grid-cols-2">
               {extras.weeds.map((w, i) => (
                 <Reveal key={w.name} delay={i * 60}>
@@ -380,7 +380,7 @@ function CropDetail() {
         </Section>
 
         {/* Harvest & storage */}
-        <Section id="harvest" eyebrow="Post-harvest" title="Harvest &amp; Storage" icon={<Wheat />} banner={harvestImg}>
+        <Section id="harvest" eyebrow="Post-harvest" title="Harvest & Storage" icon={<Wheat />} banner={harvestImg}>
           <div className="grid gap-4 md:grid-cols-2">
             <InfoCard label="Harvesting" value={c.harvesting} />
             <InfoCard label="Storage" value={c.storage} />
