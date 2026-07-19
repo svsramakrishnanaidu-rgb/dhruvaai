@@ -44,8 +44,22 @@ const DEFAULT: LeoSettings = {
 let current: LeoSettings = DEFAULT;
 const listeners = new Set<() => void>();
 
+function hydrateSettings(value: Partial<LeoSettings>): LeoSettings {
+  const phrases = Array.from(new Set([...(value.wakePhrases ?? []), ...DEFAULT.wakePhrases]))
+    .map((phrase) => phrase.trim())
+    .filter(Boolean);
+  return {
+    ...DEFAULT,
+    ...value,
+    proRecognition: value.proRecognition ?? DEFAULT.proRecognition,
+    wakePhrases: phrases,
+    wakeConfidence: Math.min(value.wakeConfidence ?? DEFAULT.wakeConfidence, DEFAULT.wakeConfidence),
+    bargeSensitivity: Math.max(value.bargeSensitivity ?? DEFAULT.bargeSensitivity, DEFAULT.bargeSensitivity),
+  };
+}
+
 if (typeof window !== "undefined") {
-  try { const raw = localStorage.getItem(KEY); if (raw) current = { ...DEFAULT, ...JSON.parse(raw) }; } catch {}
+  try { const raw = localStorage.getItem(KEY); current = hydrateSettings(raw ? JSON.parse(raw) : DEFAULT); } catch {}
 }
 
 function persist() {
