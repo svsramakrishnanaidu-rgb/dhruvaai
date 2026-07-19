@@ -131,7 +131,7 @@ function make(s: Spec): Crop {
     slug: s.slug,
     name: s.name,
     scientificName: s.sci,
-    image: IMG[s.img],
+    image: SLUG_IMG[s.slug] ?? IMG[s.img],
     emoji: s.emoji,
     season: s.season,
     suitableDistricts: s.districts,
