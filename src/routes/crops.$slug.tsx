@@ -102,15 +102,6 @@ function CropDetail() {
             </Reveal>
           </div>
 
-          {/* Floating 3D model */}
-          <Reveal delay={200}>
-            <div className="glass hidden overflow-hidden rounded-3xl border border-primary/20 p-2 md:block">
-              <CropModel3D crop={c} className="h-[340px] w-full" />
-              <div className="px-4 pb-3 text-[10px] uppercase tracking-widest text-muted-foreground">
-                Interactive 3D · scroll to rotate
-              </div>
-            </div>
-          </Reveal>
         </div>
       </section>
 
