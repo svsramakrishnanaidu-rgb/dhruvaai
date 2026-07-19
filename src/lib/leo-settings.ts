@@ -33,7 +33,7 @@ const DEFAULT: LeoSettings = {
   rate: 0.82,
   wakeEnabled: true,
   wakePhrases: ["hey leo", "hi leo", "hello leo", "ok leo"],
-  wakeConfidence: 0.55,
+  wakeConfidence: 0.4,
   bargeSensitivity: 3,
   autoSpeak: true,
   voiceLang: "",
