@@ -43,23 +43,23 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
         scrolled ? "py-2" : "py-3"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 sm:px-4">
         <div
-          className={`flex flex-1 items-center gap-2 rounded-full border px-3 py-2 transition-all ${
+          className={`flex flex-1 items-center gap-1 rounded-full border px-2 py-1.5 transition-all sm:px-3 sm:py-2 ${
             scrolled ? "glass shadow-elegant" : "glass"
           }`}
           style={{ boxShadow: scrolled ? "var(--shadow-elegant)" : undefined }}
         >
-          <Link to="/" className="flex items-center gap-2 pr-2">
-            <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-primary to-accent shadow-lg">
-              <Sprout className="h-5 w-5 text-primary-foreground" />
+          <Link to="/" aria-label="KrishiSense home" className="flex shrink-0 items-center gap-2 pr-1 sm:pr-2">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-accent shadow-lg">
+              <Sprout className="h-5 w-5 text-primary-foreground" aria-hidden />
             </div>
-            <span className="font-display text-lg font-bold tracking-tight">
+            <span className="hidden font-display text-lg font-bold tracking-tight xs:inline sm:inline">
               Krishi<span className="text-gradient">Sense</span>
             </span>
           </Link>
 
-          <nav className="ml-2 hidden items-center gap-1 lg:flex">
+          <nav aria-label="Primary" className="ml-2 hidden min-w-0 items-center gap-1 lg:flex">
             {NAV.map((item) => {
               const active =
                 item.to === "/"
@@ -69,6 +69,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                 <Link
                   key={item.to}
                   to={item.to}
+                  aria-current={active ? "page" : undefined}
                   className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
                     active
                       ? "text-foreground"
@@ -91,50 +92,65 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
             })}
           </nav>
 
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
             <div className="hidden sm:block">
               <DistrictPicker />
             </div>
             <button
               onClick={onSearchOpen}
               aria-label={t("aria.openSearch")}
-              className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition-all hover:scale-110 hover:bg-secondary/60 hover:text-foreground"
+              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-4 w-4" aria-hidden />
             </button>
             <LanguageSwitcher />
             <button
               onClick={toggle}
               aria-label={t("aria.toggleTheme")}
-              className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition-all hover:scale-110 hover:bg-secondary/60 hover:text-foreground"
+              aria-pressed={theme === "dark"}
+              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
             >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === "dark" ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
             </button>
             <button
               onClick={() => setOpen((o) => !o)}
               aria-label={t("aria.toggleMenu")}
-              className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground lg:hidden"
+              aria-expanded={open}
+              aria-controls="mobile-nav"
+              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground lg:hidden"
             >
-              {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {open ? <X className="h-4 w-4" aria-hidden /> : <Menu className="h-4 w-4" aria-hidden />}
             </button>
           </div>
         </div>
       </div>
 
       {open && (
-        <div className="mx-auto mt-2 max-w-7xl px-4 lg:hidden">
+        <div id="mobile-nav" className="mx-auto mt-2 max-w-7xl px-3 sm:px-4 lg:hidden">
           <div className="glass rounded-3xl p-3">
-            <div className="grid grid-cols-2 gap-1">
-              {NAV.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className="rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
-                >
-                  {t(item.key)}
-                </Link>
-              ))}
+            <div className="mb-2 sm:hidden">
+              <DistrictPicker />
             </div>
+            <nav aria-label="Mobile" className="grid grid-cols-2 gap-1">
+              {NAV.map((item) => {
+                const active =
+                  item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    aria-current={active ? "page" : undefined}
+                    className={`rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                      active
+                        ? "bg-primary/15 text-foreground"
+                        : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
+                    }`}
+                  >
+                    {t(item.key)}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
         </div>
       )}
