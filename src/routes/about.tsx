@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Reveal } from "@/components/Reveal";
+import { HeroBanner } from "@/components/HeroBanner";
+import heroImg from "@/assets/heroes/about.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -15,18 +17,15 @@ const TEAM = ["Bhaskar", "Ravi", "Ramakrishna", "Vinay"];
 
 function About() {
   return (
-    <div className="mx-auto max-w-4xl px-6 py-24">
-      <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">About</span>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-7xl">
-          We build tools that make <span className="text-gradient">every farmer feel like an agronomist.</span>
-        </h1>
-      </Reveal>
-      <Reveal delay={120}>
-        <p className="mt-6 text-lg text-muted-foreground">
-          KrishiSense is a cinematic, image-first advisory platform. Every crop is a self-contained playbook — from land preparation to market — so a farmer in Guntur never sees data meant for Anantapur.
-        </p>
-      </Reveal>
+    <div>
+      <HeroBanner
+        image={heroImg}
+        eyebrow="About"
+        title="Every farmer, an agronomist."
+        description="KrishiSense is a cinematic, image-first advisory platform. Every crop is a self-contained playbook — from land preparation to market — so a farmer in Guntur never sees data meant for Anantapur."
+      />
+      <div className="mx-auto max-w-4xl px-6 py-16">
+
 
       <div className="mt-16">
         <div className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Team</div>
