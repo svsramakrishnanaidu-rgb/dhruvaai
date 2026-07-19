@@ -124,21 +124,35 @@ export function GrowthStages360({ stages, cropName }: { stages: GrowthStage[]; c
         onTouchEnd={onTouchEnd}
         style={{ touchAction: zoom > 1 ? "none" : "pan-y" }}
       >
-        {stages.map((s, idx) => (
-          <img
-            key={s.key}
-            src={s.image}
-            alt={`${cropName} · ${s.label}`}
-            loading={idx === 0 ? "eager" : "lazy"}
-            draggable={false}
-            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
-            style={{
-              opacity: idx === i ? 1 : 0,
-              transform: idx === i ? `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` : undefined,
-              transition: dragRef.current?.mode === "pan" ? "opacity 300ms ease" : undefined,
-            }}
-          />
-        ))}
+        {stages.map((s, idx) => {
+          const isFailed = failed[s.image];
+          return isFailed ? (
+            idx === i ? (
+              <div key={s.key} className="absolute inset-0 grid place-items-center bg-secondary/40 text-muted-foreground">
+                <div className="text-center text-xs">
+                  <ImageOff className="mx-auto mb-2 h-6 w-6" />
+                  Image unavailable — {s.label}
+                </div>
+              </div>
+            ) : null
+          ) : (
+            <img
+              key={s.key}
+              src={s.image}
+              alt={`${cropName} · ${s.label}`}
+              loading={idx === 0 ? "eager" : "lazy"}
+              decoding="async"
+              draggable={false}
+              onError={() => setFailed((f) => ({ ...f, [s.image]: true }))}
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{
+                opacity: idx === i ? 1 : 0,
+                transform: idx === i ? `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` : undefined,
+                transition: reducedMotion ? "none" : "opacity 500ms ease",
+              }}
+            />
+          );
+        })}
 
         {/* Stage badge */}
         <div className="pointer-events-none absolute left-4 top-4 rounded-full bg-background/80 px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary backdrop-blur">
