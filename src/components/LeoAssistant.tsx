@@ -297,36 +297,73 @@ export function LeoAssistant() {
     if (typeof window !== "undefined") { try { document.documentElement.lang = lang; } catch {} }
   }, [lang]);
 
-  // === Wake word ===
+  // === Wake word — custom phrases + confidence gating, standby while busy ===
   useEffect(() => {
     if (typeof window === "undefined") return;
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR || !greeted || !settings.wakeEnabled) return;
     let stopped = false; let wake: any;
+    // Build a regex from user's saved phrases; escape regex metacharacters.
+    const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const phrases = (settings.wakePhrases?.length ? settings.wakePhrases : ["hey leo"])
+      .map((p) => p.trim().toLowerCase()).filter(Boolean);
+    if (phrases.length === 0) return;
+    const wakeRe = new RegExp(`\\b(${phrases.map(escape).join("|")})\\b`, "i");
+    const minConf = Math.max(0, Math.min(1, settings.wakeConfidence ?? 0.55));
     const start = () => {
+      // Standby: never listen for wake while speaking, thinking, listening or open.
       if (stopped || listeningRef.current || thinking || speakingRef.current || open) return;
       try {
         wake = new SR();
-        wake.lang = "en-IN"; wake.continuous = true; wake.interimResults = true;
+        wake.lang = settingsRef.current.voiceLang || "en-IN";
+        wake.continuous = true; wake.interimResults = false; // only final results (higher confidence)
         wake.onresult = (e: any) => {
-          const t = Array.from(e.results as any).map((r: any) => r[0].transcript).join(" ").toLowerCase();
-          if (/\b(hey|hi|hello|ok)\s+leo\b/.test(t)) {
-            try { wake.stop(); } catch {}
-            setSummoning(true);
-            setTimeout(() => setSummoning(false), 1400);
-            setOpen(true);
-            setTimeout(startListening, 900);
+          // Guard again — reject if LEO started speaking mid-listen.
+          if (speakingRef.current || listeningRef.current || thinking) return;
+          for (let i = e.resultIndex; i < e.results.length; i++) {
+            const r = e.results[i];
+            if (!r.isFinal) continue;
+            const t = (r[0]?.transcript || "").toLowerCase();
+            const conf = typeof r[0]?.confidence === "number" ? r[0].confidence : 1;
+            if (conf >= minConf && wakeRe.test(t)) {
+              try { wake.stop(); } catch {}
+              setSummoning(true);
+              setTimeout(() => setSummoning(false), 1400);
+              setOpen(true);
+              setTimeout(startListening, 900);
+              return;
+            }
           }
         };
         wake.onerror = () => { try { wake.stop(); } catch {} };
-        wake.onend = () => { if (!stopped) setTimeout(start, 1500); };
+        wake.onend = () => {
+          // Only restart when truly in standby (not speaking / thinking / listening).
+          if (!stopped && !speakingRef.current && !listeningRef.current && !thinking) {
+            setTimeout(start, 1500);
+          }
+        };
         wake.start();
       } catch {}
     };
     const enable = () => { window.removeEventListener("click", enable); start(); };
     window.addEventListener("click", enable, { once: true });
     return () => { stopped = true; try { wake?.stop(); } catch {}; window.removeEventListener("click", enable); };
-  }, [greeted, startListening, thinking, open, settings.wakeEnabled]);
+  }, [greeted, startListening, thinking, open, settings.wakeEnabled, settings.wakePhrases, settings.wakeConfidence]);
+
+  // === Keep-alive: Chrome pauses speechSynthesis after ~15s. Nudge it. ===
+  useEffect(() => {
+    if (!speaking || typeof window === "undefined") return;
+    const iv = window.setInterval(() => {
+      try {
+        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+          window.speechSynthesis.pause();
+          window.speechSynthesis.resume();
+        }
+      } catch {}
+    }, 10000);
+    return () => window.clearInterval(iv);
+  }, [speaking]);
+
 
   const handleFile = useCallback(async (file: File) => {
     if (!file || !file.type.startsWith("image/")) return;

@@ -1,5 +1,6 @@
 "use client";
-import { X, Settings2 } from "lucide-react";
+import { useState } from "react";
+import { X, Settings2, Plus, Trash2 } from "lucide-react";
 import { PERSONAS, useLeoSettings, leoSettings, type Persona } from "@/lib/leo-settings";
 
 const LANGS = [
@@ -109,13 +110,37 @@ export function LeoSettingsPanel({ open, onClose }: { open: boolean; onClose: ()
             onChange={(v) => leoSettings.set({ autoSpeak: v })}
           />
 
-          {/* Wake phrase */}
+          {/* Wake phrase enable */}
           <ToggleRow
-            label={`Wake phrase (\"Hey LEO\")`}
-            hint="Say Hey LEO from anywhere on the site to summon the assistant."
+            label="Wake phrase"
+            hint="Say any of your saved phrases from anywhere on the site to summon LEO."
             value={s.wakeEnabled}
             onChange={(v) => leoSettings.set({ wakeEnabled: v })}
           />
+
+          {/* Custom wake phrases */}
+          {s.wakeEnabled && (
+            <WakePhrasesEditor phrases={s.wakePhrases} />
+          )}
+
+          {/* Wake confidence */}
+          {s.wakeEnabled && (
+            <section>
+              <div className="mb-1 flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Wake confidence</label>
+                <span className="text-xs tabular-nums text-muted-foreground">{Math.round(s.wakeConfidence * 100)}%</span>
+              </div>
+              <input
+                type="range" min={0.2} max={0.95} step={0.05}
+                value={s.wakeConfidence}
+                onChange={(e) => leoSettings.set({ wakeConfidence: Number(e.target.value) })}
+                className="w-full accent-primary"
+              />
+              <div className="flex justify-between text-[10px] text-muted-foreground">
+                <span>Easy trigger</span><span>Balanced</span><span>Strict (fewer false wakes)</span>
+              </div>
+            </section>
+          )}
 
           {/* Barge-in sensitivity */}
           <section>
@@ -157,6 +182,61 @@ function ToggleRow({ label, hint, value, onChange }: { label: string; hint?: str
           style={{ transform: value ? "translateX(22px)" : "translateX(2px)" }}
         />
       </button>
+    </section>
+  );
+}
+
+function WakePhrasesEditor({ phrases }: { phrases: string[] }) {
+  const [draft, setDraft] = useState("");
+  const add = () => {
+    const v = draft.trim().toLowerCase();
+    if (!v) return;
+    if (phrases.map((p) => p.toLowerCase()).includes(v)) { setDraft(""); return; }
+    leoSettings.set({ wakePhrases: [...phrases, v] });
+    setDraft("");
+  };
+  const remove = (idx: number) => {
+    const next = phrases.filter((_, i) => i !== idx);
+    leoSettings.set({ wakePhrases: next.length ? next : ["hey leo"] });
+  };
+  return (
+    <section>
+      <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        Your wake phrases
+      </label>
+      <p className="mb-2 text-[11px] text-muted-foreground">
+        Add nicknames or multilingual triggers (e.g. "hey leo", "namaste leo", "నమస్తే లియో"). Saved across sessions.
+      </p>
+      <ul className="mb-2 space-y-1.5">
+        {phrases.map((p, i) => (
+          <li key={`${p}-${i}`} className="flex items-center justify-between rounded-lg border border-border/60 bg-secondary/60 px-3 py-1.5">
+            <span className="text-sm">{p}</span>
+            <button
+              aria-label={`Remove ${p}`}
+              onClick={() => remove(i)}
+              className="rounded-full p-1.5 text-muted-foreground hover:bg-background hover:text-destructive"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="flex items-center gap-2">
+        <input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
+          placeholder="e.g. hey leo"
+          className="flex-1 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm"
+        />
+        <button
+          onClick={add}
+          disabled={!draft.trim()}
+          className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-40"
+        >
+          <Plus className="h-3.5 w-3.5" /> Add
+        </button>
+      </div>
     </section>
   );
 }
