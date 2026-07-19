@@ -307,17 +307,12 @@ export function LeoAssistant() {
     reader.readAsDataURL(file);
   }, [identify, speak]);
 
-  // === Auto-record crop route visits ===
+  // === Auto-record crop route visits (TanStack Router aware) ===
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const onPop = () => {
-      const m = window.location.pathname.match(/^\/crops\/([\w-]+)$/);
-      if (m) leoMemory.recordCrop(m[1]);
-    };
-    onPop();
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, []);
+    const m = pathname.match(/^\/crops\/([\w-]+)$/);
+    if (m) leoMemory.recordCrop(m[1]);
+  }, [pathname]);
 
   return (
     <>
