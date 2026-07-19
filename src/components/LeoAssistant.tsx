@@ -217,26 +217,33 @@ export function LeoAssistant() {
     if (!SR) { setSupported(false); return; }
     if (listeningRef.current) return;
     stopSpeaking();
-    try {
-      const rec = new SR();
-      rec.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
-      rec.interimResults = true;
-      rec.continuous = false;
-      rec.onstart = () => { setListening(true); listeningRef.current = true; setCaptionUser(""); };
-      rec.onresult = (e: any) => {
-        let interim = "", finalT = "";
-        for (let i = e.resultIndex; i < e.results.length; i++) {
-          const r = e.results[i];
-          if (r.isFinal) finalT += r[0].transcript; else interim += r[0].transcript;
-        }
-        setCaptionUser(finalT || interim);
-        if (finalT) { try { rec.stop(); } catch {} ask(finalT); }
-      };
-      rec.onerror = () => { setListening(false); listeningRef.current = false; };
-      rec.onend = () => { setListening(false); listeningRef.current = false; };
-      recRef.current = rec;
-      rec.start();
-    } catch { setListening(false); listeningRef.current = false; }
+    // Clear stale captions so the box is fresh each session.
+    setCaptionUser(""); setCaptionLeo(""); setIdResult(null);
+    // Warm-up delay: give TTS a moment to fully release audio so the mic
+    // doesn't immediately capture the tail of LEO's own voice.
+    setTimeout(() => {
+      if (listeningRef.current) return;
+      try {
+        const rec = new SR();
+        rec.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
+        rec.interimResults = true;
+        rec.continuous = false;
+        rec.onstart = () => { setListening(true); listeningRef.current = true; setCaptionUser(""); };
+        rec.onresult = (e: any) => {
+          let interim = "", finalT = "";
+          for (let i = e.resultIndex; i < e.results.length; i++) {
+            const r = e.results[i];
+            if (r.isFinal) finalT += r[0].transcript; else interim += r[0].transcript;
+          }
+          setCaptionUser(finalT || interim);
+          if (finalT) { try { rec.stop(); } catch {} ask(finalT); }
+        };
+        rec.onerror = () => { setListening(false); listeningRef.current = false; };
+        rec.onend = () => { setListening(false); listeningRef.current = false; };
+        recRef.current = rec;
+        rec.start();
+      } catch { setListening(false); listeningRef.current = false; }
+    }, 400);
   }, [ask, stopSpeaking]);
 
   startListeningRef.current = startListening;
