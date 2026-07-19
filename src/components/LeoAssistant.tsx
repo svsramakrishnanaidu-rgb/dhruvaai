@@ -162,7 +162,7 @@ export function LeoAssistant() {
       });
       setThinking(false);
       setCaptionLeo(res.speak);
-      historyRef.current = [...historyRef.current, { role: "assistant", content: res.speak }].slice(-12);
+      pushHistory("assistant", res.speak);
       speak(res.speak, () => {
         // Continuous conversation: hand the mic back to the user automatically.
         if (conversationRef.current && open) setTimeout(() => startListeningRef.current(), 250);
