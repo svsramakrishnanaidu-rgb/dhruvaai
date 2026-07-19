@@ -1,27 +1,53 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw, ImageOff } from "lucide-react";
 import type { GrowthStage } from "@/data/crop-knowledge";
+import { useReducedMotion } from "@/lib/reduced-motion";
 
 /**
  * 360°-style stage previewer.
- * - Drag horizontally (mouse or touch) to scrub through growth stages.
- * - Pinch or wheel to zoom the active stage image.
- * - Arrow keys ← → for accessibility.
+ * - Drag to scrub, arrow keys, wheel/pinch to zoom, dot scrubber.
+ * - Predictively prefetches neighbouring stage images so scrubbing feels instant.
+ * - Falls back to an inline placeholder if a stage image fails to load.
+ * - Honours prefers-reduced-motion: disables cross-fade and drag scrubbing
+ *   auto-play, but keeps arrow / dot navigation fully usable.
  */
 export function GrowthStages360({ stages, cropName }: { stages: GrowthStage[]; cropName: string }) {
   const [i, setI] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [failed, setFailed] = useState<Record<string, boolean>>({});
   const dragRef = useRef<{ x: number; startI: number; mode: "scrub" | "pan" } | null>(null);
   const pinchRef = useRef<{ d: number; z: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
 
   const n = stages.length;
   const clamp = (v: number) => (v + n) % n;
   const stage = stages[i];
 
   const reset = () => { setZoom(1); setPan({ x: 0, y: 0 }); };
+
+  // Predictive prefetch — warm neighbouring images so the next scrub is instant.
+  const prefetchTargets = useMemo(() => {
+    const set = new Set<number>();
+    set.add(clamp(i + 1)); set.add(clamp(i + 2));
+    set.add(clamp(i - 1));
+    return Array.from(set);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i, n]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    prefetchTargets.forEach((idx) => {
+      const src = stages[idx]?.image;
+      if (!src || failed[src]) return;
+      const img = new Image();
+      img.decoding = "async";
+      img.loading = "eager";
+      img.src = src;
+    });
+  }, [prefetchTargets, stages, failed]);
 
   // Keyboard
   useEffect(() => {
@@ -98,21 +124,35 @@ export function GrowthStages360({ stages, cropName }: { stages: GrowthStage[]; c
         onTouchEnd={onTouchEnd}
         style={{ touchAction: zoom > 1 ? "none" : "pan-y" }}
       >
-        {stages.map((s, idx) => (
-          <img
-            key={s.key}
-            src={s.image}
-            alt={`${cropName} · ${s.label}`}
-            loading={idx === 0 ? "eager" : "lazy"}
-            draggable={false}
-            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
-            style={{
-              opacity: idx === i ? 1 : 0,
-              transform: idx === i ? `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` : undefined,
-              transition: dragRef.current?.mode === "pan" ? "opacity 300ms ease" : undefined,
-            }}
-          />
-        ))}
+        {stages.map((s, idx) => {
+          const isFailed = failed[s.image];
+          return isFailed ? (
+            idx === i ? (
+              <div key={s.key} className="absolute inset-0 grid place-items-center bg-secondary/40 text-muted-foreground">
+                <div className="text-center text-xs">
+                  <ImageOff className="mx-auto mb-2 h-6 w-6" />
+                  Image unavailable — {s.label}
+                </div>
+              </div>
+            ) : null
+          ) : (
+            <img
+              key={s.key}
+              src={s.image}
+              alt={`${cropName} · ${s.label}`}
+              loading={idx === 0 ? "eager" : "lazy"}
+              decoding="async"
+              draggable={false}
+              onError={() => setFailed((f) => ({ ...f, [s.image]: true }))}
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{
+                opacity: idx === i ? 1 : 0,
+                transform: idx === i ? `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` : undefined,
+                transition: reducedMotion ? "none" : "opacity 500ms ease",
+              }}
+            />
+          );
+        })}
 
         {/* Stage badge */}
         <div className="pointer-events-none absolute left-4 top-4 rounded-full bg-background/80 px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary backdrop-blur">

@@ -33,12 +33,17 @@ function paletteFor(style: StyleKey) {
   }
 }
 
-function Plant({ style, colors }: { style: StyleKey; colors: ReturnType<typeof paletteFor> }) {
+function Plant({ style, colors, reducedMotion }: { style: StyleKey; colors: ReturnType<typeof paletteFor>; reducedMotion?: boolean }) {
   const group = useRef<THREE.Group>(null);
 
   useFrame((state) => {
     if (!group.current) return;
-    // Scroll-reactive tilt (documentElement.scrollTop / total).
+    if (reducedMotion) {
+      // Freeze the plant in a pleasant static pose — no scroll or time rotation.
+      group.current.rotation.y = 0.4;
+      group.current.rotation.x = 0.05;
+      return;
+    }
     const el = typeof document !== "undefined" ? document.documentElement : null;
     const p = el ? el.scrollTop / Math.max(1, el.scrollHeight - el.clientHeight) : 0;
     group.current.rotation.y = state.clock.elapsedTime * 0.35 + p * Math.PI * 2;
@@ -133,9 +138,11 @@ function Plant({ style, colors }: { style: StyleKey; colors: ReturnType<typeof p
   );
 }
 
-export function CropModelScene({ crop }: { crop: Crop }) {
+export function CropModelScene({ crop, reducedMotion }: { crop: Crop; reducedMotion?: boolean }) {
   const style = styleForCategory(crop.category);
   const colors = paletteFor(style);
+
+  const plant = <Plant style={style} colors={colors} reducedMotion={reducedMotion} />;
 
   return (
     <Canvas
@@ -148,9 +155,11 @@ export function CropModelScene({ crop }: { crop: Crop }) {
       <ambientLight intensity={0.55} />
       <directionalLight position={[3, 5, 2]} intensity={1.2} castShadow shadow-mapSize={[1024, 1024]} />
       <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#7dd3fc" />
-      <Float speed={1.2} rotationIntensity={0.3} floatIntensity={0.6}>
-        <Plant style={style} colors={colors} />
-      </Float>
+      {reducedMotion ? plant : (
+        <Float speed={1.2} rotationIntensity={0.3} floatIntensity={0.6}>
+          {plant}
+        </Float>
+      )}
       <ContactShadows position={[0, -1.35, 0]} opacity={0.4} scale={5} blur={2.5} far={2} />
       <Environment preset="sunset" />
     </Canvas>
