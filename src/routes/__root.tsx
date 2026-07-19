@@ -16,6 +16,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CinematicLoader } from "@/components/CinematicLoader";
 import { SearchDialog } from "@/components/SearchDialog";
+import { I18nProvider } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -128,16 +129,18 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CinematicLoader />
-      <AnimatedBackground />
-      <div className="relative flex min-h-dvh flex-col">
-        <Navbar onSearchOpen={() => setSearchOpen(true)} />
-        <main className="flex-1">
-          <Outlet />
-        </main>
-        <Footer />
-      </div>
-      <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <I18nProvider>
+        <CinematicLoader />
+        <AnimatedBackground />
+        <div className="relative flex min-h-dvh flex-col">
+          <Navbar onSearchOpen={() => setSearchOpen(true)} />
+          <main className="flex-1">
+            <Outlet />
+          </main>
+          <Footer />
+        </div>
+        <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
+      </I18nProvider>
     </QueryClientProvider>
   );
 }
