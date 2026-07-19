@@ -356,8 +356,9 @@ export function LeoAssistant() {
   const stopListening = useCallback(() => {
     try { recRef.current?.stop(); } catch {}
     try { mediaRecorderRef.current?.stop(); } catch {}
+    stopAudioTracks();
     setListening(false); listeningRef.current = false;
-  }, []);
+  }, [stopAudioTracks]);
 
   // === Barge-in with sensitivity ===
   useEffect(() => {
@@ -572,14 +573,14 @@ export function LeoAssistant() {
   return (
     <>
       {/* Live captions overlay */}
-      {(captionUser || captionLeo || thinking) && (open || speaking || listening) && (
+      {(captionUser || captionLeo || thinking || transcribing) && (open || speaking || listening || transcribing) && (
         <div className="pointer-events-none fixed inset-x-0 top-[76px] z-[68] flex justify-center px-3">
           <div className="max-w-3xl space-y-1 rounded-2xl border border-border/50 bg-background/70 px-4 py-2 text-center text-sm shadow-lg backdrop-blur-xl">
-            {captionUser && listening && (
+            {captionUser && (listening || transcribing) && (
               <p className="text-primary"><span className="opacity-60">You:</span> {captionUser}</p>
             )}
-            {(captionLeo || thinking) && (
-              <p><span className="opacity-60">LEO:</span> {thinking ? "…" : captionLeo}</p>
+            {(captionLeo || thinking || transcribing) && (
+              <p><span className="opacity-60">LEO:</span> {transcribing ? labels.transcribing : thinking ? "…" : captionLeo}</p>
             )}
           </div>
         </div>
