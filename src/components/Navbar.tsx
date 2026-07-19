@@ -15,6 +15,7 @@ const NAV = [
   { to: "/rotation", key: "nav.rotation" },
   { to: "/fertilizer", key: "nav.fertilizer" },
   
+  { to: "/weather", key: "nav.weather" },
   { to: "/market", key: "nav.market" },
   { to: "/diseases", key: "nav.diseases" },
   { to: "/schemes", key: "nav.schemes" },
