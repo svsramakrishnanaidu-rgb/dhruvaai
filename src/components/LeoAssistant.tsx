@@ -78,8 +78,8 @@ export function LeoAssistant() {
         locationStore.set({ district: intent.district });
         break;
       case "setLanguage":
-        if (intenlang === "en" || intenlang === "te" || intenlang === "hi") {
-          try { localStorage.setItem("agri.lang", intenlang); } catch {}
+        if (intent.lang === "en" || intent.lang === "te" || intent.lang === "hi") {
+          try { localStorage.setItem("agri.lang", intent.lang); } catch {}
           window.location.reload();
         }
         break;
