@@ -34,7 +34,7 @@ export function Footer() {
           <FooterCol
             title={t("footer.insights")}
             links={[
-              { to: "/weather", label: t("nav.weather") },
+              
               { to: "/market", label: t("nav.market") },
               { to: "/schemes", label: t("nav.schemes") },
               { to: "/districts", label: t("nav.districts") },
