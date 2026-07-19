@@ -304,7 +304,10 @@ export function LeoAssistant() {
           const t = Array.from(e.results as any).map((r: any) => r[0].transcript).join(" ").toLowerCase();
           if (/\b(hey|hi|hello|ok)\s+leo\b/.test(t)) {
             try { wake.stop(); } catch {}
-            setOpen(true); setTimeout(startListening, 250);
+            setSummoning(true);
+            setTimeout(() => setSummoning(false), 1400);
+            setOpen(true);
+            setTimeout(startListening, 900);
           }
         };
         wake.onerror = () => { try { wake.stop(); } catch {} };
