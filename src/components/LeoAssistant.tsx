@@ -186,10 +186,8 @@ export function LeoAssistant() {
       setLastReply(res.speak);
       pushHistory("assistant", res.speak);
       const s = settingsRef.current;
-      const after = () => {
-        if (conversationRef.current && open && s.autoSpeak) setTimeout(() => startListeningRef.current(), 250);
-      };
-      if (s.autoSpeak) speak(res.speak, after);
+      // No auto-restart: LEO only speaks the reply. User taps mic to talk again.
+      if (s.autoSpeak) speak(res.speak);
       runIntent(res.intent as Intent);
     } catch {
       setThinking(false);
