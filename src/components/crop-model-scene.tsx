@@ -33,12 +33,17 @@ function paletteFor(style: StyleKey) {
   }
 }
 
-function Plant({ style, colors }: { style: StyleKey; colors: ReturnType<typeof paletteFor> }) {
+function Plant({ style, colors, reducedMotion }: { style: StyleKey; colors: ReturnType<typeof paletteFor>; reducedMotion?: boolean }) {
   const group = useRef<THREE.Group>(null);
 
   useFrame((state) => {
     if (!group.current) return;
-    // Scroll-reactive tilt (documentElement.scrollTop / total).
+    if (reducedMotion) {
+      // Freeze the plant in a pleasant static pose — no scroll or time rotation.
+      group.current.rotation.y = 0.4;
+      group.current.rotation.x = 0.05;
+      return;
+    }
     const el = typeof document !== "undefined" ? document.documentElement : null;
     const p = el ? el.scrollTop / Math.max(1, el.scrollHeight - el.clientHeight) : 0;
     group.current.rotation.y = state.clock.elapsedTime * 0.35 + p * Math.PI * 2;
