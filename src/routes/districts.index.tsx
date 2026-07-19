@@ -5,7 +5,7 @@ import { AP_DISTRICTS, AP_REGIONS } from "@/data/ap-districts";
 import { Reveal } from "@/components/Reveal";
 import { MapPin, Check, Sprout } from "lucide-react";
 
-export const Route = createFileRoute("/districts")({
+export const Route = createFileRoute("/districts/")({
   head: () => ({
     meta: [
       { title: "Districts — KrishiSense" },
