@@ -20,6 +20,8 @@ export type LeoSettings = {
   persona: Persona;
   rate: number;              // 0.5 - 2
   wakeEnabled: boolean;
+  wakePhrases: string[];     // user-customizable activation phrases (lowercase)
+  wakeConfidence: number;    // 0..1 min recognition confidence to trigger wake
   bargeSensitivity: number;  // 1(low) - 5(high) — smaller triggers earlier
   autoSpeak: boolean;        // if false, user must press Speak on each reply
   voiceLang: string;         // BCP47 e.g. "en-IN"
@@ -30,6 +32,8 @@ const DEFAULT: LeoSettings = {
   persona: "friendly-female",
   rate: 0.82,
   wakeEnabled: true,
+  wakePhrases: ["hey leo", "hi leo", "hello leo", "ok leo"],
+  wakeConfidence: 0.55,
   bargeSensitivity: 3,
   autoSpeak: true,
   voiceLang: "",
