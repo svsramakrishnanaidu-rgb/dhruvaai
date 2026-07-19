@@ -1,5 +1,6 @@
 "use client";
-import { X, Settings2 } from "lucide-react";
+import { useState } from "react";
+import { X, Settings2, Plus, Trash2 } from "lucide-react";
 import { PERSONAS, useLeoSettings, leoSettings, type Persona } from "@/lib/leo-settings";
 
 const LANGS = [
