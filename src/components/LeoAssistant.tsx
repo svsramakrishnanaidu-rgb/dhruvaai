@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Mic, MicOff, X, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { leoChat } from "@/lib/leo.functions";
-import { useT, type Lang } from "@/lib/i18n";
+import { useI18n, type Lang } from "@/lib/i18n";
 import { locationStore, useLocation } from "@/lib/location-store";
 
 type Intent =
@@ -30,7 +30,7 @@ const GREETING: Record<Lang, string> = {
 };
 
 export function LeoAssistant() {
-  const t = useT();
+  const { lang } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
   const chat = useServerFn(leoChat);
@@ -47,8 +47,8 @@ export function LeoAssistant() {
   const [greeted, setGreeted] = useState(false);
 
   const recRef = useRef<any>(null);
-  const langRef = useRef<Lang>(t.lang);
-  langRef.current = t.lang;
+  const langRef = useRef<Lang>(lang);
+  langRef.current = lang;
 
   // Speech synthesis
   const speak = useCallback((text: string) => {
@@ -78,8 +78,8 @@ export function LeoAssistant() {
         locationStore.set({ district: intent.district });
         break;
       case "setLanguage":
-        if (intent.lang === "en" || intent.lang === "te" || intent.lang === "hi") {
-          try { localStorage.setItem("agri.lang", intent.lang); } catch {}
+        if (intenlang === "en" || intenlang === "te" || intenlang === "hi") {
+          try { localStorage.setItem("agri.lang", intenlang); } catch {}
           window.location.reload();
         }
         break;
@@ -264,7 +264,7 @@ export function LeoAssistant() {
 
             <div className="max-h-[45dvh] overflow-y-auto px-4 py-3 text-sm">
               {history.length === 0 && (
-                <p className="text-muted-foreground">{GREETING[t.lang]}</p>
+                <p className="text-muted-foreground">{GREETING[lang]}</p>
               )}
               <ul className="space-y-2">
                 {history.slice(-8).map((m, i) => (
@@ -316,7 +316,7 @@ export function LeoAssistant() {
                 />
               </form>
               <div className="hidden text-xs text-muted-foreground sm:block">
-                <Sparkles className="inline h-3 w-3" /> {t.lang.toUpperCase()}
+                <Sparkles className="inline h-3 w-3" /> {lang.toUpperCase()}
               </div>
             </div>
           </div>
