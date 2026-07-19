@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { Mic, MicOff, X, Volume2, VolumeX, Camera, Loader2, Settings2, Play, Square } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { leoChat, leoIdentify } from "@/lib/leo.functions";
+import { leoChat, leoIdentify, leoTranscribe } from "@/lib/leo.functions";
 import { buildLeoKnowledge } from "@/lib/leo-knowledge";
 import { useI18n, type Lang } from "@/lib/i18n";
 import { locationStore, useLocation } from "@/lib/location-store";
@@ -31,10 +31,10 @@ const GREETING: Record<Lang, string> = {
   hi: "नमस्ते! मैं लियो हूँ, आपका वॉइस-आधारित कृषि सहायक। बस बोलिए — फसलों, बीमारियों, उर्वरकों के बारे में पूछें।",
 };
 
-const STATE_LABEL: Record<Lang, { listening: string; thinking: string; speaking: string; idle: string; muted: string; identifying: string }> = {
-  en: { listening: "Listening…", thinking: "Thinking…", speaking: "Speaking…", idle: "Ready", muted: "Muted", identifying: "Analyzing photo…" },
-  te: { listening: "వింటున్నాను…", thinking: "ఆలోచిస్తున్నాను…", speaking: "మాట్లాడుతున్నాను…", idle: "సిద్ధం", muted: "మ్యూట్", identifying: "చిత్రాన్ని విశ్లేషిస్తున్నాను…" },
-  hi: { listening: "सुन रहा हूँ…", thinking: "सोच रहा हूँ…", speaking: "बोल रहा हूँ…", idle: "तैयार", muted: "म्यूट", identifying: "फ़ोटो जाँच रहा हूँ…" },
+const STATE_LABEL: Record<Lang, { listening: string; transcribing: string; thinking: string; speaking: string; idle: string; muted: string; identifying: string }> = {
+  en: { listening: "Listening…", transcribing: "Recognizing clearly…", thinking: "Thinking…", speaking: "Speaking…", idle: "Ready", muted: "Muted", identifying: "Analyzing photo…" },
+  te: { listening: "వింటున్నాను…", transcribing: "స్పష్టంగా గుర్తిస్తున్నాను…", thinking: "ఆలోచిస్తున్నాను…", speaking: "మాట్లాడుతున్నాను…", idle: "సిద్ధం", muted: "మ్యూట్", identifying: "చిత్రాన్ని విశ్లేషిస్తున్నాను…" },
+  hi: { listening: "सुन रहा हूँ…", transcribing: "साफ़ पहचान रहा हूँ…", thinking: "सोच रहा हूँ…", speaking: "बोल रहा हूँ…", idle: "तैयार", muted: "म्यूट", identifying: "फ़ोटो जाँच रहा हूँ…" },
 };
 
 const CROP_SLUGS = CROP_LIST.map((c) => c.slug);
@@ -47,11 +47,13 @@ export function LeoAssistant() {
   const settings = useLeoSettings();
   const chat = useServerFn(leoChat);
   const identify = useServerFn(leoIdentify);
+  const transcribe = useServerFn(leoTranscribe);
   const reducedMotion = useReducedMotion();
 
   const [open, setOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [listening, setListening] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
   const [thinking, setThinking] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -70,6 +72,8 @@ export function LeoAssistant() {
     historyRef.current = [...historyRef.current, { role, content }].slice(-12);
   };
   const recRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
   const interruptRef = useRef<any>(null);
   const langRef = useRef<Lang>(lang);
   langRef.current = lang;
@@ -77,7 +81,6 @@ export function LeoAssistant() {
   settingsRef.current = settings;
   const speakingRef = useRef(false);
   const listeningRef = useRef(false);
-  const conversationRef = useRef(true);
   const thinkingRef = useRef(false);
   const openRef = useRef(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -166,6 +169,19 @@ export function LeoAssistant() {
 
   const startListeningRef = useRef<() => void>(() => {});
 
+  const blobToDataUrl = (blob: Blob) => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+
+  const stopAudioTracks = useCallback(() => {
+    try { mediaStreamRef.current?.getTracks().forEach((track) => track.stop()); } catch {}
+    mediaStreamRef.current = null;
+    mediaRecorderRef.current = null;
+  }, []);
+
   // === Ask ===
   const ask = useCallback(async (message: string) => {
     if (!message.trim()) return;
@@ -225,37 +241,123 @@ export function LeoAssistant() {
     setCaptionUser(""); setCaptionLeo(""); setIdResult(null);
     // Warm-up delay: give TTS a moment to fully release audio so the mic
     // doesn't immediately capture the tail of LEO's own voice.
-    setTimeout(() => {
+    setTimeout(async () => {
       if (listeningRef.current) return;
+      let finalised = false;
+      let bestTranscript = "";
+      let bestConfidence = 0;
+      let settleTimer: number | null = null;
+      let recorderStop: (() => Promise<Blob | null>) | null = null;
+
+      try {
+        if (navigator.mediaDevices?.getUserMedia && "MediaRecorder" in window) {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+          });
+          mediaStreamRef.current = stream;
+          const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus"
+            : MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4"
+            : "";
+          const chunks: Blob[] = [];
+          const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+          mediaRecorderRef.current = recorder;
+          recorder.ondataavailable = (event) => { if (event.data?.size) chunks.push(event.data); };
+          recorderStop = () => new Promise((resolve) => {
+            const finish = () => {
+              stopAudioTracks();
+              resolve(chunks.length ? new Blob(chunks, { type: recorder.mimeType || "audio/webm" }) : null);
+            };
+            recorder.onstop = finish;
+            if (recorder.state !== "inactive") recorder.stop(); else finish();
+          });
+          recorder.start();
+        }
+      } catch {
+        stopAudioTracks();
+      }
+
+      const finish = async (candidate: string, preferProRecognition: boolean) => {
+        if (finalised) return;
+        finalised = true;
+        if (settleTimer) window.clearTimeout(settleTimer);
+        try { recRef.current?.stop(); } catch {}
+        setListening(false); listeningRef.current = false;
+
+        let text = candidate.trim();
+        if (settingsRef.current.proRecognition && preferProRecognition && recorderStop) {
+          setTranscribing(true);
+          try {
+            const blob = await recorderStop();
+            if (blob && blob.size > 2048) {
+              const audioDataUrl = await blobToDataUrl(blob);
+              const res = await transcribe({ data: { audioDataUrl, lang: langRef.current } });
+              if (res.text?.trim()) text = res.text.trim();
+              if (res.error && !text) setCaptionLeo(res.error);
+            }
+          } catch {
+            // Keep the browser transcript if premium STT cannot complete.
+          } finally {
+            setTranscribing(false);
+          }
+        } else if (recorderStop) {
+          recorderStop().catch(() => stopAudioTracks());
+        }
+
+        if (text) {
+          setCaptionUser(text);
+          ask(text);
+        } else {
+          const msg: Record<Lang, string> = {
+            en: "I couldn't hear that clearly. Please speak once more, a little closer to the mic.",
+            te: "స్పష్టంగా వినిపించలేదు. మైక్‌కు కొంచెం దగ్గరగా మళ్లీ మాట్లాడండి.",
+            hi: "साफ़ सुनाई नहीं दिया। कृपया माइक के थोड़ा पास आकर फिर बोलिए।",
+          };
+          setCaptionLeo(msg[langRef.current]);
+        }
+      };
+
       try {
         const rec = new SR();
         rec.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
         rec.interimResults = true;
         rec.continuous = false;
+        rec.maxAlternatives = 3;
         rec.onstart = () => { setListening(true); listeningRef.current = true; setCaptionUser(""); };
         rec.onresult = (e: any) => {
           let interim = "", finalT = "";
           for (let i = e.resultIndex; i < e.results.length; i++) {
             const r = e.results[i];
-            if (r.isFinal) finalT += r[0].transcript; else interim += r[0].transcript;
+            const alt = r[0];
+            const transcript = alt?.transcript || "";
+            const confidence = typeof alt?.confidence === "number" ? alt.confidence : 0;
+            if (transcript.trim()) { bestTranscript = transcript.trim(); bestConfidence = Math.max(bestConfidence, confidence); }
+            if (r.isFinal) finalT += transcript; else interim += transcript;
           }
           setCaptionUser(finalT || interim);
-          if (finalT) { try { rec.stop(); } catch {} ask(finalT); }
+          if (settleTimer) window.clearTimeout(settleTimer);
+          if (finalT) {
+            const weak = bestConfidence === 0 || bestConfidence < 0.72 || finalT.trim().split(/\s+/).length <= 2;
+            finish(finalT, weak);
+          } else if (bestTranscript) {
+            settleTimer = window.setTimeout(() => finish(bestTranscript, true), 1500);
+          }
         };
-        rec.onerror = () => { setListening(false); listeningRef.current = false; };
-        rec.onend = () => { setListening(false); listeningRef.current = false; };
+        rec.onerror = () => { finish(bestTranscript, true); };
+        rec.onend = () => { if (!finalised) finish(bestTranscript, true); };
         recRef.current = rec;
         rec.start();
-      } catch { setListening(false); listeningRef.current = false; }
+      } catch { finish(bestTranscript, true); }
     }, 400);
-  }, [ask, stopSpeaking]);
+  }, [ask, stopSpeaking, stopAudioTracks, transcribe]);
 
   startListeningRef.current = startListening;
 
   const stopListening = useCallback(() => {
     try { recRef.current?.stop(); } catch {}
+    try { mediaRecorderRef.current?.stop(); } catch {}
+    stopAudioTracks();
     setListening(false); listeningRef.current = false;
-  }, []);
+  }, [stopAudioTracks]);
 
   // === Barge-in with sensitivity ===
   useEffect(() => {
@@ -320,8 +422,20 @@ export function LeoAssistant() {
     const normalize = (s: string) =>
       s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
 
+    const leoAliases = ["leo", "lio", "leyo", "leeo", "le o", "rio", "లియో", "లీయో", "लियो", "लीओ"];
+    const expandPhrase = (phrase: string) => {
+      const n = normalize(phrase);
+      const variants = new Set([n]);
+      if (/\bleo\b|\blio\b|లియో|लियो|लीओ/u.test(n)) {
+        for (const alias of leoAliases) {
+          variants.add(n.replace(/\bleo\b|\blio\b|లియో|लियो|लीओ/gu, normalize(alias)));
+        }
+      }
+      return [...variants].filter(Boolean);
+    };
+
     const rawPhrases = (settings.wakePhrases?.length ? settings.wakePhrases : ["hey leo"])
-      .map((p) => normalize(p)).filter(Boolean);
+      .flatMap(expandPhrase).filter(Boolean);
     if (rawPhrases.length === 0) return;
     const minConf = Math.max(0, Math.min(1, settings.wakeConfidence ?? 0.4));
 
@@ -352,7 +466,7 @@ export function LeoAssistant() {
       if (busy()) { scheduleRestart(1200); return; }
       try {
         wake = new SR();
-        wake.lang = settingsRef.current.voiceLang || "en-IN";
+        wake.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
         wake.continuous = true;
         wake.interimResults = true; // catch short nicknames faster
         let fired = false;
@@ -446,6 +560,7 @@ export function LeoAssistant() {
   const labels = STATE_LABEL[lang];
   const status = muted ? labels.muted
     : identifying ? labels.identifying
+    : transcribing ? labels.transcribing
     : thinking ? labels.thinking
     : speaking ? labels.speaking
     : listening ? labels.listening
@@ -457,14 +572,14 @@ export function LeoAssistant() {
   return (
     <>
       {/* Live captions overlay */}
-      {(captionUser || captionLeo || thinking) && (open || speaking || listening) && (
+      {(captionUser || captionLeo || thinking || transcribing) && (open || speaking || listening || transcribing) && (
         <div className="pointer-events-none fixed inset-x-0 top-[76px] z-[68] flex justify-center px-3">
           <div className="max-w-3xl space-y-1 rounded-2xl border border-border/50 bg-background/70 px-4 py-2 text-center text-sm shadow-lg backdrop-blur-xl">
-            {captionUser && listening && (
+            {captionUser && (listening || transcribing) && (
               <p className="text-primary"><span className="opacity-60">You:</span> {captionUser}</p>
             )}
-            {(captionLeo || thinking) && (
-              <p><span className="opacity-60">LEO:</span> {thinking ? "…" : captionLeo}</p>
+            {(captionLeo || thinking || transcribing) && (
+              <p><span className="opacity-60">LEO:</span> {transcribing ? labels.transcribing : thinking ? "…" : captionLeo}</p>
             )}
           </div>
         </div>
@@ -578,9 +693,10 @@ export function LeoAssistant() {
               >
                 <LeoAvatarAnime mouthLevel={mouth} state={avatarState} size={200} waving={avatarState === "idle" && !reducedMotion} />
               </div>
-              <Waveform active={listening || speaking} reducedMotion={reducedMotion} />
+              <Waveform active={listening || speaking || transcribing} reducedMotion={reducedMotion} />
               <p className="mt-3 min-h-[2.5rem] max-w-full text-center text-sm text-muted-foreground">
                 {listening && captionUser ? <span className="text-primary">{captionUser}</span>
+                  : transcribing ? labels.transcribing
                   : thinking ? "…"
                   : captionLeo || (!greeted ? GREETING[lang] : "")}
               </p>

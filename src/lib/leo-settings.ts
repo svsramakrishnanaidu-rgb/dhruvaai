@@ -19,6 +19,7 @@ export const PERSONAS: { id: Persona; label: string; rate: number; pitch: number
 export type LeoSettings = {
   persona: Persona;
   rate: number;              // 0.5 - 2
+  proRecognition: boolean;   // use high-accuracy server STT when browser confidence is weak
   wakeEnabled: boolean;
   wakePhrases: string[];     // user-customizable activation phrases (lowercase)
   wakeConfidence: number;    // 0..1 min recognition confidence to trigger wake
@@ -31,10 +32,11 @@ const KEY = "leo.settings.v1";
 const DEFAULT: LeoSettings = {
   persona: "friendly-female",
   rate: 0.82,
+  proRecognition: true,
   wakeEnabled: true,
-  wakePhrases: ["hey leo", "hi leo", "hello leo", "ok leo"],
-  wakeConfidence: 0.4,
-  bargeSensitivity: 3,
+  wakePhrases: ["leo", "hey leo", "hi leo", "hello leo", "ok leo", "namaste leo", "నమస్తే లియో", "హలో లియో", "लियो", "नमस्ते लियो"],
+  wakeConfidence: 0.25,
+  bargeSensitivity: 4,
   autoSpeak: true,
   voiceLang: "",
 };
@@ -42,8 +44,22 @@ const DEFAULT: LeoSettings = {
 let current: LeoSettings = DEFAULT;
 const listeners = new Set<() => void>();
 
+function hydrateSettings(value: Partial<LeoSettings>): LeoSettings {
+  const phrases = Array.from(new Set([...(value.wakePhrases ?? []), ...DEFAULT.wakePhrases]))
+    .map((phrase) => phrase.trim())
+    .filter(Boolean);
+  return {
+    ...DEFAULT,
+    ...value,
+    proRecognition: value.proRecognition ?? DEFAULT.proRecognition,
+    wakePhrases: phrases,
+    wakeConfidence: value.wakeConfidence === 0.4 ? DEFAULT.wakeConfidence : (value.wakeConfidence ?? DEFAULT.wakeConfidence),
+    bargeSensitivity: value.bargeSensitivity === 3 ? DEFAULT.bargeSensitivity : (value.bargeSensitivity ?? DEFAULT.bargeSensitivity),
+  };
+}
+
 if (typeof window !== "undefined") {
-  try { const raw = localStorage.getItem(KEY); if (raw) current = { ...DEFAULT, ...JSON.parse(raw) }; } catch {}
+  try { const raw = localStorage.getItem(KEY); current = hydrateSettings(raw ? JSON.parse(raw) : DEFAULT); } catch {}
 }
 
 function persist() {

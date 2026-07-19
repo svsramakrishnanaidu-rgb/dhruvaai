@@ -110,6 +110,13 @@ export function LeoSettingsPanel({ open, onClose }: { open: boolean; onClose: ()
             onChange={(v) => leoSettings.set({ autoSpeak: v })}
           />
 
+          <ToggleRow
+            label="Pro recognition"
+            hint="Uses premium server speech recognition when the browser transcript is weak or unclear."
+            value={s.proRecognition}
+            onChange={(v) => leoSettings.set({ proRecognition: v })}
+          />
+
           {/* Wake phrase enable */}
           <ToggleRow
             label="Wake phrase"
@@ -131,7 +138,7 @@ export function LeoSettingsPanel({ open, onClose }: { open: boolean; onClose: ()
                 <span className="text-xs tabular-nums text-muted-foreground">{Math.round(s.wakeConfidence * 100)}%</span>
               </div>
               <input
-                type="range" min={0.2} max={0.95} step={0.05}
+                type="range" min={0.05} max={0.95} step={0.05}
                 value={s.wakeConfidence}
                 onChange={(e) => leoSettings.set({ wakeConfidence: Number(e.target.value) })}
                 className="w-full accent-primary"
