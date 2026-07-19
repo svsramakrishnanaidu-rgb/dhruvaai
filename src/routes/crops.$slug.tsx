@@ -12,6 +12,12 @@ import {
   ArrowLeft, ExternalLink, ShieldAlert, Lightbulb, Recycle, Leaf,
 } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import landPrepImg from "@/assets/sections/land-prep.jpg";
+import sowingImg from "@/assets/sections/sowing.jpg";
+import irrigationImg from "@/assets/sections/irrigation.jpg";
+import harvestImg from "@/assets/sections/harvest.jpg";
+import storageImg from "@/assets/sections/storage.jpg";
+import weedsImg from "@/assets/sections/weeds.jpg";
 
 export const Route = createFileRoute("/crops/$slug")({
   head: ({ loaderData }: { loaderData?: Crop }) => {
@@ -439,7 +445,7 @@ function InfoCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Section({ id, eyebrow, title, icon, children }: { id?: string; eyebrow: string; title: string; icon?: React.ReactNode; children: React.ReactNode }) {
+function Section({ id, eyebrow, title, icon, banner, children }: { id?: string; eyebrow: string; title: string; icon?: React.ReactNode; banner?: string; children: React.ReactNode }) {
   return (
     <section id={id} className="scroll-mt-28">
       <Reveal>
@@ -451,6 +457,20 @@ function Section({ id, eyebrow, title, icon, children }: { id?: string; eyebrow:
           </div>
         </div>
       </Reveal>
+      {banner && (
+        <Reveal delay={80}>
+          <div className="mt-6 overflow-hidden rounded-3xl border border-border/60">
+            <img
+              src={banner}
+              alt=""
+              loading="lazy"
+              width={1600}
+              height={520}
+              className="h-52 w-full object-cover md:h-64"
+            />
+          </div>
+        </Reveal>
+      )}
       <div className="mt-8">{children}</div>
     </section>
   );
