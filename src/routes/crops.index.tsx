@@ -104,22 +104,19 @@ function CropLibrary() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
       <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Library</span>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-6xl">Crop Encyclopaedia</h1>
-        <p className="mt-3 max-w-2xl text-muted-foreground">
-          Every crop is a fully isolated dossier — data, images, diseases and rotations never cross over.
-          Combine any of the filters below for a precise match.
-        </p>
+        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">{t("lib.eyebrow")}</span>
+        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-6xl">{t("lib.title")}</h1>
+        <p className="mt-3 max-w-2xl text-muted-foreground">{t("lib.sub")}</p>
       </Reveal>
 
       {localCrops.length > 0 && district === "All" && (
         <Reveal>
           <div className="mt-10 rounded-3xl border border-primary/30 bg-primary/5 p-6">
             <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-              <MapPin className="h-4 w-4" /> Recommended for {loc.district}
+              <MapPin className="h-4 w-4" /> {t("lib.recommended")} {loc.district}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              {localCrops.length} crops thrive in your district's soil & climate.
+              {localCrops.length} {t("lib.recSub")}
             </p>
             <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {localCrops.slice(0, 4).map((c, i) => (
@@ -134,45 +131,56 @@ function CropLibrary() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search crop, family, description…"
+          placeholder={t("lib.searchPh")}
+          aria-label={t("lib.searchPh")}
           className="flex-1 min-w-[240px] rounded-full border border-border/60 bg-card/60 px-4 py-2 text-sm outline-none focus:border-primary"
         />
         <button
           onClick={() => setShowFilters((v) => !v)}
+          aria-expanded={showFilters}
           className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-4 py-2 text-sm hover:border-primary"
         >
-          <Filter className="h-4 w-4" /> Filters
+          <Filter className="h-4 w-4" /> {t("lib.filters")}
           {activeCount > 0 && (
             <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">{activeCount}</span>
           )}
         </button>
         {activeCount > 0 && (
           <button onClick={reset} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
-            <X className="h-3 w-3" /> Reset all
+            <X className="h-3 w-3" /> {t("lib.reset")}
           </button>
         )}
       </div>
 
       {showFilters && (
         <div className="mt-4 grid gap-3 rounded-3xl border border-white/10 bg-black/70 p-4 shadow-2xl backdrop-blur-xl md:grid-cols-2 lg:grid-cols-3">
-          <Select label="District" value={district} onChange={setDistrict} options={allDistricts} />
-          <Select label="Category" value={category} onChange={(v) => setCategory(v as any)} options={["All", ...CROP_CATEGORIES]} />
-          <Select label="Season" value={season} onChange={setSeason} options={SEASONS as unknown as string[]} />
-          <Select label="Water need" value={water} onChange={setWater} options={WATER as unknown as string[]} />
-          <Select label="Soil" value={soil} onChange={setSoil} options={SOIL_KEYS as unknown as string[]} />
-          <Select label="Duration" value={duration} onChange={setDuration} options={DURATION as unknown as string[]} />
-          <Select label="Profit ≥" value={profit} onChange={setProfit} options={PROFIT as unknown as string[]} />
-          <Select label="Tag" value={tag} onChange={setTag} options={allTags} />
+          <Select label={t("filter.district")} value={district} onChange={setDistrict} options={allDistricts} tKey={(v) => (v === "All" ? t("opt.All") : v)} />
+          <Select label={t("filter.category")} value={category} onChange={(v) => setCategory(v as any)} options={["All", ...CROP_CATEGORIES]} tKey={(v) => (v === "All" ? t("opt.All") : v)} />
+          <Select label={t("filter.season")} value={season} onChange={setSeason} options={SEASONS as unknown as string[]} tKey={(v) => t(`opt.${v}`) || v} />
+          <Select label={t("filter.water")} value={water} onChange={setWater} options={WATER as unknown as string[]} tKey={(v) => t(`opt.${v}`) || v} />
+          <Select label={t("filter.soil")} value={soil} onChange={setSoil} options={SOIL_KEYS as unknown as string[]} tKey={(v) => {
+            const key = v === "Black cotton" ? "opt.BlackCotton" : v === "Red loam" ? "opt.RedLoam" : v === "Sandy loam" ? "opt.SandyLoam" : `opt.${v}`;
+            return t(key) || v;
+          }} />
+          <Select label={t("filter.duration")} value={duration} onChange={setDuration} options={DURATION as unknown as string[]} tKey={(v) => {
+            const key = v === "All" ? "opt.All" : v === "≤90 d" ? "opt.dur.short" : v === "91–150 d" ? "opt.dur.med" : "opt.dur.long";
+            return t(key) || v;
+          }} />
+          <Select label={t("filter.profit")} value={profit} onChange={setProfit} options={PROFIT as unknown as string[]} tKey={(v) => {
+            const key = v === "All" ? "opt.All" : v === "≥30%" ? "opt.profit.30" : v === "≥45%" ? "opt.profit.45" : "opt.profit.60";
+            return t(key) || v;
+          }} />
+          <Select label={t("filter.tag")} value={tag} onChange={setTag} options={allTags} tKey={(v) => (v === "All" ? t("opt.All") : v)} />
         </div>
       )}
 
-      <div className="mt-8 text-xs text-muted-foreground">{filtered.length} of {CROP_LIST.length} crops</div>
+      <div className="mt-8 text-xs text-muted-foreground">{filtered.length} {t("lib.count")} {CROP_LIST.length} {t("lib.crops")}</div>
       <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {filtered.map((c, i) => (
           <CropCard key={c.slug} crop={c} index={i} />
         ))}
         {filtered.length === 0 && (
-          <div className="col-span-full py-24 text-center text-muted-foreground">No crops match those filters.</div>
+          <div className="col-span-full py-24 text-center text-muted-foreground">{t("lib.noMatch")}</div>
         )}
       </div>
     </div>
