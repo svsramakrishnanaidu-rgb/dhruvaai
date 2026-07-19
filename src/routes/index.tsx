@@ -108,14 +108,14 @@ function Home() {
       {/* TRENDING */}
       <section className="mx-auto max-w-7xl px-6 py-20">
         <Reveal>
-          <div className="flex items-end justify-between gap-4">
-            <div>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div className="min-w-0">
               <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Trending</span>
-              <h2 className="mt-2 font-display text-4xl font-black tracking-tight md:text-5xl">
+              <h2 className="mt-2 font-display text-3xl font-black tracking-tight sm:text-4xl md:text-5xl">
                 Crops moving this season
               </h2>
             </div>
-            <Link to="/crops" className="story-link hidden text-sm text-muted-foreground md:inline-block">
+            <Link to="/crops" className="story-link text-sm text-muted-foreground">
               See all →
             </Link>
           </div>
