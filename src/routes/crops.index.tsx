@@ -5,6 +5,7 @@ import type { CropCategory } from "@/data/crops/types";
 import { CropCard } from "@/components/CropCard";
 import { Reveal } from "@/components/Reveal";
 import { useLocation, STATES } from "@/lib/location-store";
+import { useT } from "@/lib/i18n";
 import { MapPin, Filter, X } from "lucide-react";
 
 export const Route = createFileRoute("/crops/")({
@@ -51,6 +52,7 @@ function matchProfit(pct: number, key: string): boolean {
 }
 
 function CropLibrary() {
+  const t = useT();
   const loc = useLocation();
   const allDistricts = useMemo(() => ["All", ...Object.values(STATES).flat()], []);
   const [season, setSeason] = useState<string>("All");
