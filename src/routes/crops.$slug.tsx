@@ -2,9 +2,10 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CROPS } from "@/data/crops";
 import type { Crop } from "@/data/crops/types";
 import { Reveal } from "@/components/Reveal";
+import { getCropExtras } from "@/data/crop-knowledge";
 import {
   Droplets, Thermometer, CloudRain, Sprout, TrendingUp, Bug, Beaker, Wheat,
-  ArrowLeft, ExternalLink, ShieldAlert, Lightbulb, Recycle,
+  ArrowLeft, ExternalLink, ShieldAlert, Lightbulb, Recycle, Leaf, Camera,
 } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
