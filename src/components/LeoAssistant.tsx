@@ -57,6 +57,9 @@ export function LeoAssistant() {
   const [idResult, setIdResult] = useState<any>(null);
 
   const historyRef = useRef<{ role: "user" | "assistant"; content: string }[]>([]);
+  const pushHistory = (role: "user" | "assistant", content: string) => {
+    historyRef.current = [...historyRef.current, { role, content }].slice(-12);
+  };
   const recRef = useRef<any>(null);
   const interruptRef = useRef<any>(null);
   const langRef = useRef<Lang>(lang);
