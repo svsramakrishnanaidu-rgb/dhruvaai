@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { Mic, MicOff, X, Volume2, VolumeX, Camera, Loader2 } from "lucide-react";
+import { Mic, MicOff, X, Volume2, VolumeX, Camera, Loader2, Settings2, Play, Square } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { leoChat, leoIdentify } from "@/lib/leo.functions";
 import { useI18n, type Lang } from "@/lib/i18n";
@@ -9,6 +9,9 @@ import { locationStore, useLocation } from "@/lib/location-store";
 import { leoMemory, useLeoMemory } from "@/lib/leo-memory";
 import { CROP_LIST } from "@/data/crops";
 import { useReducedMotion } from "@/lib/reduced-motion";
+import { useLeoSettings, PERSONAS, pickVoice } from "@/lib/leo-settings";
+import { LeoAvatarAnime } from "./LeoAvatarAnime";
+import { LeoSettingsPanel } from "./LeoSettingsPanel";
 
 type Intent =
   | { type: "navigate"; path: string; highlight?: string }
@@ -22,7 +25,7 @@ type Intent =
 const LANG_TO_BCP47: Record<Lang, string> = { en: "en-IN", te: "te-IN", hi: "hi-IN" };
 
 const GREETING: Record<Lang, string> = {
-  en: "Hello! I am LEO, your voice-first farming assistant. Just speak — ask me about crops, diseases, fertilizers, or say 'open cotton' and I'll take you there.",
+  en: "Hi! I'm LEO, your voice-first farming assistant. Ask about crops, diseases, fertilizers, or say 'open cotton' and I'll take you there.",
   te: "నమస్తే! నేను లియో, మీ వాయిస్ ఆధారిత వ్యవసాయ సహాయకుడిని. మాట్లాడండి — పంటలు, తెగుళ్ళు, ఎరువుల గురించి అడగండి.",
   hi: "नमस्ते! मैं लियो हूँ, आपका वॉइस-आधारित कृषि सहायक। बस बोलिए — फसलों, बीमारियों, उर्वरकों के बारे में पूछें।",
 };
@@ -40,21 +43,25 @@ export function LeoAssistant() {
   const navigate = useNavigate();
   const location = useLocation();
   const memory = useLeoMemory();
+  const settings = useLeoSettings();
   const chat = useServerFn(leoChat);
   const identify = useServerFn(leoIdentify);
   const reducedMotion = useReducedMotion();
 
   const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [listening, setListening] = useState(false);
   const [thinking, setThinking] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [muted, setMuted] = useState(false);
   const [captionUser, setCaptionUser] = useState("");
   const [captionLeo, setCaptionLeo] = useState("");
+  const [lastReply, setLastReply] = useState("");   // for manual Speak
   const [supported, setSupported] = useState(true);
   const [greeted, setGreeted] = useState(false);
   const [identifying, setIdentifying] = useState(false);
   const [idResult, setIdResult] = useState<any>(null);
+  const [mouth, setMouth] = useState(0);            // 0..1 lip-sync level
 
   const historyRef = useRef<{ role: "user" | "assistant"; content: string }[]>([]);
   const pushHistory = (role: "user" | "assistant", content: string) => {
@@ -64,10 +71,36 @@ export function LeoAssistant() {
   const interruptRef = useRef<any>(null);
   const langRef = useRef<Lang>(lang);
   langRef.current = lang;
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
   const speakingRef = useRef(false);
   const listeningRef = useRef(false);
-  const conversationRef = useRef(true); // continuous voice mode is always on when open
+  const conversationRef = useRef(true);
   const fileRef = useRef<HTMLInputElement>(null);
+  const mouthRAF = useRef<number | null>(null);
+
+  // === Lip-sync driver: sine-modulated envelope while speaking ===
+  useEffect(() => {
+    if (!speaking) {
+      if (mouthRAF.current) cancelAnimationFrame(mouthRAF.current);
+      setMouth(0);
+      return;
+    }
+    let t0 = performance.now();
+    const tick = () => {
+      const t = (performance.now() - t0) / 1000;
+      // Layered sine waves emulate phoneme envelope
+      const v = 0.45
+        + 0.35 * Math.sin(t * 11)
+        + 0.20 * Math.sin(t * 4.7 + 1.3)
+        + 0.10 * Math.sin(t * 23 + 0.5);
+      const clamped = Math.max(0.05, Math.min(1, (v + 0.4) / 1.6));
+      setMouth(clamped);
+      mouthRAF.current = requestAnimationFrame(tick);
+    };
+    mouthRAF.current = requestAnimationFrame(tick);
+    return () => { if (mouthRAF.current) cancelAnimationFrame(mouthRAF.current); };
+  }, [speaking]);
 
   // === TTS ===
   const stopSpeaking = useCallback(() => {
@@ -84,14 +117,16 @@ export function LeoAssistant() {
     }
     try {
       window.speechSynthesis.cancel();
+      const s = settingsRef.current;
+      const persona = PERSONAS.find((p) => p.id === s.persona)!;
+      const targetLang = s.voiceLang || LANG_TO_BCP47[langRef.current];
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = LANG_TO_BCP47[langRef.current];
-      u.rate = 1;
-      u.pitch = 1;
-      // Try to pick an expressive voice matching the requested language.
+      u.lang = targetLang;
+      u.rate = Math.max(0.5, Math.min(1.8, s.rate)) * persona.rate;
+      u.pitch = Math.max(0.1, Math.min(2, persona.pitch));
       try {
         const voices = window.speechSynthesis.getVoices();
-        const match = voices.find((v) => v.lang?.toLowerCase().startsWith(u.lang.toLowerCase().slice(0, 2)));
+        const match = pickVoice(voices, s.persona, targetLang);
         if (match) u.voice = match;
       } catch {}
       u.onstart = () => { setSpeaking(true); speakingRef.current = true; };
@@ -107,35 +142,22 @@ export function LeoAssistant() {
     switch (intent.type) {
       case "navigate":
         if (typeof intent.path === "string" && intent.path.startsWith("/")) {
-          if (intent.highlight) {
-            try { sessionStorage.setItem("leo.highlight", intent.highlight); } catch {}
-          }
+          if (intent.highlight) { try { sessionStorage.setItem("leo.highlight", intent.highlight); } catch {} }
           navigate({ to: intent.path as any }).catch(() => {});
           const m = intent.path.match(/^\/crops\/([\w-]+)$/);
           if (m) leoMemory.recordCrop(m[1]);
         }
         break;
-      case "setDistrict":
-        locationStore.set({ district: intent.district });
-        break;
+      case "setDistrict": locationStore.set({ district: intent.district }); break;
       case "setLanguage":
-        if (intent.lang === "en" || intent.lang === "te" || intent.lang === "hi") {
-          setLang(intent.lang);
-        }
+        if (intent.lang === "en" || intent.lang === "te" || intent.lang === "hi") setLang(intent.lang);
         break;
-      case "toggleTheme":
-        document.documentElement.classList.toggle("light");
-        break;
-      case "openSearch":
-        window.dispatchEvent(new CustomEvent("leo:openSearch"));
-        break;
-      case "favorite":
-        if (intent.slug) leoMemory.toggleFavorite(intent.slug);
-        break;
+      case "toggleTheme": document.documentElement.classList.toggle("light"); break;
+      case "openSearch": window.dispatchEvent(new CustomEvent("leo:openSearch")); break;
+      case "favorite": if (intent.slug) leoMemory.toggleFavorite(intent.slug); break;
     }
   }, [navigate, setLang]);
 
-  // Forward decl so ask() can restart listening after LEO finishes speaking.
   const startListeningRef = useRef<() => void>(() => {});
 
   // === Ask ===
@@ -152,21 +174,21 @@ export function LeoAssistant() {
           lang: langRef.current,
           history: historyRef.current.slice(-6),
           context: {
-            district: location.district,
-            state: location.state,
-            recentCrops: memory.recentCrops,
-            favorites: memory.favorites,
+            district: location.district, state: location.state,
+            recentCrops: memory.recentCrops, favorites: memory.favorites,
           },
           cropSlugs: CROP_SLUGS,
         },
       });
       setThinking(false);
       setCaptionLeo(res.speak);
+      setLastReply(res.speak);
       pushHistory("assistant", res.speak);
-      speak(res.speak, () => {
-        // Continuous conversation: hand the mic back to the user automatically.
-        if (conversationRef.current && open) setTimeout(() => startListeningRef.current(), 250);
-      });
+      const s = settingsRef.current;
+      const after = () => {
+        if (conversationRef.current && open && s.autoSpeak) setTimeout(() => startListeningRef.current(), 250);
+      };
+      if (s.autoSpeak) speak(res.speak, after);
       runIntent(res.intent as Intent);
     } catch {
       setThinking(false);
@@ -176,8 +198,8 @@ export function LeoAssistant() {
         hi: "सर्वर तक नहीं पहुँच सका। कृपया पुनः प्रयास करें।",
       };
       const msg = fallback[langRef.current];
-      setCaptionLeo(msg);
-      speak(msg);
+      setCaptionLeo(msg); setLastReply(msg);
+      if (settingsRef.current.autoSpeak) speak(msg);
     }
   }, [chat, location.district, location.state, memory.recentCrops, memory.favorites, runIntent, speak, open]);
 
@@ -190,23 +212,18 @@ export function LeoAssistant() {
     stopSpeaking();
     try {
       const rec = new SR();
-      rec.lang = LANG_TO_BCP47[langRef.current];
+      rec.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
       rec.interimResults = true;
       rec.continuous = false;
       rec.onstart = () => { setListening(true); listeningRef.current = true; setCaptionUser(""); };
       rec.onresult = (e: any) => {
-        let interim = "";
-        let finalT = "";
+        let interim = "", finalT = "";
         for (let i = e.resultIndex; i < e.results.length; i++) {
           const r = e.results[i];
-          if (r.isFinal) finalT += r[0].transcript;
-          else interim += r[0].transcript;
+          if (r.isFinal) finalT += r[0].transcript; else interim += r[0].transcript;
         }
         setCaptionUser(finalT || interim);
-        if (finalT) {
-          try { rec.stop(); } catch {}
-          ask(finalT);
-        }
+        if (finalT) { try { rec.stop(); } catch {} ask(finalT); }
       };
       rec.onerror = () => { setListening(false); listeningRef.current = false; };
       rec.onend = () => { setListening(false); listeningRef.current = false; };
@@ -219,85 +236,76 @@ export function LeoAssistant() {
 
   const stopListening = useCallback(() => {
     try { recRef.current?.stop(); } catch {}
-    setListening(false);
-    listeningRef.current = false;
+    setListening(false); listeningRef.current = false;
   }, []);
 
-  // === Barge-in: detect user speech while LEO is speaking ===
+  // === Barge-in with sensitivity ===
   useEffect(() => {
     if (typeof window === "undefined") return;
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR || !speaking) return;
+    // Sensitivity: 1(off-ish) → require 12 chars; 5(instant) → 1 char
+    const threshold = Math.max(1, 14 - settingsRef.current.bargeSensitivity * 3);
     let rec: any;
     try {
       rec = new SR();
-      rec.lang = LANG_TO_BCP47[langRef.current];
-      rec.continuous = true;
-      rec.interimResults = true;
+      rec.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
+      rec.continuous = true; rec.interimResults = true;
       let triggered = false;
       rec.onresult = (e: any) => {
         const t = Array.from(e.results as any).map((r: any) => r[0].transcript).join("").trim();
-        if (!triggered && t.length > 3) {
+        if (!triggered && t.length >= threshold) {
           triggered = true;
           try { rec.stop(); } catch {}
           stopSpeaking();
-          setTimeout(startListening, 150);
+          setTimeout(startListening, 120);
         }
       };
-      rec.onerror = () => {};
-      rec.onend = () => {};
+      rec.onerror = () => {}; rec.onend = () => {};
       interruptRef.current = rec;
       rec.start();
     } catch {}
     return () => { try { rec?.stop(); } catch {} };
   }, [speaking, startListening, stopSpeaking]);
 
-  // === Auto-greet on first visit ===
+  // === Auto-greet ===
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (sessionStorage.getItem("leo.greeted")) { setGreeted(true); return; }
     const timer = setTimeout(() => {
       setOpen(true);
       const g = GREETING[langRef.current];
-      setCaptionLeo(g);
+      setCaptionLeo(g); setLastReply(g);
       historyRef.current = []; pushHistory("assistant", g);
-      speak(g, () => {
-        // Hand the mic to the user immediately after the greeting.
-        if (conversationRef.current) setTimeout(startListening, 300);
-      });
+      if (settingsRef.current.autoSpeak) {
+        speak(g, () => { if (conversationRef.current) setTimeout(startListening, 300); });
+      }
       sessionStorage.setItem("leo.greeted", "1");
       setGreeted(true);
     }, 3200);
     return () => clearTimeout(timer);
   }, [speak, startListening]);
 
-  // === Update html lang instantly when i18n changes ===
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      try { document.documentElement.lang = lang; } catch {}
-    }
+    if (typeof window !== "undefined") { try { document.documentElement.lang = lang; } catch {} }
   }, [lang]);
 
-  // === Wake word "Hey LEO" ===
+  // === Wake word ===
   useEffect(() => {
     if (typeof window === "undefined") return;
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR || !greeted) return;
-    let stopped = false;
-    let wake: any;
+    if (!SR || !greeted || !settings.wakeEnabled) return;
+    let stopped = false; let wake: any;
     const start = () => {
       if (stopped || listeningRef.current || thinking || speakingRef.current || open) return;
       try {
         wake = new SR();
-        wake.lang = "en-IN";
-        wake.continuous = true;
-        wake.interimResults = true;
+        wake.lang = "en-IN"; wake.continuous = true; wake.interimResults = true;
         wake.onresult = (e: any) => {
           const t = Array.from(e.results as any).map((r: any) => r[0].transcript).join(" ").toLowerCase();
           if (/\b(hey|hi|hello|ok)\s+leo\b/.test(t)) {
             try { wake.stop(); } catch {}
-            setOpen(true);
-            setTimeout(startListening, 250);
+            setOpen(true); setTimeout(startListening, 250);
           }
         };
         wake.onerror = () => { try { wake.stop(); } catch {} };
@@ -308,35 +316,31 @@ export function LeoAssistant() {
     const enable = () => { window.removeEventListener("click", enable); start(); };
     window.addEventListener("click", enable, { once: true });
     return () => { stopped = true; try { wake?.stop(); } catch {}; window.removeEventListener("click", enable); };
-  }, [greeted, startListening, thinking, open]);
+  }, [greeted, startListening, thinking, open, settings.wakeEnabled]);
 
-  // === Vision identification ===
   const handleFile = useCallback(async (file: File) => {
     if (!file || !file.type.startsWith("image/")) return;
     if (file.size > 8 * 1024 * 1024) { setCaptionLeo("Image too large — please pick one under 8MB."); return; }
-    setIdentifying(true);
-    setIdResult(null);
+    setIdentifying(true); setIdResult(null);
     const reader = new FileReader();
     reader.onload = async () => {
       try {
         const dataUrl = String(reader.result || "");
         const res = await identify({ data: { imageDataUrl: dataUrl, lang: langRef.current, kind: "any" } });
-        setIdResult(res);
-        setIdentifying(false);
-        setCaptionLeo(res.summary);
-        speak(`${res.summary}. ${res.advice}`);
+        setIdResult(res); setIdentifying(false);
+        setCaptionLeo(res.summary); setLastReply(`${res.summary} ${res.advice}`);
+        if (settingsRef.current.autoSpeak) speak(`${res.summary}. ${res.advice}`);
         if (res.topMatches?.[0]?.name) leoMemory.recordDisease(res.topMatches[0].name);
       } catch {
         setIdentifying(false);
         const msg = "I couldn't analyze that photo. Try a clearer close-up.";
-        setCaptionLeo(msg);
-        speak(msg);
+        setCaptionLeo(msg); setLastReply(msg);
+        if (settingsRef.current.autoSpeak) speak(msg);
       }
     };
     reader.readAsDataURL(file);
   }, [identify, speak]);
 
-  // === Track crop route visits ===
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => {
     const m = pathname.match(/^\/crops\/([\w-]+)$/);
@@ -350,6 +354,9 @@ export function LeoAssistant() {
     : speaking ? labels.speaking
     : listening ? labels.listening
     : labels.idle;
+
+  const avatarState: "idle" | "listening" | "thinking" | "speaking" =
+    speaking ? "speaking" : listening ? "listening" : thinking ? "thinking" : "idle";
 
   return (
     <>
@@ -377,65 +384,75 @@ export function LeoAssistant() {
           if (nowOpen && !listening && !speaking) setTimeout(startListening, 150);
           if (!nowOpen) { stopListening(); stopSpeaking(); }
         }}
-        className="fixed bottom-5 right-5 z-[70] grid h-16 w-16 place-items-center rounded-full text-primary-foreground shadow-2xl transition hover:scale-105 active:scale-95"
+        className="fixed bottom-5 right-5 z-[70] grid h-16 w-16 place-items-center overflow-hidden rounded-full text-primary-foreground shadow-2xl transition hover:scale-105 active:scale-95"
         style={{
           background: "var(--gradient-primary, linear-gradient(135deg,#4ade80,#16a34a))",
           boxShadow: "0 10px 40px -5px color-mix(in oklab, var(--primary, #16a34a) 60%, transparent), 0 0 0 6px color-mix(in oklab, var(--primary, #16a34a) 15%, transparent)",
         }}
       >
-        <LeoAvatar active={speaking || listening || thinking} reducedMotion={reducedMotion} />
+        <div className="scale-[1.15]">
+          <LeoAvatarAnime mouthLevel={mouth} state={avatarState} size={62} waving={!open && !reducedMotion} />
+        </div>
       </button>
 
       {open && (
         <div className="fixed inset-x-0 bottom-0 z-[71] flex justify-end p-2 sm:inset-auto sm:bottom-24 sm:right-5">
           <div
             className="w-full max-w-sm overflow-hidden rounded-3xl border border-border/60 shadow-2xl backdrop-blur-xl"
-            style={{ background: "color-mix(in oklab, var(--background) 88%, transparent)" }}
-            role="dialog"
-            aria-label="LEO voice assistant"
+            style={{ background: "color-mix(in oklab, var(--background) 92%, transparent)" }}
+            role="dialog" aria-label="LEO voice assistant"
           >
             <header className="flex items-center justify-between border-b border-border/60 px-4 py-3">
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-full" style={{ background: "var(--gradient-primary)" }}>
-                  <LeoAvatar active={speaking || listening || thinking} small reducedMotion={reducedMotion} />
-                </div>
                 <div>
-                  <div className="text-sm font-semibold">LEO</div>
-                  <div className="text-[11px] uppercase tracking-widest text-muted-foreground" aria-live="polite">
-                    {status}
-                  </div>
+                  <div className="text-sm font-semibold">LEO · {PERSONAS.find((p) => p.id === settings.persona)?.label}</div>
+                  <div className="text-[11px] uppercase tracking-widest text-muted-foreground" aria-live="polite">{status}</div>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button
-                  aria-label={muted ? "Unmute" : "Mute"}
-                  onClick={() => { setMuted((m) => !m); stopSpeaking(); }}
-                  className="rounded-full p-2 hover:bg-secondary"
-                >
+                <button aria-label="Voice settings" onClick={() => setSettingsOpen(true)} className="rounded-full p-2 hover:bg-secondary">
+                  <Settings2 className="h-4 w-4" />
+                </button>
+                <button aria-label={muted ? "Unmute" : "Mute"} onClick={() => { setMuted((m) => !m); stopSpeaking(); }} className="rounded-full p-2 hover:bg-secondary">
                   {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
                 </button>
-                <button
-                  aria-label="Close"
-                  onClick={() => { setOpen(false); stopListening(); stopSpeaking(); }}
-                  className="rounded-full p-2 hover:bg-secondary"
-                >
+                <button aria-label="Close" onClick={() => { setOpen(false); stopListening(); stopSpeaking(); }} className="rounded-full p-2 hover:bg-secondary">
                   <X className="h-4 w-4" />
                 </button>
               </div>
             </header>
 
-            {/* Voice stage — big avatar + waveform, no chat bubbles */}
-            <div className="relative grid place-items-center px-6 pb-4 pt-6">
-              <VoiceOrb active={speaking || listening} thinking={thinking} reducedMotion={reducedMotion} />
+            {/* Anime avatar stage with live lip-sync */}
+            <div className="relative grid place-items-center px-6 pb-3 pt-5">
+              <div
+                className="rounded-full"
+                style={{
+                  padding: 6,
+                  background: "radial-gradient(circle at 30% 20%, color-mix(in oklab, var(--primary) 40%, transparent), transparent 65%)",
+                  filter: (speaking || listening) && !reducedMotion ? "drop-shadow(0 12px 28px color-mix(in oklab, var(--primary) 40%, transparent))" : undefined,
+                  animation: (speaking || listening) && !reducedMotion ? "leo-orb-pulse 2.4s ease-in-out infinite" : undefined,
+                }}
+              >
+                <LeoAvatarAnime mouthLevel={mouth} state={avatarState} size={200} waving={avatarState === "idle" && !reducedMotion} />
+              </div>
               <Waveform active={listening || speaking} reducedMotion={reducedMotion} />
-              <p className="mt-3 min-h-[2.5rem] text-center text-sm text-muted-foreground">
+              <p className="mt-3 min-h-[2.5rem] max-w-full text-center text-sm text-muted-foreground">
                 {listening && captionUser ? <span className="text-primary">{captionUser}</span>
                   : thinking ? "…"
                   : captionLeo || (!greeted ? GREETING[lang] : "")}
               </p>
+              {/* Manual Speak button when autoSpeak is off */}
+              {!settings.autoSpeak && lastReply && !thinking && (
+                <button
+                  onClick={() => (speaking ? stopSpeaking() : speak(lastReply))}
+                  className="mt-2 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20"
+                >
+                  {speaking ? <><Square className="h-3 w-3" /> Stop</> : <><Play className="h-3 w-3" /> Speak reply</>}
+                </button>
+              )}
+              <style>{`@keyframes leo-orb-pulse { 0%,100% { transform: scale(1);} 50% { transform: scale(1.04);} }`}</style>
             </div>
 
-            {/* Vision result panel (if user uploaded a photo) */}
             {(identifying || idResult) && (
               <div className="mx-4 mb-3 rounded-2xl border border-border/60 bg-background/50 p-3 text-xs">
                 {identifying && (
@@ -464,13 +481,8 @@ export function LeoAssistant() {
               </div>
             )}
 
-            {/* Controls — voice only. Mic + camera. No text input. */}
             <div className="flex items-center justify-center gap-4 border-t border-border/60 px-4 py-4">
-              <button
-                aria-label="Identify plant from photo"
-                onClick={() => fileRef.current?.click()}
-                className="grid h-12 w-12 place-items-center rounded-full border border-border/60 hover:bg-secondary"
-              >
+              <button aria-label="Identify plant from photo" onClick={() => fileRef.current?.click()} className="grid h-12 w-12 place-items-center rounded-full border border-border/60 hover:bg-secondary">
                 <Camera className="h-5 w-5" />
               </button>
               <button
@@ -488,16 +500,10 @@ export function LeoAssistant() {
                 {listening ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
               </button>
               <div className="grid h-12 w-12 place-items-center rounded-full border border-border/60 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                {lang}
+                {(settings.voiceLang || LANG_TO_BCP47[lang]).slice(0, 2)}
               </div>
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="hidden"
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
-              />
+              <input ref={fileRef} type="file" accept="image/*" capture="environment" className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
             </div>
 
             {!supported && (
@@ -508,33 +514,9 @@ export function LeoAssistant() {
           </div>
         </div>
       )}
-    </>
-  );
-}
 
-function VoiceOrb({ active, thinking, reducedMotion }: { active: boolean; thinking: boolean; reducedMotion: boolean }) {
-  const pulse = active && !reducedMotion;
-  return (
-    <div className="relative grid h-32 w-32 place-items-center">
-      <div
-        className="absolute inset-0 rounded-full"
-        style={{
-          background: "radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--primary) 70%, white), color-mix(in oklab, var(--primary) 45%, transparent) 60%, transparent 75%)",
-          filter: pulse ? "blur(6px)" : "blur(2px)",
-          animation: pulse ? "leo-orb-pulse 2.4s ease-in-out infinite" : undefined,
-        }}
-      />
-      <div
-        className="relative grid h-24 w-24 place-items-center rounded-full text-primary-foreground"
-        style={{
-          background: "var(--gradient-primary)",
-          boxShadow: "0 20px 60px -20px color-mix(in oklab, var(--primary) 60%, transparent)",
-        }}
-      >
-        {thinking ? <Loader2 className="h-8 w-8 animate-spin" /> : <LeoAvatar active={active} reducedMotion={reducedMotion} large />}
-      </div>
-      <style>{`@keyframes leo-orb-pulse { 0%,100% { transform: scale(1); opacity: .85 } 50% { transform: scale(1.08); opacity: 1 } }`}</style>
-    </div>
+      <LeoSettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+    </>
   );
 }
 
@@ -547,10 +529,7 @@ function Waveform({ active, reducedMotion }: { active: boolean; reducedMotion: b
           key={i}
           className={active ? "leo-wave-bar" : ""}
           style={{
-            display: "inline-block",
-            width: 3,
-            height: 26,
-            borderRadius: 2,
+            display: "inline-block", width: 3, height: 26, borderRadius: 2,
             background: "color-mix(in oklab, var(--primary) 75%, transparent)",
             animationDelay: `${(i % 7) * 90}ms`,
             transform: active && !reducedMotion ? undefined : "scaleY(0.35)",
@@ -559,32 +538,5 @@ function Waveform({ active, reducedMotion }: { active: boolean; reducedMotion: b
         />
       ))}
     </div>
-  );
-}
-
-function LeoAvatar({ active, small = false, large = false, reducedMotion }: { active: boolean; small?: boolean; large?: boolean; reducedMotion: boolean }) {
-  const size = large ? 56 : small ? 22 : 30;
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <defs>
-        <radialGradient id="leo-eye" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fff" />
-          <stop offset="100%" stopColor="#dcfce7" />
-        </radialGradient>
-      </defs>
-      <circle cx="16" cy="16" r="14" fill="url(#leo-eye)" opacity="0.15" />
-      <circle cx="16" cy="16" r={active ? 8 : 6} fill="url(#leo-eye)" style={{ transition: "r 0.3s ease" }} />
-      <circle cx="16" cy="16" r="3" fill="#052e16">
-        {!reducedMotion && (
-          <animate attributeName="r" values="3;3.6;3" dur="2.4s" repeatCount="indefinite" />
-        )}
-      </circle>
-      {active && !reducedMotion && (
-        <circle cx="16" cy="16" r="12" fill="none" stroke="#fff" strokeOpacity="0.6" strokeWidth="1">
-          <animate attributeName="r" values="8;15;8" dur="1.6s" repeatCount="indefinite" />
-          <animate attributeName="stroke-opacity" values="0.6;0;0.6" dur="1.6s" repeatCount="indefinite" />
-        </circle>
-      )}
-    </svg>
   );
 }
