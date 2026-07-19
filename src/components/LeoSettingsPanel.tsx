@@ -109,13 +109,37 @@ export function LeoSettingsPanel({ open, onClose }: { open: boolean; onClose: ()
             onChange={(v) => leoSettings.set({ autoSpeak: v })}
           />
 
-          {/* Wake phrase */}
+          {/* Wake phrase enable */}
           <ToggleRow
-            label={`Wake phrase (\"Hey LEO\")`}
-            hint="Say Hey LEO from anywhere on the site to summon the assistant."
+            label="Wake phrase"
+            hint="Say any of your saved phrases from anywhere on the site to summon LEO."
             value={s.wakeEnabled}
             onChange={(v) => leoSettings.set({ wakeEnabled: v })}
           />
+
+          {/* Custom wake phrases */}
+          {s.wakeEnabled && (
+            <WakePhrasesEditor phrases={s.wakePhrases} />
+          )}
+
+          {/* Wake confidence */}
+          {s.wakeEnabled && (
+            <section>
+              <div className="mb-1 flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Wake confidence</label>
+                <span className="text-xs tabular-nums text-muted-foreground">{Math.round(s.wakeConfidence * 100)}%</span>
+              </div>
+              <input
+                type="range" min={0.2} max={0.95} step={0.05}
+                value={s.wakeConfidence}
+                onChange={(e) => leoSettings.set({ wakeConfidence: Number(e.target.value) })}
+                className="w-full accent-primary"
+              />
+              <div className="flex justify-between text-[10px] text-muted-foreground">
+                <span>Easy trigger</span><span>Balanced</span><span>Strict (fewer false wakes)</span>
+              </div>
+            </section>
+          )}
 
           {/* Barge-in sensitivity */}
           <section>
