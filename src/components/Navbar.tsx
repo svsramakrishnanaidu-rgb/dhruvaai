@@ -102,6 +102,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
             >
               <Search className="h-4 w-4" />
             </button>
+            <LanguageSwitcher />
             <button
               onClick={toggle}
               aria-label="Toggle theme"
