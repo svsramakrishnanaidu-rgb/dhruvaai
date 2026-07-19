@@ -59,6 +59,7 @@ function Contact() {
         .input:focus { border-color: var(--primary); }
       `}</style>
     </div>
+    </div>
   );
 }
 
