@@ -4,7 +4,7 @@ import { CROPS } from "@/data/crops";
 import type { Crop } from "@/data/crops/types";
 import { Reveal } from "@/components/Reveal";
 import { getCropExtras } from "@/data/crop-knowledge";
-import { CropModel3D } from "@/components/CropModel3D";
+
 import { GrowthStages360 } from "@/components/GrowthStages360";
 import { T } from "@/lib/translate-cache";
 import {
@@ -68,7 +68,7 @@ function CropDetail() {
           <img src={c.image} alt={c.name} className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/50 to-background" />
         </div>
-        <div className="mx-auto grid max-w-7xl gap-8 px-6 pt-10 pb-24 md:grid-cols-[1fr_360px] md:pt-14 md:pb-32">
+        <div className="mx-auto max-w-7xl px-6 pt-10 pb-24 md:pt-14 md:pb-32">
           <div>
             <Link to="/crops" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-3 w-3" /> <T>Back to library</T>
@@ -102,15 +102,6 @@ function CropDetail() {
             </Reveal>
           </div>
 
-          {/* Floating 3D model */}
-          <Reveal delay={200}>
-            <div className="glass hidden overflow-hidden rounded-3xl border border-primary/20 p-2 md:block">
-              <CropModel3D crop={c} className="h-[340px] w-full" />
-              <div className="px-4 pb-3 text-[10px] uppercase tracking-widest text-muted-foreground">
-                Interactive 3D · scroll to rotate
-              </div>
-            </div>
-          </Reveal>
         </div>
       </section>
 
