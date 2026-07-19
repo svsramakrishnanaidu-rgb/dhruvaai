@@ -2,9 +2,10 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CROPS } from "@/data/crops";
 import type { Crop } from "@/data/crops/types";
 import { Reveal } from "@/components/Reveal";
+import { getCropExtras } from "@/data/crop-knowledge";
 import {
   Droplets, Thermometer, CloudRain, Sprout, TrendingUp, Bug, Beaker, Wheat,
-  ArrowLeft, ExternalLink, ShieldAlert, Lightbulb, Recycle,
+  ArrowLeft, ExternalLink, ShieldAlert, Lightbulb, Recycle, Leaf, Camera,
 } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/crops/$slug")({
 
 function CropDetail() {
   const c = Route.useLoaderData() as Crop;
+  const extras = getCropExtras(c);
 
   return (
     <div>
@@ -183,6 +185,133 @@ function CropDetail() {
             </div>
           </div>
         </Section>
+
+        {/* Growth stages gallery */}
+        <Section eyebrow="Visual guide" title="Growth Stages" icon={<Camera />}>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {extras.stages.map((s, i) => (
+              <Reveal key={s.key} delay={i * 50}>
+                <figure className="group card-elegant hover-lift overflow-hidden p-0">
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <img
+                      src={s.image}
+                      alt={`${c.name} — ${s.label} stage`}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <span className="absolute left-3 top-3 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
+                      Day {s.days}
+                    </span>
+                  </div>
+                  <figcaption className="p-4">
+                    <h3 className="font-display text-lg font-bold">{s.label}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{s.description}</p>
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
+        </Section>
+
+        {/* Detailed disease library with imagery */}
+        {extras.diseases.length > 0 && (
+          <Section eyebrow="Health atlas" title="Disease Atlas" icon={<Bug />}>
+            <div className="grid gap-5 md:grid-cols-2">
+              {extras.diseases.map((d, i) => (
+                <Reveal key={d.name} delay={i * 60}>
+                  <article className="card-elegant overflow-hidden p-0">
+                    <div className="grid md:grid-cols-2">
+                      <img src={d.image} alt={d.name} loading="lazy" className="h-full max-h-64 w-full object-cover" />
+                      <div className="p-5">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-display text-lg font-bold">{d.name}</h3>
+                          <span className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-widest">{d.category}</span>
+                        </div>
+                        <p className="mt-1 text-xs italic text-muted-foreground">{d.scientific}</p>
+                        <dl className="mt-3 space-y-2 text-xs">
+                          <Row k="Stages" v={d.stages} />
+                          <Row k="Spread" v={d.spread} />
+                          <Row k="Favorable" v={d.favorable} />
+                          <Row k="Prevention" v={d.prevention} />
+                          <Row k="Organic" v={d.organic} />
+                          <Row k="Biological" v={d.biological} />
+                          <Row k="Chemical" v={`${d.chemical.activeIngredient} — ${d.chemical.dose}, ${d.chemical.schedule}`} />
+                          <Row k="Safety" v={`Re-entry ${d.chemical.reEntry} · PHI ${d.chemical.phi}`} />
+                          <Row k="Recovery" v={d.recovery} />
+                        </dl>
+                      </div>
+                    </div>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Weed library */}
+        {extras.weeds.length > 0 && (
+          <Section eyebrow="Field enemies" title="Weed Identification & Control" icon={<Leaf />}>
+            <div className="grid gap-5 md:grid-cols-2">
+              {extras.weeds.map((w, i) => (
+                <Reveal key={w.name} delay={i * 60}>
+                  <article className="card-elegant overflow-hidden p-0">
+                    <div className="grid md:grid-cols-[220px_1fr]">
+                      <img src={w.image} alt={w.name} loading="lazy" className="h-full max-h-64 w-full object-cover md:max-h-none" />
+                      <div className="p-5">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-display text-lg font-bold">{w.name}</h3>
+                          <SeverityMeter n={w.severity} />
+                        </div>
+                        <p className="mt-1 text-xs italic text-muted-foreground">{w.scientific} · {w.lifeCycle}</p>
+                        <dl className="mt-3 space-y-2 text-xs">
+                          <Row k="Identify" v={w.identify} />
+                          <Row k="Cultural" v={w.cultural} />
+                          <Row k="Mechanical" v={w.mechanical} />
+                          <Row k="Herbicide" v={`${w.chemical.activeIngredient} — ${w.chemical.brands.join(", ")}`} />
+                          <Row k="Dose & timing" v={`${w.chemical.dose} · ${w.chemical.timing} · ${w.chemical.water}`} />
+                          <Row k="Safety" v={`${w.chemical.safety} · PHI ${w.chemical.phi}`} />
+                        </dl>
+                      </div>
+                    </div>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Pest library */}
+        {extras.pests.length > 0 && (
+          <Section eyebrow="Insect pressure" title="Pest & Insect Library" icon={<Bug />}>
+            <div className="grid gap-5 md:grid-cols-2">
+              {extras.pests.map((p, i) => (
+                <Reveal key={p.name} delay={i * 60}>
+                  <article className="card-elegant overflow-hidden p-0">
+                    <div className="grid md:grid-cols-[220px_1fr]">
+                      <img src={p.image} alt={p.name} loading="lazy" className="h-full max-h-64 w-full object-cover md:max-h-none" />
+                      <div className="p-5">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-display text-lg font-bold">{p.name}</h3>
+                          <SeverityMeter n={p.severity} />
+                        </div>
+                        <p className="mt-1 text-xs italic text-muted-foreground">{p.scientific}</p>
+                        <dl className="mt-3 space-y-2 text-xs">
+                          <Row k="Damage" v={p.damage} />
+                          <Row k="Life cycle" v={p.lifecycle} />
+                          <Row k="Organic" v={p.organic} />
+                          <Row k="Biological" v={p.biological} />
+                          <Row k="Chemical" v={`${p.chemical.activeIngredient} (${p.chemical.brands.join(", ")}) — ${p.chemical.dose}`} />
+                          <Row k="Timing & PHI" v={`${p.chemical.timing} · PHI ${p.chemical.phi}`} />
+                        </dl>
+                      </div>
+                    </div>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </Section>
+        )}
+
 
         {/* Rotation preview */}
         <Section eyebrow="Sustainability" title="Recommended Rotation" icon={<Recycle />}>
