@@ -53,8 +53,8 @@ function hydrateSettings(value: Partial<LeoSettings>): LeoSettings {
     ...value,
     proRecognition: value.proRecognition ?? DEFAULT.proRecognition,
     wakePhrases: phrases,
-    wakeConfidence: Math.min(value.wakeConfidence ?? DEFAULT.wakeConfidence, DEFAULT.wakeConfidence),
-    bargeSensitivity: Math.max(value.bargeSensitivity ?? DEFAULT.bargeSensitivity, DEFAULT.bargeSensitivity),
+    wakeConfidence: value.wakeConfidence === 0.4 ? DEFAULT.wakeConfidence : (value.wakeConfidence ?? DEFAULT.wakeConfidence),
+    bargeSensitivity: value.bargeSensitivity === 3 ? DEFAULT.bargeSensitivity : (value.bargeSensitivity ?? DEFAULT.bargeSensitivity),
   };
 }
 
