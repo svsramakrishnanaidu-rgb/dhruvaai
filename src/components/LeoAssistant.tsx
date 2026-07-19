@@ -144,7 +144,7 @@ export function LeoAssistant() {
     setThinking(true);
     setCaptionLeo("");
     leoMemory.setLastQuery(message);
-    historyRef.current = [...historyRef.current, { role: "user", content: message }].slice(-12);
+    pushHistory("user", message);
     try {
       const res = await chat({
         data: {
