@@ -3,7 +3,9 @@ import { useState } from "react";
 import { CROP_LIST, CROPS } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
+import { HeroBanner } from "@/components/HeroBanner";
 import { Beaker } from "lucide-react";
+import heroImg from "@/assets/heroes/fertilizer.jpg";
 
 export const Route = createFileRoute("/fertilizer")({
   head: () => ({
@@ -23,12 +25,15 @@ function Fertilizer() {
   const totalAcres = unit === "acre" ? size : size * 2.471;
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Tool</span>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-6xl">Fertilizer Calculator</h1>
-        <p className="mt-3 max-w-xl text-muted-foreground">Precision dosage for your acres — every crop uses its own isolated schedule.</p>
-      </Reveal>
+    <div>
+      <HeroBanner
+        image={heroImg}
+        eyebrow="Tool"
+        title="Fertilizer Calculator"
+        description="Precision dosage for your acres — every crop uses its own isolated schedule."
+      />
+      <div className="mx-auto max-w-7xl px-6 py-16">
+
 
       <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_2fr]">
         <div className="card-elegant p-6">
