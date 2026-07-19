@@ -5,7 +5,7 @@ import type { Crop } from "@/data/crops/types";
 import { Reveal } from "@/components/Reveal";
 import { getCropExtras } from "@/data/crop-knowledge";
 
-import { GrowthStages360 } from "@/components/GrowthStages360";
+import { diseaseImage } from "@/lib/disease-image";
 import { T } from "@/lib/translate-cache";
 import {
   Droplets, Thermometer, CloudRain, Sprout, TrendingUp, Bug, Beaker, Wheat,
