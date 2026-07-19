@@ -10,12 +10,18 @@ export function LanguageSwitcher() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!open) return;
     const onClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
-    window.addEventListener("mousedown", onClick);
-    return () => window.removeEventListener("mousedown", onClick);
-  }, []);
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
 
@@ -26,29 +32,40 @@ export function LanguageSwitcher() {
         aria-label={t("aria.changeLanguage")}
         aria-expanded={open}
         aria-haspopup="listbox"
-        className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
+        className="tap flex items-center gap-1.5 rounded-full px-2.5 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
       >
-        <Languages className="h-4 w-4" />
+        <Languages className="h-4 w-4" aria-hidden />
         <span className="hidden sm:inline">{current.native}</span>
       </button>
       {open && (
-        <div className="absolute right-0 top-11 z-50 w-40 overflow-hidden rounded-xl border border-border/60 bg-card shadow-2xl">
-          {LANGS.map((l) => (
-            <button
-              key={l.code}
-              onClick={() => { setLang(l.code); setOpen(false); }}
-              className={`flex w-full items-center justify-between gap-2 px-3 py-2 text-sm transition hover:bg-secondary/60 ${
-                l.code === lang ? "text-foreground" : "text-muted-foreground"
-              }`}
-            >
-              <span>
-                <span className="font-medium">{l.native}</span>
-                <span className="ml-2 text-[10px] uppercase tracking-widest text-muted-foreground">{l.code}</span>
-              </span>
-              {l.code === lang && <Check className="h-3.5 w-3.5 text-primary" />}
-            </button>
-          ))}
-        </div>
+        <ul
+          role="listbox"
+          aria-label={t("aria.changeLanguage")}
+          className="absolute right-0 top-11 z-50 w-44 overflow-hidden rounded-xl border border-border/60 bg-popover shadow-2xl"
+          style={{ animation: "scale-in .18s var(--ease-out-expo) both" }}
+        >
+          {LANGS.map((l) => {
+            const selected = l.code === lang;
+            return (
+              <li key={l.code}>
+                <button
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => { setLang(l.code); setOpen(false); }}
+                  className={`flex w-full items-center justify-between gap-2 px-3 py-2.5 text-sm transition hover:bg-secondary/60 ${
+                    selected ? "text-foreground" : "text-muted-foreground"
+                  }`}
+                >
+                  <span>
+                    <span className="font-medium">{l.native}</span>
+                    <span className="ml-2 text-[10px] uppercase tracking-widest text-muted-foreground">{l.code}</span>
+                  </span>
+                  {selected && <Check className="h-3.5 w-3.5 text-primary" aria-hidden />}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );
