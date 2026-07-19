@@ -308,59 +308,96 @@ export function LeoAssistant() {
     if (typeof window !== "undefined") { try { document.documentElement.lang = lang; } catch {} }
   }, [lang]);
 
-  // === Wake word — custom phrases + confidence gating, standby while busy ===
+  // === Wake word — custom phrases, robust matching, standby while busy ===
   useEffect(() => {
     if (typeof window === "undefined") return;
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR || !greeted || !settings.wakeEnabled) return;
-    let stopped = false; let wake: any;
-    // Build a regex from user's saved phrases; escape regex metacharacters.
-    const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const phrases = (settings.wakePhrases?.length ? settings.wakePhrases : ["hey leo"])
-      .map((p) => p.trim().toLowerCase()).filter(Boolean);
-    if (phrases.length === 0) return;
-    const wakeRe = new RegExp(`\\b(${phrases.map(escape).join("|")})\\b`, "i");
-    const minConf = Math.max(0, Math.min(1, settings.wakeConfidence ?? 0.55));
+    let stopped = false;
+    let wake: any = null;
+    let restartTimer: number | null = null;
+
+    const normalize = (s: string) =>
+      s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
+
+    const rawPhrases = (settings.wakePhrases?.length ? settings.wakePhrases : ["hey leo"])
+      .map((p) => normalize(p)).filter(Boolean);
+    if (rawPhrases.length === 0) return;
+    const minConf = Math.max(0, Math.min(1, settings.wakeConfidence ?? 0.4));
+
+    const matches = (text: string) => {
+      const t = normalize(text);
+      if (!t) return false;
+      // substring match — works with any script (Latin, Telugu, Hindi…)
+      return rawPhrases.some((p) => t.includes(p));
+    };
+
+    const busy = () => speakingRef.current || listeningRef.current || thinkingRef.current || openRef.current;
+
+    const trigger = () => {
+      setSummoning(true);
+      setTimeout(() => setSummoning(false), 1400);
+      setOpen(true);
+      setTimeout(() => { if (!speakingRef.current) startListeningRef.current(); }, 1500);
+    };
+
+    const scheduleRestart = (ms = 800) => {
+      if (stopped) return;
+      if (restartTimer) window.clearTimeout(restartTimer);
+      restartTimer = window.setTimeout(() => { restartTimer = null; start(); }, ms);
+    };
+
     const start = () => {
-      // Standby: never listen for wake while speaking, thinking, listening or open.
-      if (stopped || listeningRef.current || thinking || speakingRef.current || open) return;
+      if (stopped) return;
+      if (busy()) { scheduleRestart(1200); return; }
       try {
         wake = new SR();
         wake.lang = settingsRef.current.voiceLang || "en-IN";
-        wake.continuous = true; wake.interimResults = false; // only final results (higher confidence)
+        wake.continuous = true;
+        wake.interimResults = true; // catch short nicknames faster
+        let fired = false;
         wake.onresult = (e: any) => {
-          // Guard again — reject if LEO started speaking mid-listen.
-          if (speakingRef.current || listeningRef.current || thinking) return;
+          if (fired || busy()) return;
           for (let i = e.resultIndex; i < e.results.length; i++) {
             const r = e.results[i];
-            if (!r.isFinal) continue;
-            const t = (r[0]?.transcript || "").toLowerCase();
-            const conf = typeof r[0]?.confidence === "number" ? r[0].confidence : 1;
-            if (conf >= minConf && wakeRe.test(t)) {
+            const alt = r[0];
+            if (!alt) continue;
+            const conf = typeof alt.confidence === "number" ? alt.confidence : 0;
+            // On interim results confidence is often 0; only enforce minConf on finals.
+            const passConf = r.isFinal ? (conf === 0 || conf >= minConf) : true;
+            if (passConf && matches(alt.transcript || "")) {
+              fired = true;
               try { wake.stop(); } catch {}
-              setSummoning(true);
-              setTimeout(() => setSummoning(false), 1400);
-              setOpen(true);
-              // Wait for summoning burst + any TTS tail before opening the mic.
-              setTimeout(() => { if (!speakingRef.current) startListening(); }, 1500);
+              trigger();
               return;
             }
           }
         };
-        wake.onerror = () => { try { wake.stop(); } catch {} };
-        wake.onend = () => {
-          // Only restart when truly in standby (not speaking / thinking / listening).
-          if (!stopped && !speakingRef.current && !listeningRef.current && !thinking) {
-            setTimeout(start, 1500);
-          }
+        wake.onerror = (ev: any) => {
+          // no-speech / audio-capture / aborted — just restart
+          try { wake.stop(); } catch {}
+          scheduleRestart(ev?.error === "not-allowed" ? 5000 : 1200);
         };
+        wake.onend = () => { if (!fired) scheduleRestart(600); };
         wake.start();
-      } catch {}
+      } catch {
+        scheduleRestart(1500);
+      }
     };
+
     const enable = () => { window.removeEventListener("click", enable); start(); };
-    window.addEventListener("click", enable, { once: true });
-    return () => { stopped = true; try { wake?.stop(); } catch {}; window.removeEventListener("click", enable); };
-  }, [greeted, startListening, thinking, open, settings.wakeEnabled, settings.wakePhrases, settings.wakeConfidence]);
+    // If user already interacted (greeting shown), start immediately; else wait for gesture.
+    if (sessionStorage.getItem("leo.greeted")) start();
+    else window.addEventListener("click", enable, { once: true });
+
+    return () => {
+      stopped = true;
+      if (restartTimer) window.clearTimeout(restartTimer);
+      try { wake?.stop(); } catch {}
+      window.removeEventListener("click", enable);
+    };
+  }, [greeted, settings.wakeEnabled, settings.wakePhrases, settings.wakeConfidence, settings.voiceLang]);
+
 
   // === Keep-alive: Chrome pauses speechSynthesis after ~15s. Nudge it. ===
   useEffect(() => {
