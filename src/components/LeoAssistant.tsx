@@ -62,6 +62,7 @@ export function LeoAssistant() {
   const [identifying, setIdentifying] = useState(false);
   const [idResult, setIdResult] = useState<any>(null);
   const [mouth, setMouth] = useState(0);            // 0..1 lip-sync level
+  const [summoning, setSummoning] = useState(false); // burst animation on wake / open
 
   const historyRef = useRef<{ role: "user" | "assistant"; content: string }[]>([]);
   const pushHistory = (role: "user" | "assistant", content: string) => {
