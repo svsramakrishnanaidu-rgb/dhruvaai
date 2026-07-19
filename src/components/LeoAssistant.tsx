@@ -217,26 +217,33 @@ export function LeoAssistant() {
     if (!SR) { setSupported(false); return; }
     if (listeningRef.current) return;
     stopSpeaking();
-    try {
-      const rec = new SR();
-      rec.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
-      rec.interimResults = true;
-      rec.continuous = false;
-      rec.onstart = () => { setListening(true); listeningRef.current = true; setCaptionUser(""); };
-      rec.onresult = (e: any) => {
-        let interim = "", finalT = "";
-        for (let i = e.resultIndex; i < e.results.length; i++) {
-          const r = e.results[i];
-          if (r.isFinal) finalT += r[0].transcript; else interim += r[0].transcript;
-        }
-        setCaptionUser(finalT || interim);
-        if (finalT) { try { rec.stop(); } catch {} ask(finalT); }
-      };
-      rec.onerror = () => { setListening(false); listeningRef.current = false; };
-      rec.onend = () => { setListening(false); listeningRef.current = false; };
-      recRef.current = rec;
-      rec.start();
-    } catch { setListening(false); listeningRef.current = false; }
+    // Clear stale captions so the box is fresh each session.
+    setCaptionUser(""); setCaptionLeo(""); setIdResult(null);
+    // Warm-up delay: give TTS a moment to fully release audio so the mic
+    // doesn't immediately capture the tail of LEO's own voice.
+    setTimeout(() => {
+      if (listeningRef.current) return;
+      try {
+        const rec = new SR();
+        rec.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
+        rec.interimResults = true;
+        rec.continuous = false;
+        rec.onstart = () => { setListening(true); listeningRef.current = true; setCaptionUser(""); };
+        rec.onresult = (e: any) => {
+          let interim = "", finalT = "";
+          for (let i = e.resultIndex; i < e.results.length; i++) {
+            const r = e.results[i];
+            if (r.isFinal) finalT += r[0].transcript; else interim += r[0].transcript;
+          }
+          setCaptionUser(finalT || interim);
+          if (finalT) { try { rec.stop(); } catch {} ask(finalT); }
+        };
+        rec.onerror = () => { setListening(false); listeningRef.current = false; };
+        rec.onend = () => { setListening(false); listeningRef.current = false; };
+        recRef.current = rec;
+        rec.start();
+      } catch { setListening(false); listeningRef.current = false; }
+    }, 400);
   }, [ask, stopSpeaking]);
 
   startListeningRef.current = startListening;
@@ -330,7 +337,8 @@ export function LeoAssistant() {
               setSummoning(true);
               setTimeout(() => setSummoning(false), 1400);
               setOpen(true);
-              setTimeout(startListening, 900);
+              // Wait for summoning burst + any TTS tail before opening the mic.
+              setTimeout(() => { if (!speakingRef.current) startListening(); }, 1500);
               return;
             }
           }
@@ -428,8 +436,14 @@ export function LeoAssistant() {
         onClick={() => {
           const nowOpen = !open;
           setOpen(nowOpen);
-          if (nowOpen && !listening && !speaking) setTimeout(startListening, 150);
-          if (!nowOpen) { stopListening(); stopSpeaking(); }
+          if (nowOpen) {
+            // Don't auto-start the mic — user taps the mic when ready.
+            // This prevents cutting off LEO's greeting and prevents the mic
+            // from capturing LEO's own voice.
+          } else {
+            stopListening(); stopSpeaking();
+            setCaptionUser(""); setCaptionLeo(""); setLastReply(""); setIdResult(null);
+          }
         }}
         className="fixed bottom-5 right-5 z-[70] grid h-16 w-16 place-items-center overflow-hidden rounded-full text-primary-foreground shadow-2xl transition hover:scale-105 active:scale-95"
         style={{
@@ -504,7 +518,7 @@ export function LeoAssistant() {
                 <button aria-label={muted ? "Unmute" : "Mute"} onClick={() => { setMuted((m) => !m); stopSpeaking(); }} className="rounded-full p-2 hover:bg-secondary">
                   {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
                 </button>
-                <button aria-label="Close" onClick={() => { setOpen(false); stopListening(); stopSpeaking(); }} className="rounded-full p-2 hover:bg-secondary">
+                <button aria-label="Close" onClick={() => { setOpen(false); stopListening(); stopSpeaking(); setCaptionUser(""); setCaptionLeo(""); setLastReply(""); setIdResult(null); }} className="rounded-full p-2 hover:bg-secondary">
                   <X className="h-4 w-4" />
                 </button>
               </div>
