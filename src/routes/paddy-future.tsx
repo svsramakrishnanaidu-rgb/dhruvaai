@@ -2,8 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { TrendingUp, Cloud, Cpu, Ship, Landmark, Sprout, ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
+import { HeroBanner } from "@/components/HeroBanner";
 import { useT } from "@/lib/i18n";
 import { CROP_LIST } from "@/data/crops";
+import heroImg from "@/assets/heroes/paddy-future.jpg";
 
 export const Route = createFileRoute("/paddy-future")({
   head: () => ({
@@ -43,18 +45,15 @@ function PaddyFuture() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-20">
-      <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-          {t("paddy.eyebrow")}
-        </span>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-7xl">
-          {t("paddy.title")}
-        </h1>
-      </Reveal>
-      <Reveal delay={120}>
-        <p className="mt-6 max-w-2xl text-lg text-muted-foreground">{t("paddy.subtitle")}</p>
-      </Reveal>
+    <div>
+      <HeroBanner
+        image={heroImg}
+        eyebrow={t("paddy.eyebrow")}
+        title={t("paddy.title")}
+        description={t("paddy.subtitle")}
+      />
+      <div className="mx-auto max-w-6xl px-6 py-20">
+
 
       <div className="mt-12 grid gap-4 md:grid-cols-4">
         {kpis.map((k, i) => (
