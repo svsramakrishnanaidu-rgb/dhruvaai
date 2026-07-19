@@ -78,8 +78,12 @@ export function LeoAssistant() {
   const speakingRef = useRef(false);
   const listeningRef = useRef(false);
   const conversationRef = useRef(true);
+  const thinkingRef = useRef(false);
+  const openRef = useRef(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const mouthRAF = useRef<number | null>(null);
+  useEffect(() => { thinkingRef.current = thinking; }, [thinking]);
+  useEffect(() => { openRef.current = open; }, [open]);
 
   // === Lip-sync driver: sine-modulated envelope while speaking ===
   useEffect(() => {
