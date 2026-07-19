@@ -24,6 +24,7 @@ Return STRICT JSON only, no prose outside JSON, matching:
 
 Rules:
 - Fuzzy-match crop names against the provided slug list. If the user says a crop even loosely (e.g. "పత్తి", "गेहूं", "paddy" → rice, "brinjal" → brinjal), navigate to /crops/<matched-slug>.
+- When navigating to a crop, if the user asks about a specific topic, set "highlight" to ONE of these exact tokens so the page auto-scrolls: "land-prep" | "seed" | "irrigation" | "fertilizer" | "diseases" | "stages" | "weeds" | "pests" | "rotation" | "market" | "harvest" | "tips" | "references". Example: "how to fertilize rice?" → navigate /crops/rice with highlight "fertilizer".
 - If both a crop and a district are mentioned, include navigate to the crop AND setDistrict via a second follow-up sentence in "speak".
 - Prefer setDistrict for known Indian districts.
 - If the user asks to change language ("switch to Telugu"), include setLanguage.
