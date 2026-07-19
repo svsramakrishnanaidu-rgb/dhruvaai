@@ -335,10 +335,27 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
+      // 1) URL takes precedence so shareable links land in the right language.
+      const url = new URL(window.location.href);
+      const qp = url.searchParams.get("lang") as Lang | null;
+      if (qp && DICTS[qp]) {
+        setLangState(qp);
+        window.localStorage.setItem("agri.lang", qp);
+        document.documentElement.lang = qp;
+        return;
+      }
+      // 2) Fall back to previous session preference.
       const saved = window.localStorage.getItem("agri.lang") as Lang | null;
       if (saved && DICTS[saved]) {
         setLangState(saved);
         document.documentElement.lang = saved;
+        return;
+      }
+      // 3) Fall back to browser locale hint.
+      const nav = (navigator.language || "").slice(0, 2).toLowerCase() as Lang;
+      if (nav && DICTS[nav]) {
+        setLangState(nav);
+        document.documentElement.lang = nav;
       }
     } catch {}
   }, []);
@@ -348,6 +365,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     try {
       window.localStorage.setItem("agri.lang", l);
       document.documentElement.lang = l;
+      // Keep the URL in sync so refresh / copy-paste preserves the language.
+      const url = new URL(window.location.href);
+      if (l === "en") url.searchParams.delete("lang");
+      else url.searchParams.set("lang", l);
+      window.history.replaceState({}, "", url.toString());
     } catch {}
   };
 
