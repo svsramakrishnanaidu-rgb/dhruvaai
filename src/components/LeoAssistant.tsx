@@ -397,6 +397,47 @@ export function LeoAssistant() {
         </div>
       </button>
 
+      {/* Summoning burst — plays each time the wake phrase fires */}
+      {summoning && !reducedMotion && (
+        <div className="pointer-events-none fixed inset-0 z-[69] grid place-items-center" aria-hidden>
+          <div className="leo-summon-ring" />
+          <div className="leo-summon-ring leo-summon-ring--2" />
+          <div className="leo-summon-ring leo-summon-ring--3" />
+          <div className="leo-summon-seal" />
+          <div className="leo-summon-flash" />
+          <style>{`
+            @keyframes leo-summon-ring { 0% { transform: scale(0.15); opacity: 0.9; } 100% { transform: scale(2.4); opacity: 0; } }
+            @keyframes leo-summon-seal { 0% { transform: rotate(0) scale(0.4); opacity: 0; } 30% { opacity: 1; } 100% { transform: rotate(360deg) scale(1.6); opacity: 0; } }
+            @keyframes leo-summon-flash { 0% { opacity: 0; } 25% { opacity: 0.55; } 100% { opacity: 0; } }
+            .leo-summon-ring {
+              position: absolute; width: 260px; height: 260px; border-radius: 999px;
+              border: 2px solid color-mix(in oklab, var(--primary, #16a34a) 85%, white);
+              box-shadow: 0 0 60px color-mix(in oklab, var(--primary, #16a34a) 70%, transparent);
+              animation: leo-summon-ring 1.2s ease-out forwards;
+            }
+            .leo-summon-ring--2 { animation-delay: 0.15s; border-color: color-mix(in oklab, var(--primary, #16a34a) 60%, white); }
+            .leo-summon-ring--3 { animation-delay: 0.3s; border-color: color-mix(in oklab, var(--primary, #16a34a) 40%, white); }
+            .leo-summon-seal {
+              position: absolute; width: 220px; height: 220px; border-radius: 999px;
+              background:
+                conic-gradient(from 0deg, transparent 0 40deg, color-mix(in oklab, var(--primary, #16a34a) 70%, transparent) 40deg 50deg,
+                transparent 50deg 130deg, color-mix(in oklab, var(--primary, #16a34a) 70%, transparent) 130deg 140deg,
+                transparent 140deg 220deg, color-mix(in oklab, var(--primary, #16a34a) 70%, transparent) 220deg 230deg,
+                transparent 230deg 310deg, color-mix(in oklab, var(--primary, #16a34a) 70%, transparent) 310deg 320deg, transparent 320deg 360deg);
+              -webkit-mask: radial-gradient(circle, transparent 62%, black 63%, black 100%);
+                      mask: radial-gradient(circle, transparent 62%, black 63%, black 100%);
+              animation: leo-summon-seal 1.3s ease-out forwards;
+              filter: drop-shadow(0 0 24px color-mix(in oklab, var(--primary, #16a34a) 60%, transparent));
+            }
+            .leo-summon-flash {
+              position: absolute; inset: 0;
+              background: radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--primary, #16a34a) 45%, transparent), transparent 45%);
+              animation: leo-summon-flash 1s ease-out forwards;
+            }
+          `}</style>
+        </div>
+      )}
+
       {open && (
         <div className="fixed inset-x-0 bottom-0 z-[71] flex justify-end p-2 sm:inset-auto sm:bottom-24 sm:right-5">
           <div
