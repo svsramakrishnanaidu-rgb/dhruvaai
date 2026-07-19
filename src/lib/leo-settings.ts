@@ -28,7 +28,7 @@ export type LeoSettings = {
 const KEY = "leo.settings.v1";
 const DEFAULT: LeoSettings = {
   persona: "friendly-female",
-  rate: 1,
+  rate: 0.82,
   wakeEnabled: true,
   bargeSensitivity: 3,
   autoSpeak: true,
