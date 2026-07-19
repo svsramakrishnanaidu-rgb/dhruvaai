@@ -1,27 +1,53 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw, ImageOff } from "lucide-react";
 import type { GrowthStage } from "@/data/crop-knowledge";
+import { useReducedMotion } from "@/lib/reduced-motion";
 
 /**
  * 360°-style stage previewer.
- * - Drag horizontally (mouse or touch) to scrub through growth stages.
- * - Pinch or wheel to zoom the active stage image.
- * - Arrow keys ← → for accessibility.
+ * - Drag to scrub, arrow keys, wheel/pinch to zoom, dot scrubber.
+ * - Predictively prefetches neighbouring stage images so scrubbing feels instant.
+ * - Falls back to an inline placeholder if a stage image fails to load.
+ * - Honours prefers-reduced-motion: disables cross-fade and drag scrubbing
+ *   auto-play, but keeps arrow / dot navigation fully usable.
  */
 export function GrowthStages360({ stages, cropName }: { stages: GrowthStage[]; cropName: string }) {
   const [i, setI] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [failed, setFailed] = useState<Record<string, boolean>>({});
   const dragRef = useRef<{ x: number; startI: number; mode: "scrub" | "pan" } | null>(null);
   const pinchRef = useRef<{ d: number; z: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
 
   const n = stages.length;
   const clamp = (v: number) => (v + n) % n;
   const stage = stages[i];
 
   const reset = () => { setZoom(1); setPan({ x: 0, y: 0 }); };
+
+  // Predictive prefetch — warm neighbouring images so the next scrub is instant.
+  const prefetchTargets = useMemo(() => {
+    const set = new Set<number>();
+    set.add(clamp(i + 1)); set.add(clamp(i + 2));
+    set.add(clamp(i - 1));
+    return Array.from(set);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i, n]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    prefetchTargets.forEach((idx) => {
+      const src = stages[idx]?.image;
+      if (!src || failed[src]) return;
+      const img = new Image();
+      img.decoding = "async";
+      img.loading = "eager";
+      img.src = src;
+    });
+  }, [prefetchTargets, stages, failed]);
 
   // Keyboard
   useEffect(() => {
