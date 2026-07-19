@@ -16,7 +16,7 @@ import landPrepImg from "@/assets/sections/land-prep.jpg";
 import sowingImg from "@/assets/sections/sowing.jpg";
 import irrigationImg from "@/assets/sections/irrigation.jpg";
 import harvestImg from "@/assets/sections/harvest.jpg";
-import storageImg from "@/assets/sections/storage.jpg";
+
 import weedsImg from "@/assets/sections/weeds.jpg";
 
 export const Route = createFileRoute("/crops/$slug")({
