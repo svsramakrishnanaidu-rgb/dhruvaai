@@ -235,7 +235,25 @@
     min-height: 100dvh;
   }
   h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
-  ::selection { background: color-mix(in oklab, var(--primary) 40%, transparent); }
+  ::selection { background: color-mix(in oklab, var(--primary) 55%, transparent); color: var(--color-foreground); }
+
+  /* Native form controls — ensure text is readable on any theme. Browser
+     defaults render <option> with system white background + white text on our
+     dark palette, so force a solid dark surface + light foreground. */
+  select, input, textarea {
+    color: var(--color-foreground);
+    color-scheme: dark;
+  }
+  select option,
+  select optgroup {
+    background-color: #0b0f14;
+    color: #f5f7fb;
+  }
+  select option:checked,
+  select option:hover {
+    background-color: color-mix(in oklab, var(--primary) 35%, #0b0f14);
+    color: #ffffff;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

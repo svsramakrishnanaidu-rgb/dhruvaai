@@ -152,7 +152,7 @@ function CropLibrary() {
       </div>
 
       {showFilters && (
-        <div className="mt-4 grid gap-3 rounded-3xl border border-border/60 bg-card/40 p-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid gap-3 rounded-3xl border border-white/10 bg-black/70 p-4 shadow-2xl backdrop-blur-xl md:grid-cols-2 lg:grid-cols-3">
           <Select label="District" value={district} onChange={setDistrict} options={allDistricts} />
           <Select label="Category" value={category} onChange={(v) => setCategory(v as any)} options={["All", ...CROP_CATEGORIES]} />
           <Select label="Season" value={season} onChange={setSeason} options={SEASONS as unknown as string[]} />
@@ -178,13 +178,20 @@ function CropLibrary() {
 }
 
 function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
+  const active = value !== "All";
   return (
-    <label className="flex items-center gap-2 rounded-full border border-border/60 bg-background/40 px-3 py-2 text-xs">
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{label}</span>
+    <label
+      className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs transition ${
+        active
+          ? "border-primary/60 bg-primary/15 shadow-[0_0_0_1px_color-mix(in_oklab,var(--primary)_45%,transparent)]"
+          : "border-white/10 bg-black/60 hover:border-white/25"
+      }`}
+    >
+      <span className="text-[10px] font-semibold uppercase tracking-widest text-white/60">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="flex-1 bg-transparent text-sm outline-none"
+        className={`flex-1 bg-transparent text-sm outline-none ${active ? "font-semibold text-primary" : "text-white"}`}
       >
         {options.map((o) => (
           <option key={o} value={o}>{o}</option>
