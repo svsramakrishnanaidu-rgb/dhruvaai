@@ -517,7 +517,7 @@ export function LeoAssistant() {
                 <button aria-label={muted ? "Unmute" : "Mute"} onClick={() => { setMuted((m) => !m); stopSpeaking(); }} className="rounded-full p-2 hover:bg-secondary">
                   {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
                 </button>
-                <button aria-label="Close" onClick={() => { setOpen(false); stopListening(); stopSpeaking(); }} className="rounded-full p-2 hover:bg-secondary">
+                <button aria-label="Close" onClick={() => { setOpen(false); stopListening(); stopSpeaking(); setCaptionUser(""); setCaptionLeo(""); setLastReply(""); setIdResult(null); }} className="rounded-full p-2 hover:bg-secondary">
                   <X className="h-4 w-4" />
                 </button>
               </div>
