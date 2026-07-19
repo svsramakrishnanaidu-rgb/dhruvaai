@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight, MapPin, Sprout, Sun, TrendingUp, Leaf, Droplets,
-  BarChart3, Search, Compass, LineChart, ShieldCheck,
+  BarChart3, Compass, LineChart, ShieldCheck,
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
