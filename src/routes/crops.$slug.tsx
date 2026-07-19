@@ -186,17 +186,31 @@ function CropDetail() {
           </p>
         </Section>
 
-        {/* Diseases (crop-isolated) */}
+        {/* Diseases (crop-isolated) — image-first cards */}
         <Section id="diseases" eyebrow="Health" title="Disease Identification" icon={<Bug />}>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {c.diseases.map((d, i) => (
               <Reveal key={d.name} delay={i * 60}>
-                <article className="card-elegant hover-lift p-6">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-display text-lg font-bold"><T>{d.name}</T></h3>
-                    <SeverityMeter n={d.severity} />
+                <article className="card-elegant hover-lift overflow-hidden p-0">
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <img
+                      src={diseaseImage(d.name)}
+                      alt={`${d.name} symptoms on ${c.name}`}
+                      loading="lazy"
+                      width={1024}
+                      height={640}
+                      className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                    <span className="absolute left-3 top-3 rounded-full bg-background/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider backdrop-blur">
+                      {c.emoji} {c.name}
+                    </span>
+                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-4">
+                      <h3 className="font-display text-lg font-bold drop-shadow"><T>{d.name}</T></h3>
+                      <SeverityMeter n={d.severity} />
+                    </div>
                   </div>
-                  <dl className="mt-4 space-y-3 text-sm">
+                  <dl className="space-y-3 p-5 text-sm">
                     <Row k="Symptoms" v={d.symptoms} />
                     <Row k="Cause" v={d.cause} />
                     <Row k="Organic" v={d.organic} />
@@ -208,12 +222,6 @@ function CropDetail() {
           </div>
         </Section>
 
-        {/* 360 growth stages viewer */}
-        {extras.stages.length > 0 && (
-          <Section id="stages" eyebrow="Visual guide" title="Growth Stages · 360° Viewer" icon={<Camera />}>
-            <GrowthStages360 stages={extras.stages} cropName={c.name} />
-          </Section>
-        )}
 
         {/* Detailed disease library with imagery */}
         {extras.diseases.length > 0 && (
