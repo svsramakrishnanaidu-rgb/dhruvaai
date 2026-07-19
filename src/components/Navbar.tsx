@@ -22,6 +22,7 @@ const NAV = [
 ] as const;
 
 export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
+  const t = useT();
   const { theme, toggle } = useTheme();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -84,7 +85,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                       }}
                     />
                   )}
-                  {item.label}
+                  {t(item.key)}
                 </Link>
               );
             })}
@@ -129,7 +130,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                   to={item.to}
                   className="rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
                 >
-                  {item.label}
+                  {t(item.key)}
                 </Link>
               ))}
             </div>
