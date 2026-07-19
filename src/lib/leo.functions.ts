@@ -73,7 +73,11 @@ Rules for intent:
 async function callGateway(body: unknown, key: string) {
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+    headers: {
+      "Content-Type": "application/json",
+      "Lovable-API-Key": key,
+      "X-Lovable-AIG-SDK": "krishisense-leo",
+    },
     body: JSON.stringify(body),
   });
   if (!res.ok) {
@@ -127,10 +131,11 @@ export const leoChat = createServerFn({ method: "POST" })
     ];
 
     const json: any = await callGateway({
-      model: "google/gemini-2.5-pro",
+      model: "google/gemini-3.1-pro-preview",
       messages,
       response_format: { type: "json_object" },
-      temperature: 0.35,
+      temperature: 0.25,
+      max_tokens: 520,
     }, key);
 
     if (json?.__err) return { speak: json.__err, intent: null };
@@ -142,6 +147,49 @@ export const leoChat = createServerFn({ method: "POST" })
     } catch {
       return { speak: content.slice(0, 400), intent: null };
     }
+  });
+
+export const leoTranscribe = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => {
+    const d = data as { audioDataUrl?: string; lang?: string };
+    return {
+      audioDataUrl: String(d?.audioDataUrl ?? ""),
+      lang: d?.lang === "te" || d?.lang === "hi" || d?.lang === "en" ? d.lang : "en",
+    };
+  })
+  .handler(async ({ data }) => {
+    const key = process.env.LOVABLE_API_KEY;
+    if (!key) throw new Error("LOVABLE_API_KEY missing");
+    if (data.audioDataUrl.length > 22_000_000) throw new Error("Audio is too large");
+
+    const match = data.audioDataUrl.match(/^data:(audio\/[\w.+-]+);base64,(.+)$/);
+    if (!match) throw new Error("Invalid audio data");
+
+    const [, mime, base64] = match;
+    const binary = atob(base64);
+    if (binary.length < 2048) return { text: "" };
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+
+    const ext = mime.includes("mp4") ? "mp4" : mime.includes("mpeg") ? "mp3" : mime.includes("wav") ? "wav" : mime.includes("ogg") ? "ogg" : "webm";
+    const form = new FormData();
+    form.append("model", "openai/gpt-4o-transcribe");
+    form.append("file", new Blob([bytes], { type: mime }), `leo-recording.${ext}`);
+
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/transcriptions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}` },
+      body: form,
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      if (res.status === 429) return { text: "", error: "Speech service is busy. Please try again." };
+      if (res.status === 402) return { text: "", error: "AI credits exhausted. Please add credits." };
+      throw new Error(`LEO transcription ${res.status}: ${text}`);
+    }
+
+    const json: any = await res.json();
+    return { text: String(json?.text ?? "").trim() };
   });
 
 // Vision endpoint for disease/weed/pest identification from a photo.
