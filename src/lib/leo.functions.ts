@@ -167,7 +167,7 @@ export const leoTranscribe = createServerFn({ method: "POST" })
 
     const [, mime, base64] = match;
     const binary = atob(base64);
-    if (binary.length < 2048) return { text: "" };
+    if (binary.length < 2048) return { text: "", error: "" };
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
 
@@ -189,7 +189,7 @@ export const leoTranscribe = createServerFn({ method: "POST" })
     }
 
     const json: any = await res.json();
-    return { text: String(json?.text ?? "").trim() };
+    return { text: String(json?.text ?? "").trim(), error: "" };
   });
 
 // Vision endpoint for disease/weed/pest identification from a photo.

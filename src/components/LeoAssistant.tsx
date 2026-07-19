@@ -81,7 +81,6 @@ export function LeoAssistant() {
   settingsRef.current = settings;
   const speakingRef = useRef(false);
   const listeningRef = useRef(false);
-  const conversationRef = useRef(true);
   const thinkingRef = useRef(false);
   const openRef = useRef(false);
   const fileRef = useRef<HTMLInputElement>(null);
