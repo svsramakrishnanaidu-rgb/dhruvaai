@@ -97,7 +97,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
             </div>
             <button
               onClick={onSearchOpen}
-              aria-label="Open search"
+              aria-label={t("aria.openSearch")}
               className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition-all hover:scale-110 hover:bg-secondary/60 hover:text-foreground"
             >
               <Search className="h-4 w-4" />
@@ -105,14 +105,14 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
             <LanguageSwitcher />
             <button
               onClick={toggle}
-              aria-label="Toggle theme"
+              aria-label={t("aria.toggleTheme")}
               className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition-all hover:scale-110 hover:bg-secondary/60 hover:text-foreground"
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
             <button
               onClick={() => setOpen((o) => !o)}
-              aria-label="Toggle menu"
+              aria-label={t("aria.toggleMenu")}
               className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground lg:hidden"
             >
               {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
