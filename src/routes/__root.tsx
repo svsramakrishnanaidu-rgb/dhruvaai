@@ -16,6 +16,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CinematicLoader } from "@/components/CinematicLoader";
 import { SearchDialog } from "@/components/SearchDialog";
+import { LeoAssistant } from "@/components/LeoAssistant";
 import { I18nProvider } from "@/lib/i18n";
 
 function NotFoundComponent() {
@@ -123,8 +124,13 @@ function RootComponent() {
         setSearchOpen(true);
       }
     };
+    const onLeoSearch = () => setSearchOpen(true);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("leo:openSearch", onLeoSearch);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("leo:openSearch", onLeoSearch);
+    };
   }, []);
 
   return (
@@ -141,6 +147,7 @@ function RootComponent() {
           <Footer />
         </div>
         <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
+        <LeoAssistant />
       </I18nProvider>
     </QueryClientProvider>
   );
