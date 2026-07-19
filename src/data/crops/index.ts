@@ -15,24 +15,24 @@ import jowar from "./jowar";
 import bajra from "./bajra";
 import ragi from "./ragi";
 import onion from "./onion";
+import { BULK_CROPS } from "./bulk-crops";
 
-// Strict isolation: each crop has its own module. This registry only maps
-// slug → crop; no cross-crop merging of arrays anywhere in the app.
-export const CROPS: Record<string, Crop> = {
-  rice, cotton, groundnut, maize,
-  chilli, turmeric, sugarcane, mango, tomato, banana,
-  "red-gram": redGram, "bengal-gram": bengalGram,
-  jowar, bajra, ragi, onion,
-};
-
-export const CROP_LIST: Crop[] = [
+// Strict isolation: each crop is its OWN object literal. This registry only
+// maps slug → crop; no cross-crop merging of arrays anywhere in the app.
+const CORE_LIST: Crop[] = [
   rice, cotton, groundnut, maize,
   chilli, turmeric, sugarcane, mango, tomato, banana,
   redGram, bengalGram, jowar, bajra, ragi, onion,
 ];
 
-// Legacy crops that don't yet carry a `category` field get one derived here so
-// filters remain consistent without editing every file.
+export const CROP_LIST: Crop[] = [...CORE_LIST, ...BULK_CROPS];
+
+export const CROPS: Record<string, Crop> = Object.fromEntries(
+  CROP_LIST.map((c) => [c.slug, c])
+);
+
+// Legacy crops without a `category` field get one derived here so filters
+// remain consistent without editing every legacy file.
 const LEGACY_CATEGORY: Record<string, CropCategory> = {
   rice: "Cereal",
   maize: "Cereal",
