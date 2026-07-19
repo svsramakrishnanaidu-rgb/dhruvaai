@@ -9,7 +9,7 @@ import { diseaseImage } from "@/lib/disease-image";
 import { T } from "@/lib/translate-cache";
 import {
   Droplets, Thermometer, CloudRain, Sprout, TrendingUp, Bug, Beaker, Wheat,
-  ArrowLeft, ExternalLink, ShieldAlert, Lightbulb, Recycle, Leaf, Camera,
+  ArrowLeft, ExternalLink, ShieldAlert, Lightbulb, Recycle, Leaf,
 } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
