@@ -337,7 +337,8 @@ export function LeoAssistant() {
               setSummoning(true);
               setTimeout(() => setSummoning(false), 1400);
               setOpen(true);
-              setTimeout(startListening, 900);
+              // Wait for summoning burst + any TTS tail before opening the mic.
+              setTimeout(() => { if (!speakingRef.current) startListening(); }, 1500);
               return;
             }
           }
