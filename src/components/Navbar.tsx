@@ -4,18 +4,21 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X, Search, Moon, Sun, Sprout } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { DistrictPicker } from "@/components/DistrictPicker";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useT } from "@/lib/i18n";
 
 const NAV = [
-  { to: "/", label: "Home" },
-  { to: "/analytics", label: "Analytics" },
-  { to: "/crops", label: "Crops" },
-  { to: "/rotation", label: "Rotation" },
-  { to: "/fertilizer", label: "Fertilizer" },
-  { to: "/weather", label: "Weather" },
-  { to: "/market", label: "Market" },
-  { to: "/diseases", label: "Diseases" },
-  { to: "/schemes", label: "Schemes" },
-  { to: "/districts", label: "Districts" },
+  { to: "/", key: "nav.home" },
+  { to: "/analytics", key: "nav.analytics" },
+  { to: "/crops", key: "nav.crops" },
+  { to: "/paddy-future", key: "nav.paddyFuture" },
+  { to: "/rotation", key: "nav.rotation" },
+  { to: "/fertilizer", key: "nav.fertilizer" },
+  { to: "/weather", key: "nav.weather" },
+  { to: "/market", key: "nav.market" },
+  { to: "/diseases", key: "nav.diseases" },
+  { to: "/schemes", key: "nav.schemes" },
+  { to: "/districts", key: "nav.districts" },
 ] as const;
 
 export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
