@@ -4,6 +4,7 @@ import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { Mic, MicOff, X, Volume2, VolumeX, Camera, Loader2, Settings2, Play, Square } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { leoChat, leoIdentify } from "@/lib/leo.functions";
+import { buildLeoKnowledge } from "@/lib/leo-knowledge";
 import { useI18n, type Lang } from "@/lib/i18n";
 import { locationStore, useLocation } from "@/lib/location-store";
 import { leoMemory, useLeoMemory } from "@/lib/leo-memory";
@@ -177,8 +178,15 @@ export function LeoAssistant() {
           context: {
             district: location.district, state: location.state,
             recentCrops: memory.recentCrops, favorites: memory.favorites,
+            currentPath: typeof window !== "undefined" ? window.location.pathname : "/",
           },
           cropSlugs: CROP_SLUGS,
+          knowledge: buildLeoKnowledge({
+            district: location.district,
+            state: location.state,
+            recentCrops: memory.recentCrops,
+            favorites: memory.favorites,
+          }),
         },
       });
       setThinking(false);
