@@ -130,11 +130,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
+        <a href="#main" className="skip-link">Skip to content</a>
         <CinematicLoader />
         <AnimatedBackground />
         <div className="relative flex min-h-dvh flex-col">
           <Navbar onSearchOpen={() => setSearchOpen(true)} />
-          <main className="flex-1">
+          <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
             <Outlet />
           </main>
           <Footer />

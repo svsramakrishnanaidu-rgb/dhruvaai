@@ -237,20 +237,18 @@
   h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
   ::selection { background: color-mix(in oklab, var(--primary) 55%, transparent); color: var(--color-foreground); }
 
-  /* Native form controls — ensure text is readable on any theme. Browser
-     defaults render <option> with system white background + white text on our
-     dark palette, so force a solid dark surface + light foreground. */
-  select, input, textarea {
-    color: var(--color-foreground);
-    color-scheme: dark;
+  /* Accessible focus ring on every interactive element. */
+  :where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 10px;
   }
-  select option,
-  select optgroup {
-    background-color: #0b0f14;
-    color: #f5f7fb;
-  }
-  select option:checked,
-  select option:hover {
+
+  /* Native form controls — readable on any theme. */
+  select, input, textarea { color: var(--color-foreground); color-scheme: dark; }
+  .light select, .light input, .light textarea { color-scheme: light; }
+  select option, select optgroup { background-color: #0b0f14; color: #f5f7fb; }
+  select option:checked, select option:hover {
     background-color: color-mix(in oklab, var(--primary) 35%, #0b0f14);
     color: #ffffff;
   }
@@ -258,7 +256,40 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
     }
   }
+}
+
+/* Skip-to-content link — visible only when focused via keyboard. */
+@utility skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.625rem 1rem;
+  border-radius: 9999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-elegant);
+  transform: translateY(-140%);
+  transition: transform 0.25s var(--ease-out-expo);
+  &:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--foreground);
+    outline-offset: 3px;
+  }
+}
+
+/* Ensure comfortable tap targets on touch devices. */
+@utility tap {
+  min-height: 40px;
+  min-width: 40px;
+}
+@media (pointer: coarse) {
+  .tap { min-height: 44px; min-width: 44px; }
 }
