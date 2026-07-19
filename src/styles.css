@@ -305,3 +305,25 @@
   border-radius: 1.25rem;
   animation: leo-highlight-pulse 3s ease-out;
 }
+@media (prefers-reduced-motion: reduce) {
+  /* Replace the pulse with a subtle, non-animated highlight so users still
+     see where LEO jumped to, without motion. */
+  .leo-highlight-pulse {
+    animation: none;
+    outline: 2px solid color-mix(in oklab, var(--primary) 55%, transparent);
+    outline-offset: 6px;
+  }
+}
+
+/* Voice waveform bars for LEO */
+@keyframes leo-wave {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+.leo-wave-bar {
+  transform-origin: center;
+  animation: leo-wave 1.1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .leo-wave-bar { animation: none; transform: scaleY(0.7); }
+}
