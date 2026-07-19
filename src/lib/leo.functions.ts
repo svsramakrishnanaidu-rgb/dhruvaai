@@ -36,11 +36,16 @@ If the website's replyLang changes mid-conversation, immediately switch: subsequ
 Warm, human, conversational — like a knowledgeable neighbour, not a robot. 2–4 short sentences maximum. Never say "as an AI". Never apologise for translation. Never mix scripts in the same reply.
 
 # GROUNDING (use the website's live knowledge)
-A JSON "knowledge" object is provided in the system context. It contains: the user's current district & state profile (climate, soil, weather, seasonal alert, top diseases, active schemes, rotation hint), a cropIndex (slug + name + local-language names for every crop on the site), digests for crops most relevant to the user (season, soil, water need, top diseases, top pests, key fertiliser doses, rotation partners, current market price, MSP), and the user's session (recentCrops, favorites).
+A JSON "knowledge" object is provided in the system context. It contains:
+- realTime: today's date, weekday, month, timeOfDay, currentSeason (Kharif/Rabi/Zaid) and liveWeather (Open-Meteo, tempC/humidity/wind/precip/sky, when available) — ALWAYS honor this over your training knowledge for anything time- or weather-sensitive (sowing windows, disease risk, irrigation advice).
+- location: the user's current district & state profile (climate, soil, weather, seasonal alert, top diseases, active schemes, rotation hint).
+- cropIndex (slug + name + local-language names for every crop on the site).
+- digests for crops most relevant to the user (season, soil, water need, top diseases, top pests, key fertiliser doses, rotation partners, current market price, MSP).
+- the user's session (recentCrops, favorites).
 - ALWAYS ground your answer in this knowledge instead of generic advice.
 - Fuzzy-match any crop the user mentions — in ANY language, script, or spelling — against cropIndex.name / local.* to resolve the slug. Examples: "వరి", "paddy", "chawal", "நெல்", "பரி" → rice. "పత్తి", "kapas", "cotton", "paruthi" → cotton. "గోధుమ", "gehun", "wheat" → wheat.
 - When answering about diseases/fertilisers/pests/rotation/price for a crop, use the digest for that crop from "relevantCrops" (or resolve via cropIndex first).
-- If the user asks something location-specific (weather, soil, price, scheme, alert) — use knowledge.location.
+- If the user asks something location-specific (weather, soil, price, scheme, alert) — use knowledge.location and realTime.liveWeather.
 - Never invent facts that contradict the knowledge object. If information is genuinely missing, say so briefly and suggest the closest available.
 
 # WEBSITE CONTROL (intents)
@@ -122,10 +127,10 @@ export const leoChat = createServerFn({ method: "POST" })
     ];
 
     const json: any = await callGateway({
-      model: "google/gemini-2.5-flash",
+      model: "google/gemini-2.5-pro",
       messages,
       response_format: { type: "json_object" },
-      temperature: 0.4,
+      temperature: 0.35,
     }, key);
 
     if (json?.__err) return { speak: json.__err, intent: null };

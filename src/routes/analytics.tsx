@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
+import { HeroBanner } from "@/components/HeroBanner";
+import heroImg from "@/assets/heroes/analytics.jpg";
 import { locationStore, useLocation } from "@/lib/location-store";
 import {
   DISTRICTS, MACRO, KPIS, EXECUTIVE, CHALLENGES, REFERENCES,
@@ -133,26 +135,15 @@ function Analytics() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      {/* HERO */}
-      <Reveal>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            Ministry of Agriculture · 2025-26
-          </span>
-          <span className="rounded-full border border-border/60 bg-secondary/40 px-2 py-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
-            3rd Advance Estimates
-          </span>
-        </div>
-        <h1 className="mt-3 font-display text-5xl font-black leading-[0.95] tracking-tight md:text-7xl">
-          India Crop Production <span className="text-gradient">Atlas</span>
-        </h1>
-        <p className="mt-4 max-w-3xl text-lg text-muted-foreground">
-          A spatial & quantitative matrix of area, yield and annual output metrics across
-          India's foremost agricultural clusters — Rice, Wheat, Pulses, Oilseeds and
-          Commercial crops. Filter by state, season or crop and export what you see.
-        </p>
-      </Reveal>
+    <div>
+      <HeroBanner
+        image={heroImg}
+        eyebrow="Ministry of Agriculture · 2025-26 · 3rd Advance Estimates"
+        title="India Crop Production Atlas"
+        description="A spatial & quantitative matrix of area, yield and annual output metrics across India's foremost agricultural clusters — Rice, Wheat, Pulses, Oilseeds and Commercial crops."
+      />
+      <div className="mx-auto max-w-7xl px-6 py-16">
+
 
       {/* KPI DASHBOARD */}
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -569,6 +560,7 @@ function Analytics() {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

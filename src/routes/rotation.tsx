@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { CROP_LIST, CROPS } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
+import { HeroBanner } from "@/components/HeroBanner";
 import { Recycle } from "lucide-react";
+import heroImg from "@/assets/heroes/rotation.jpg";
 
 export const Route = createFileRoute("/rotation")({
   head: () => ({
@@ -21,14 +23,15 @@ function Rotation() {
   const N = wheel.length;
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Sustainability</span>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-6xl">Crop Rotation Wheel</h1>
-        <p className="mt-3 max-w-xl text-muted-foreground">
-          Break pest cycles, restore soil nitrogen, and diversify income. Pick a crop to see the recommended sequence.
-        </p>
-      </Reveal>
+    <div>
+      <HeroBanner
+        image={heroImg}
+        eyebrow="Sustainability"
+        title="Crop Rotation Wheel"
+        description="Break pest cycles, restore soil nitrogen, and diversify income. Pick a crop to see the recommended sequence."
+      />
+      <div className="mx-auto max-w-7xl px-6 py-16">
+
 
       <div className="mt-8 flex flex-wrap gap-2">
         {CROP_LIST.map((c) => (
@@ -109,6 +112,7 @@ function Rotation() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

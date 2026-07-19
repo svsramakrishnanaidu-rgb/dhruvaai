@@ -19,6 +19,8 @@ import { SearchDialog } from "@/components/SearchDialog";
 import { LeoAssistant } from "@/components/LeoAssistant";
 import { I18nProvider } from "@/lib/i18n";
 import { TranslationProvider } from "@/lib/translate-cache";
+import { useLocation as useUserLocation } from "@/lib/location-store";
+import { fetchLiveWeather } from "@/lib/live-weather";
 
 function NotFoundComponent() {
   return (
@@ -117,6 +119,13 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [searchOpen, setSearchOpen] = useState(false);
+  const userLoc = useUserLocation();
+
+  // Warm the live-weather cache whenever the user's district changes so
+  // LEO and the UI can ground answers in real conditions.
+  useEffect(() => {
+    if (userLoc.district) fetchLiveWeather(userLoc.district).catch(() => {});
+  }, [userLoc.district]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

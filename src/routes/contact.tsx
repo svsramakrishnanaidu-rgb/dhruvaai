@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Reveal } from "@/components/Reveal";
+import { HeroBanner } from "@/components/HeroBanner";
 import { Send } from "lucide-react";
+import heroImg from "@/assets/heroes/contact.jpg";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -16,12 +18,15 @@ export const Route = createFileRoute("/contact")({
 function Contact() {
   const [sent, setSent] = useState(false);
   return (
-    <div className="mx-auto max-w-3xl px-6 py-24">
-      <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Say hello</span>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-7xl">Contact</h1>
-        <p className="mt-3 text-muted-foreground">Request a district, propose a crop, or partner on research.</p>
-      </Reveal>
+    <div>
+      <HeroBanner
+        image={heroImg}
+        eyebrow="Say hello"
+        title="Contact"
+        description="Request a district, propose a crop, or partner on research."
+      />
+      <div className="mx-auto max-w-3xl px-6 py-16">
+
 
       <form
         onSubmit={(e) => { e.preventDefault(); setSent(true); }}
@@ -53,6 +58,7 @@ function Contact() {
         }
         .input:focus { border-color: var(--primary); }
       `}</style>
+    </div>
     </div>
   );
 }

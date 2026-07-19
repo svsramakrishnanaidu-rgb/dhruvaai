@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Reveal } from "@/components/Reveal";
+import { HeroBanner } from "@/components/HeroBanner";
 import { Award, IndianRupee, Sprout, Tractor } from "lucide-react";
 import { useLocation } from "@/lib/location-store";
 import { profileFor } from "@/lib/district-profiles";
+import heroImg from "@/assets/heroes/schemes.jpg";
 
 export const Route = createFileRoute("/schemes")({
   head: () => ({
@@ -42,12 +44,15 @@ function Schemes() {
   const others = SCHEMES.filter((s) => !recommendedKeys.has(s.key));
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Support · {p.state}</span>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-6xl">Government Schemes</h1>
-        <p className="mt-3 max-w-xl text-muted-foreground">Curated central + state schemes — schemes are auto-prioritized for your selected district.</p>
-      </Reveal>
+    <div>
+      <HeroBanner
+        image={heroImg}
+        eyebrow={`Support · ${p.state}`}
+        title="Government Schemes"
+        description="Curated central + state schemes — schemes are auto-prioritized for your selected district."
+      />
+      <div className="mx-auto max-w-7xl px-6 py-16">
+
 
       {recommended.length > 0 && (
         <>
@@ -66,6 +71,7 @@ function Schemes() {
       <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {others.map((s, i) => <SchemeCard key={s.key} s={s} i={i} />)}
       </div>
+    </div>
     </div>
   );
 }

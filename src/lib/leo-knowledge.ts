@@ -8,6 +8,7 @@
  */
 import { CROP_LIST, type Crop } from "@/data/crops";
 import { profileFor } from "@/lib/district-profiles";
+import { cachedLiveWeather, nowContext, type LiveWeather } from "@/lib/live-weather";
 
 function cropDigest(c: Crop) {
   return {
@@ -52,7 +53,28 @@ export function buildLeoKnowledge(opts: {
   const relevant = CROP_LIST.filter((c) => relevantSet.has(c.slug)).slice(0, 12);
   const others = CROP_LIST.filter((c) => !relevantSet.has(c.slug)).slice(0, 40);
 
+  const live: LiveWeather | null = opts.district ? cachedLiveWeather(opts.district) : null;
+  const now = nowContext();
+
   return {
+    realTime: {
+      today: now.date,
+      weekday: now.weekday,
+      month: now.monthName,
+      timeOfDay: now.timeOfDay,
+      currentSeason: now.season,
+      liveWeather: live
+        ? {
+            source: "Open-Meteo (live)",
+            tempC: live.tempC,
+            humidity: live.humidity,
+            windKph: live.windKph,
+            precipMm: live.precipMm,
+            sky: live.sky,
+            fetchedAt: new Date(live.fetchedAt).toISOString(),
+          }
+        : null,
+    },
     location: profile
       ? {
           district: profile.district,
