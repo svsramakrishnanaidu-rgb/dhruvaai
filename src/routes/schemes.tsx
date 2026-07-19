@@ -72,6 +72,7 @@ function Schemes() {
         {others.map((s, i) => <SchemeCard key={s.key} s={s} i={i} />)}
       </div>
     </div>
+    </div>
   );
 }
 
