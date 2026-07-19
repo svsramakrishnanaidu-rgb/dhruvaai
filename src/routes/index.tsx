@@ -46,9 +46,9 @@ function Home() {
           </Reveal>
 
           <Reveal delay={80}>
-            <h1 className="mt-6 max-w-5xl font-display text-5xl font-black leading-[0.95] tracking-tight md:text-7xl lg:text-8xl">
-              Smart <span className="text-gradient">Agricultural</span><br />
-              Advisory Platform
+            <h1 className="mt-6 max-w-5xl font-display text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-7xl lg:text-8xl">
+              Smart <span className="text-gradient">Agricultural</span>{" "}
+              <span className="whitespace-nowrap">Advisory Platform</span>
             </h1>
           </Reveal>
 
