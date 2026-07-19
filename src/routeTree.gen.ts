@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as RotationRouteImport } from './routes/rotation'
+import { Route as PaddyFutureRouteImport } from './routes/paddy-future'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as FertilizerRouteImport } from './routes/fertilizer'
 import { Route as DiseasesRouteImport } from './routes/diseases'
@@ -37,6 +38,11 @@ const SchemesRoute = SchemesRouteImport.update({
 const RotationRoute = RotationRouteImport.update({
   id: '/rotation',
   path: '/rotation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaddyFutureRoute = PaddyFutureRouteImport.update({
+  id: '/paddy-future',
+  path: '/paddy-future',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketRoute = MarketRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/diseases': typeof DiseasesRoute
   '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
+  '/paddy-future': typeof PaddyFutureRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
   '/weather': typeof WeatherRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByTo {
   '/diseases': typeof DiseasesRoute
   '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
+  '/paddy-future': typeof PaddyFutureRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
   '/weather': typeof WeatherRoute
@@ -136,6 +144,7 @@ export interface FileRoutesById {
   '/diseases': typeof DiseasesRoute
   '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
+  '/paddy-future': typeof PaddyFutureRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
   '/weather': typeof WeatherRoute
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
     | '/diseases'
     | '/fertilizer'
     | '/market'
+    | '/paddy-future'
     | '/rotation'
     | '/schemes'
     | '/weather'
@@ -170,6 +180,7 @@ export interface FileRouteTypes {
     | '/diseases'
     | '/fertilizer'
     | '/market'
+    | '/paddy-future'
     | '/rotation'
     | '/schemes'
     | '/weather'
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/diseases'
     | '/fertilizer'
     | '/market'
+    | '/paddy-future'
     | '/rotation'
     | '/schemes'
     | '/weather'
@@ -203,6 +215,7 @@ export interface RootRouteChildren {
   DiseasesRoute: typeof DiseasesRoute
   FertilizerRoute: typeof FertilizerRoute
   MarketRoute: typeof MarketRoute
+  PaddyFutureRoute: typeof PaddyFutureRoute
   RotationRoute: typeof RotationRoute
   SchemesRoute: typeof SchemesRoute
   WeatherRoute: typeof WeatherRoute
@@ -233,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/rotation'
       fullPath: '/rotation'
       preLoaderRoute: typeof RotationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/paddy-future': {
+      id: '/paddy-future'
+      path: '/paddy-future'
+      fullPath: '/paddy-future'
+      preLoaderRoute: typeof PaddyFutureRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/market': {
@@ -323,6 +343,7 @@ const rootRouteChildren: RootRouteChildren = {
   DiseasesRoute: DiseasesRoute,
   FertilizerRoute: FertilizerRoute,
   MarketRoute: MarketRoute,
+  PaddyFutureRoute: PaddyFutureRoute,
   RotationRoute: RotationRoute,
   SchemesRoute: SchemesRoute,
   WeatherRoute: WeatherRoute,

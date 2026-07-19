@@ -3,7 +3,7 @@ import { TrendingUp, Cloud, Cpu, Ship, Landmark, Sprout, ArrowRight } from "luci
 import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
 import { useT } from "@/lib/i18n";
-import { getCrop } from "@/data/crops";
+import { CROP_LIST } from "@/data/crops";
 
 export const Route = createFileRoute("/paddy-future")({
   head: () => ({
@@ -40,7 +40,7 @@ const YIELD_SERIES = [
 
 function PaddyFuture() {
   const t = useT();
-  const rice = getCrop("rice");
+  const rice = CROP_LIST.find((c) => c.slug === "rice");
   const maxMsp = Math.max(...MSP_SERIES.map((d) => d.v));
   const maxYield = Math.max(...YIELD_SERIES.map((d) => d.v));
 
