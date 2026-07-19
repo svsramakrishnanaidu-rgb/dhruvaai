@@ -294,3 +294,14 @@
 @media (pointer: coarse) {
   .tap { min-height: 44px; min-width: 44px; }
 }
+
+/* LEO voice highlight — pulses a section after voice navigation */
+@keyframes leo-highlight-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 55%, transparent); background: color-mix(in oklab, var(--primary) 8%, transparent); }
+  60%  { box-shadow: 0 0 0 14px color-mix(in oklab, var(--primary) 0%, transparent); background: color-mix(in oklab, var(--primary) 4%, transparent); }
+  100% { box-shadow: 0 0 0 0 transparent; background: transparent; }
+}
+.leo-highlight-pulse {
+  border-radius: 1.25rem;
+  animation: leo-highlight-pulse 3s ease-out;
+}
