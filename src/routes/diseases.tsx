@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CROP_LIST } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
+import { diseaseImage } from "@/lib/disease-image";
 
 export const Route = createFileRoute("/diseases")({
   head: () => ({
@@ -29,9 +30,9 @@ function Diseases() {
           <Reveal key={crop.slug + d.name} delay={i * 40}>
             <article className="card-elegant hover-lift overflow-hidden">
               <div className="relative aspect-[16/10] overflow-hidden">
-                <img src={crop.image} alt={crop.name} className="h-full w-full object-cover transition-transform duration-700 hover:scale-110" loading="lazy" />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent" />
-                <span className="absolute left-4 top-4 rounded-full bg-background/60 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur">
+                <img src={diseaseImage(d.name)} alt={`${d.name} on ${crop.name}`} className="h-full w-full object-cover transition-transform duration-700 hover:scale-110" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
+                <span className="absolute left-4 top-4 rounded-full bg-background/70 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur">
                   {crop.emoji} {crop.name}
                 </span>
                 <div className="absolute inset-x-0 bottom-0 p-4">
