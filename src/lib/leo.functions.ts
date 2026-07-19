@@ -122,10 +122,10 @@ export const leoChat = createServerFn({ method: "POST" })
     ];
 
     const json: any = await callGateway({
-      model: "google/gemini-2.5-flash",
+      model: "google/gemini-2.5-pro",
       messages,
       response_format: { type: "json_object" },
-      temperature: 0.4,
+      temperature: 0.35,
     }, key);
 
     if (json?.__err) return { speak: json.__err, intent: null };
