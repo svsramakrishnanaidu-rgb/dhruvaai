@@ -194,7 +194,7 @@ function FertilizerDetail() {
                 <div className="card-elegant p-6">
                   <h3 className="font-display text-lg font-bold">Benefits</h3>
                   <ul className="mt-3 space-y-2">
-                    {f.benefits.map((b) => (
+                    {f.benefits.map((b: string) => (
                       <li key={b} className="flex gap-2 text-sm">
                         <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
                         <span>{b}</span>
@@ -205,7 +205,7 @@ function FertilizerDetail() {
                 <div className="card-elegant p-6">
                   <h3 className="font-display text-lg font-bold">Cautions</h3>
                   <ul className="mt-3 space-y-2">
-                    {f.cautions.length > 0 ? f.cautions.map((c) => (
+                    {f.cautions.length > 0 ? f.cautions.map((c: string) => (
                       <li key={c} className="flex gap-2 text-sm">
                         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
                         <span>{c}</span>
@@ -251,7 +251,7 @@ function FertilizerDetail() {
                 <div className="card-elegant p-6">
                   <div className="flex items-center gap-2 text-primary"><Sprout className="h-4 w-4" /><h3 className="font-display text-lg font-bold">Suitable crops</h3></div>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {f.suitableCrops.map((c) => (
+                    {f.suitableCrops.map((c: string) => (
                       <span key={c} className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold">{c}</span>
                     ))}
                   </div>
@@ -259,7 +259,7 @@ function FertilizerDetail() {
                     <>
                       <div className="mt-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Not recommended for</div>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {f.unsuitableCrops.map((c) => (
+                        {f.unsuitableCrops!.map((c: string) => (
                           <span key={c} className="rounded-full border border-destructive/40 bg-destructive/10 px-3 py-1 text-xs font-semibold text-destructive">{c}</span>
                         ))}
                       </div>
@@ -269,7 +269,7 @@ function FertilizerDetail() {
                 <div className="card-elegant p-6">
                   <div className="flex items-center gap-2 text-primary"><Droplets className="h-4 w-4" /><h3 className="font-display text-lg font-bold">Suitable soils</h3></div>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {f.suitableSoils.map((s) => (
+                    {f.suitableSoils.map((s: string) => (
                       <span key={s} className="rounded-full border border-border/60 bg-secondary/40 px-3 py-1 text-xs font-semibold">{s}</span>
                     ))}
                   </div>
@@ -304,7 +304,7 @@ function FertilizerDetail() {
                 <div className="card-elegant p-6">
                   <div className="flex items-center gap-2 text-primary"><Factory className="h-4 w-4" /><h3 className="font-display text-lg font-bold">Manufacturers</h3></div>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {f.manufacturers.map((m) => (
+                    {f.manufacturers.map((m: string) => (
                       <span key={m} className="rounded-full border border-border/60 bg-background/40 px-3 py-1 text-xs font-semibold">{m}</span>
                     ))}
                   </div>
