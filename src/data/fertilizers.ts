@@ -51,6 +51,14 @@ export type Fertilizer = {
     granules: string;
     application: string[];
     label: string;
+    cropApplication: { crop: string; url: string }[];
+    beforeAfter: { before: string; after: string };
+    soil: string;
+    root: string;
+    deficiency: string;
+    storage: string;
+    safety: string;
+    gallery: string[];
   };
 };
 
