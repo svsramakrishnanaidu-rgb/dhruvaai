@@ -14,6 +14,7 @@ const NAV = [
   { to: "/paddy-future", key: "nav.paddyFuture" },
   { to: "/rotation", key: "nav.rotation" },
   { to: "/fertilizer", key: "nav.fertilizer" },
+  { to: "/fertilizers", key: "nav.fertilizers" },
   
   { to: "/weather", key: "nav.weather" },
   { to: "/market", key: "nav.market" },
