@@ -92,15 +92,34 @@ const mk = (
       packaging: [
         img(`${kw[0]} fertilizer bag`),
         img(`${kw[0]} fertilizer package`),
-        img(`${kw[0]} sack farm`),
+        img(`${kw[0]} sack farm warehouse`),
       ],
-      granules: img(`${kw[0]} ${data.form.toLowerCase()} closeup`),
+      granules: img(`${kw[0]} ${data.form.toLowerCase()} closeup macro`),
       application: [
         img(`${kw[0]} field application`),
-        img(`tractor fertilizer spread`),
-        img(`fertilizer broadcasting farm`),
+        img(`tractor fertilizer spreader`),
+        img(`fertilizer broadcasting farm worker`),
       ],
-      label: img(`fertilizer label bag`),
+      label: img(`fertilizer label bag ${kw[0]}`),
+      cropApplication: (data.suitableCrops.slice(0, 4)).map((c) => ({
+        crop: c,
+        url: img(`${c.toLowerCase()} crop field ${kw[0]}`),
+      })),
+      beforeAfter: {
+        before: img(`unhealthy ${data.suitableCrops[0]?.toLowerCase() ?? "crop"} yellow leaves`),
+        after: img(`healthy green ${data.suitableCrops[0]?.toLowerCase() ?? "crop"} field`),
+      },
+      soil: img(`${data.suitableSoils[0]?.toLowerCase() ?? "loam"} soil texture farm`),
+      root: img(`healthy plant root system soil`),
+      deficiency: img(`${kw[0]} nutrient deficiency plant leaf`),
+      storage: img(`fertilizer warehouse storage bags`),
+      safety: img(`farmer safety gloves mask fertilizer`),
+      gallery: [
+        img(`${kw[0]} farm india`),
+        img(`${kw[0]} agriculture close`),
+        img(`fertilizer application drone spray`),
+        img(`hand holding fertilizer granules`),
+      ],
     },
   };
 };
