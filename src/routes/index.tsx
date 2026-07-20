@@ -285,7 +285,7 @@ function FeatureGrid() {
             </Link>
           </Reveal>
         ))}
-      </section>
+      </div>
     </section>
   );
 }
