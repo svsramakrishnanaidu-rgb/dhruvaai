@@ -20,8 +20,10 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FertilizersIndexRouteImport } from './routes/fertilizers.index'
 import { Route as DistrictsIndexRouteImport } from './routes/districts.index'
 import { Route as CropsIndexRouteImport } from './routes/crops.index'
+import { Route as FertilizersSlugRouteImport } from './routes/fertilizers.$slug'
 import { Route as DistrictsSlugRouteImport } from './routes/districts.$slug'
 import { Route as CropsSlugRouteImport } from './routes/crops.$slug'
 
@@ -80,6 +82,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FertilizersIndexRoute = FertilizersIndexRouteImport.update({
+  id: '/fertilizers/',
+  path: '/fertilizers/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DistrictsIndexRoute = DistrictsIndexRouteImport.update({
   id: '/districts/',
   path: '/districts/',
@@ -88,6 +95,11 @@ const DistrictsIndexRoute = DistrictsIndexRouteImport.update({
 const CropsIndexRoute = CropsIndexRouteImport.update({
   id: '/crops/',
   path: '/crops/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FertilizersSlugRoute = FertilizersSlugRouteImport.update({
+  id: '/fertilizers/$slug',
+  path: '/fertilizers/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DistrictsSlugRoute = DistrictsSlugRouteImport.update({
@@ -115,8 +127,10 @@ export interface FileRoutesByFullPath {
   '/weather': typeof WeatherRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
+  '/fertilizers/$slug': typeof FertilizersSlugRoute
   '/crops/': typeof CropsIndexRoute
   '/districts/': typeof DistrictsIndexRoute
+  '/fertilizers/': typeof FertilizersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -132,8 +146,10 @@ export interface FileRoutesByTo {
   '/weather': typeof WeatherRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
+  '/fertilizers/$slug': typeof FertilizersSlugRoute
   '/crops': typeof CropsIndexRoute
   '/districts': typeof DistrictsIndexRoute
+  '/fertilizers': typeof FertilizersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -150,8 +166,10 @@ export interface FileRoutesById {
   '/weather': typeof WeatherRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
+  '/fertilizers/$slug': typeof FertilizersSlugRoute
   '/crops/': typeof CropsIndexRoute
   '/districts/': typeof DistrictsIndexRoute
+  '/fertilizers/': typeof FertilizersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -169,8 +187,10 @@ export interface FileRouteTypes {
     | '/weather'
     | '/crops/$slug'
     | '/districts/$slug'
+    | '/fertilizers/$slug'
     | '/crops/'
     | '/districts/'
+    | '/fertilizers/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -186,8 +206,10 @@ export interface FileRouteTypes {
     | '/weather'
     | '/crops/$slug'
     | '/districts/$slug'
+    | '/fertilizers/$slug'
     | '/crops'
     | '/districts'
+    | '/fertilizers'
   id:
     | '__root__'
     | '/'
@@ -203,8 +225,10 @@ export interface FileRouteTypes {
     | '/weather'
     | '/crops/$slug'
     | '/districts/$slug'
+    | '/fertilizers/$slug'
     | '/crops/'
     | '/districts/'
+    | '/fertilizers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -221,8 +245,10 @@ export interface RootRouteChildren {
   WeatherRoute: typeof WeatherRoute
   CropsSlugRoute: typeof CropsSlugRoute
   DistrictsSlugRoute: typeof DistrictsSlugRoute
+  FertilizersSlugRoute: typeof FertilizersSlugRoute
   CropsIndexRoute: typeof CropsIndexRoute
   DistrictsIndexRoute: typeof DistrictsIndexRoute
+  FertilizersIndexRoute: typeof FertilizersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -304,6 +330,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fertilizers/': {
+      id: '/fertilizers/'
+      path: '/fertilizers'
+      fullPath: '/fertilizers/'
+      preLoaderRoute: typeof FertilizersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/districts/': {
       id: '/districts/'
       path: '/districts'
@@ -316,6 +349,13 @@ declare module '@tanstack/react-router' {
       path: '/crops'
       fullPath: '/crops/'
       preLoaderRoute: typeof CropsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fertilizers/$slug': {
+      id: '/fertilizers/$slug'
+      path: '/fertilizers/$slug'
+      fullPath: '/fertilizers/$slug'
+      preLoaderRoute: typeof FertilizersSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/districts/$slug': {
@@ -349,8 +389,10 @@ const rootRouteChildren: RootRouteChildren = {
   WeatherRoute: WeatherRoute,
   CropsSlugRoute: CropsSlugRoute,
   DistrictsSlugRoute: DistrictsSlugRoute,
+  FertilizersSlugRoute: FertilizersSlugRoute,
   CropsIndexRoute: CropsIndexRoute,
   DistrictsIndexRoute: DistrictsIndexRoute,
+  FertilizersIndexRoute: FertilizersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
