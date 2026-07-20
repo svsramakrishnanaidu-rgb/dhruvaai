@@ -116,12 +116,12 @@ function FertilizerDetail() {
 
             {(f.secondary || f.micro) && (
               <div className="mt-5 flex flex-wrap gap-1.5">
-                {f.secondary && Object.entries(f.secondary).map(([k, v]) => (
+                {f.secondary && (Object.entries(f.secondary) as [string, number][]).map(([k, v]) => (
                   <span key={k} className="rounded-full border border-border/60 bg-sky-500/10 px-2.5 py-1 text-[10px] font-bold text-sky-300">
                     {k} {v}%
                   </span>
                 ))}
-                {f.micro && Object.entries(f.micro).map(([k, v]) => (
+                {f.micro && (Object.entries(f.micro) as [string, number][]).map(([k, v]) => (
                   <span key={k} className="rounded-full border border-border/60 bg-pink-500/10 px-2.5 py-1 text-[10px] font-bold text-pink-300">
                     {k} {v}%
                   </span>
