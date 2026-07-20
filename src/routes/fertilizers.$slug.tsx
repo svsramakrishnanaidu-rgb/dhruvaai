@@ -50,7 +50,7 @@ export const Route = createFileRoute("/fertilizers/$slug")({
 type Tab = "overview" | "application" | "crops" | "deficiency" | "safety" | "faq";
 
 function FertilizerDetail() {
-  const f = Route.useLoaderData();
+  const f = Route.useLoaderData() as Fertilizer;
   const [tab, setTab] = useState<Tab>("overview");
   const total = f.npk.n + f.npk.p + f.npk.k;
   const related = FERTILIZERS.filter((x) => x.category === f.category && x.slug !== f.slug).slice(0, 3);
