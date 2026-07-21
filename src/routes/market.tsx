@@ -9,7 +9,8 @@ import {
 import { useLocation } from "@/lib/location-store";
 import { profileFor } from "@/lib/district-profiles";
 import { HeroBanner } from "@/components/HeroBanner";
-import { TrendingUp, TrendingDown, Activity, MapPin, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Activity, MapPin, Clock, Flame, Droplets, Sprout, IndianRupee } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import heroImg from "@/assets/heroes/market.jpg";
 import {
   useLiveTicker, monthlyTrend, yearlyTrend, intradayTrend,
@@ -82,6 +83,9 @@ function Market() {
           </div>
           <DeepDive crop={active} mod={mod} district={loc.district} />
         </section>
+
+        {/* Trending Crops — full data */}
+        <TrendingCropsSection mod={mod} onOpen={(s) => setActiveSlug(s)} />
 
         {/* All crops grid */}
         <section className="space-y-4">
@@ -328,5 +332,167 @@ function CropLiveCard({ crop, mod, onOpen }: { crop: Crop; mod: number; onOpen: 
         </ResponsiveContainer>
       </div>
     </button>
+  );
+}
+
+/* ---------------- Trending Crops (full data) ---------------- */
+function TrendingCropsSection({ mod, onOpen }: { mod: number; onOpen: (slug: string) => void }) {
+  const trending = useMemo(
+    () => CROP_LIST.filter((c) => c.trending).sort((a, b) => b.profitPct - a.profitPct),
+    []
+  );
+  if (!trending.length) return null;
+  return (
+    <section className="space-y-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
+            <Flame className="h-3 w-3" /> Trending Now · {trending.length} crops
+          </div>
+          <h2 className="mt-2 font-display text-3xl font-bold">Trending Crops · Full Market Data</h2>
+          <p className="text-sm text-muted-foreground">
+            Live mandi price, MSP spread, weekly momentum, profitability and agronomy — for every trending crop.
+          </p>
+        </div>
+      </div>
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {trending.map((c) => (
+          <Reveal key={c.slug}>
+            <TrendingCropCard crop={c} mod={mod} onOpen={() => onOpen(c.slug)} />
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function TrendingCropCard({ crop, mod, onOpen }: { crop: Crop; mod: number; onOpen: () => void }) {
+  const { price, delta, updatedAt } = useLiveTicker(crop.marketPrice.price * mod);
+  const week = crop.marketPrice.trend.map((t) => ({ ...t, price: Math.round(t.price * mod) }));
+  const first = week[0].price, last = week[week.length - 1].price;
+  const wkPct = ((last - first) / first) * 100;
+  const msp = crop.marketPrice.msp;
+  const vsMsp = ((price - msp) / msp) * 100;
+  const up = delta >= 0;
+
+  return (
+    <div className="card-elegant hover-lift overflow-hidden">
+      <div className="relative h-40 overflow-hidden">
+        <img src={crop.image} alt={crop.name} className="h-full w-full object-cover transition-transform duration-500 hover:scale-110" loading="lazy" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        <div className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-primary/90 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
+          <Flame className="h-3 w-3" /> Trending
+        </div>
+        <div className="absolute right-3 top-3 rounded-full bg-background/80 px-2 py-1 text-[10px] font-semibold backdrop-blur">
+          +{crop.profitPct}% profit
+        </div>
+        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{crop.emoji}</span>
+              <h3 className="font-display text-xl font-bold drop-shadow">{crop.name}</h3>
+            </div>
+            <div className="text-[11px] italic text-muted-foreground">{crop.scientificName}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4 p-5">
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <div className="flex items-baseline gap-2">
+              <div className="font-display text-3xl font-black tabular-nums">₹{price.toLocaleString()}</div>
+              <span className={`text-xs ${up ? "text-primary" : "text-destructive"}`}>{up ? "+" : ""}{delta.toFixed(0)}</span>
+            </div>
+            <div className="text-[11px] text-muted-foreground">{crop.marketPrice.unit}</div>
+          </div>
+          <div className="text-right">
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
+              wkPct >= 0 ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
+            }`}>
+              {wkPct >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+              {wkPct >= 0 ? "+" : ""}{wkPct.toFixed(1)}% wk
+            </span>
+            <div className="mt-1 inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
+              {new Date(updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+            </div>
+          </div>
+        </div>
+
+        <div className="h-20 -mx-1">
+          <ResponsiveContainer>
+            <AreaChart data={week}>
+              <defs>
+                <linearGradient id={`tg-${crop.slug}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.55} />
+                  <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="day" hide />
+              <YAxis hide domain={["auto", "auto"]} />
+              <Tooltip contentStyle={CHART_TOOLTIP} />
+              <Area type="monotone" dataKey="price" stroke="var(--primary)" fill={`url(#tg-${crop.slug})`} strokeWidth={2} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <MiniStat icon={<IndianRupee className="h-3 w-3" />} label="MSP" value={`₹${msp.toLocaleString()}`} sub={`${vsMsp >= 0 ? "+" : ""}${vsMsp.toFixed(1)}% vs MSP`} tone={vsMsp >= 0 ? "up" : "down"} />
+          <MiniStat icon={<Sprout className="h-3 w-3" />} label="Yield" value={crop.yield} />
+          <MiniStat icon={<Droplets className="h-3 w-3" />} label="Water" value={crop.waterNeed} />
+          <MiniStat icon={<Activity className="h-3 w-3" />} label="Season" value={crop.season} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 rounded-lg border border-border/60 bg-card/40 p-3 text-[11px]">
+          <div><span className="text-muted-foreground">Soil</span><div className="font-semibold">{crop.soilType}</div></div>
+          <div><span className="text-muted-foreground">Climate</span><div className="font-semibold">{crop.climate}</div></div>
+          <div><span className="text-muted-foreground">Temp</span><div className="font-semibold">{crop.temperature}</div></div>
+          <div><span className="text-muted-foreground">Rainfall</span><div className="font-semibold">{crop.rainfall}</div></div>
+        </div>
+
+        {crop.suitableDistricts?.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {crop.suitableDistricts.slice(0, 4).map((d) => (
+              <span key={d} className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/40 px-2 py-0.5 text-[10px]">
+                <MapPin className="h-2.5 w-2.5" /> {d}
+              </span>
+            ))}
+            {crop.suitableDistricts.length > 4 && (
+              <span className="text-[10px] text-muted-foreground">+{crop.suitableDistricts.length - 4} more</span>
+            )}
+          </div>
+        )}
+
+        <div className="flex gap-2 pt-1">
+          <button onClick={onOpen} className="flex-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition hover:opacity-90">
+            Deep analytics
+          </button>
+          <Link
+            to="/crops/$slug"
+            params={{ slug: crop.slug }}
+            className="flex-1 rounded-lg border border-border bg-card px-3 py-2 text-center text-xs font-semibold transition hover:bg-muted"
+          >
+            Full crop guide →
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MiniStat({ icon, label, value, sub, tone }: { icon: React.ReactNode; label: string; value: string; sub?: string; tone?: "up" | "down" }) {
+  return (
+    <div className="rounded-lg border border-border/60 bg-card/40 p-2">
+      <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+        {icon} {label}
+      </div>
+      <div className="mt-0.5 font-display text-sm font-bold tabular-nums">{value}</div>
+      {sub && (
+        <div className={`text-[10px] ${tone === "up" ? "text-primary" : tone === "down" ? "text-destructive" : "text-muted-foreground"}`}>
+          {sub}
+        </div>
+      )}
+    </div>
   );
 }
