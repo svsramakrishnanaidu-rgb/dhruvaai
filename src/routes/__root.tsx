@@ -150,7 +150,7 @@ function RootComponent() {
         <TranslationProvider>
           <a href="#main" className="skip-link">Skip to content</a>
           <CinematicLoader />
-          <BackgroundMusic />
+          <MusicPlayer />
           <AnimatedBackground />
           <div className="relative flex min-h-dvh flex-col">
             <Navbar onSearchOpen={() => setSearchOpen(true)} />
