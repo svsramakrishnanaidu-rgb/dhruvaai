@@ -9,14 +9,15 @@ import {
 import { useLocation } from "@/lib/location-store";
 import { profileFor } from "@/lib/district-profiles";
 import { HeroBanner } from "@/components/HeroBanner";
-import { TrendingUp, TrendingDown, Activity, Radio, MapPin, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Activity, MapPin, Clock } from "lucide-react";
 import heroImg from "@/assets/heroes/market.jpg";
 import {
   useLiveTicker, monthlyTrend, yearlyTrend, intradayTrend,
-  mandiComparison, highLow, computeTopMovers,
+  mandiComparison, highLow,
 } from "@/lib/live-market";
-import { AgmarknetLive } from "@/components/AgmarknetLive";
-import { useAgmarknetLive, type LiveCommodity } from "@/lib/agmarknet-live";
+import { LiveMarketBoard } from "@/components/LiveMarketBoard";
+import { MarketInsightsPanel } from "@/components/MarketInsightsPanel";
+
 
 
 export const Route = createFileRoute("/market")({
