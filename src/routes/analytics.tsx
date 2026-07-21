@@ -151,6 +151,11 @@ function Analytics() {
 
       <LiveAnalysis />
 
+      {/* Enterprise command center */}
+      <section className="mt-10">
+        <MarketCommandCenter />
+      </section>
+
       {/* AI-generated market brief */}
       <section className="mt-10 space-y-3">
         <MarketInsightsPanel />
