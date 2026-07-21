@@ -51,7 +51,7 @@ export function AnimatedBackground() {
       ctx.clearRect(0, 0, w, h);
       // soft radial spotlight following mouse
       const g = ctx.createRadialGradient(mx, my, 0, mx, my, 420);
-      g.addColorStop(0, "rgba(180,255,150,0.10)");
+      g.addColorStop(0, "rgba(140,120,255,0.14)");
       g.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, w, h);
