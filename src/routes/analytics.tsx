@@ -18,6 +18,7 @@ import heroImg from "@/assets/heroes/analytics.jpg";
 import { LiveAnalysis } from "@/components/LiveAnalysis";
 import { LiveMarketBoard } from "@/components/LiveMarketBoard";
 import { MarketInsightsPanel } from "@/components/MarketInsightsPanel";
+import { MarketCommandCenter } from "@/components/MarketCommandCenter";
 
 import { locationStore, useLocation } from "@/lib/location-store";
 import {
@@ -149,6 +150,11 @@ function Analytics() {
       <div className="mx-auto max-w-7xl px-6 py-16">
 
       <LiveAnalysis />
+
+      {/* Enterprise command center */}
+      <section className="mt-10">
+        <MarketCommandCenter />
+      </section>
 
       {/* AI-generated market brief */}
       <section className="mt-10 space-y-3">
