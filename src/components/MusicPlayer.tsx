@@ -281,7 +281,7 @@ export function MusicPlayer() {
   const [duration, setDuration] = useState(0);
 
   return (
-    <div className="fixed left-3 top-3 z-[60] flex items-start gap-2">
+    <div className="fixed left-3 top-20 z-[60] flex items-start gap-2 sm:top-24">
       <audio
         ref={audioRef}
         loop={loop && tracks.length === 1}
