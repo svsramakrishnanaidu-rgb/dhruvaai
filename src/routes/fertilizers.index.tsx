@@ -16,9 +16,9 @@ import { Beaker, Search, Sparkles, FlaskConical, Leaf, Layers } from "lucide-rea
 export const Route = createFileRoute("/fertilizers/")({
   head: () => ({
     meta: [
-      { title: "Fertilizer Knowledge Center — KrishiSense" },
+      { title: "Fertilizer Knowledge Center — Krish Sense" },
       { name: "description", content: "Image-first encyclopedia of 60+ fertilizers with product galleries, nutrient guides, application methods, deficiency visuals, soil compatibility and dosage calculators." },
-      { property: "og:title", content: "Fertilizer Knowledge Center — KrishiSense" },
+      { property: "og:title", content: "Fertilizer Knowledge Center — Krish Sense" },
       { property: "og:description", content: "Explore fertilizers by category, nutrient, crop, soil and application method — visual, interactive, farmer-friendly." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

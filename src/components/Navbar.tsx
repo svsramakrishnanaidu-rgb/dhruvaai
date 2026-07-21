@@ -52,12 +52,12 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
           }`}
           style={{ boxShadow: scrolled ? "var(--shadow-elegant)" : undefined }}
         >
-          <Link to="/" aria-label="KrishiSense home" className="flex shrink-0 items-center gap-2 pr-1 sm:pr-2">
+          <Link to="/" aria-label="Krish Sense home" className="flex shrink-0 items-center gap-2 pr-1 sm:pr-2">
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-accent shadow-lg">
               <Sprout className="h-5 w-5 text-primary-foreground" aria-hidden />
             </div>
             <span className="hidden font-display text-lg font-bold tracking-tight xs:inline sm:inline">
-              Krishi<span className="text-gradient">Sense</span>
+              Krish <span className="text-gradient">Sense</span>
             </span>
           </Link>
 

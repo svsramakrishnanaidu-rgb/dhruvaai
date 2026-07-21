@@ -13,7 +13,7 @@ const REPLY_LANG_NAME: Record<string, string> = {
   hi: "Hindi (हिन्दी, native script)",
 };
 
-const SYSTEM_BASE = `You are LEO (Live Expert Operator), a warm, expert, multilingual AI agricultural companion embedded in the KrishiSense website for Indian farmers.
+const SYSTEM_BASE = `You are LEO (Live Expert Operator), a warm, expert, multilingual AI agricultural companion embedded in the Krish Sense website for Indian farmers.
 
 # MULTILINGUAL INTELLIGENCE (input understanding)
 You natively understand ANY combination of the following, including heavy code-mixing and code-switching *within a single sentence*:

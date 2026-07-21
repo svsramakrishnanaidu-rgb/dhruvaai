@@ -13,10 +13,10 @@ import {
 export const Route = createFileRoute("/fertilizers/$slug")({
   head: ({ params }) => {
     const f = FERTILIZERS_BY_SLUG[params.slug];
-    if (!f) return { meta: [{ title: "Fertilizer not found — KrishiSense" }] };
+    if (!f) return { meta: [{ title: "Fertilizer not found — Krish Sense" }] };
     return {
       meta: [
-        { title: `${f.name} — Complete visual dossier · KrishiSense` },
+        { title: `${f.name} — Complete visual dossier · Krish Sense` },
         { name: "description", content: `${f.name} (${f.generic}): NPK ${f.npk.n}-${f.npk.p}-${f.npk.k}, HD photo gallery, crop application visuals, dosage, deficiency correction and crop compatibility.` },
         { property: "og:title", content: `${f.name} · Fertilizer dossier` },
         { property: "og:description", content: `Visual guide to ${f.name}: composition, dosage, application methods and crop compatibility.` },
