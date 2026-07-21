@@ -472,7 +472,7 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
             </defs>
             <XAxis dataKey="i" hide />
             <YAxis hide domain={["auto", "auto"]} />
-            <Tooltip contentStyle={CHART_TOOLTIP} formatter={(v: number) => [`₹${v.toLocaleString()}`, "Avg"]} labelFormatter={() => ""} />
+            <Tooltip contentStyle={CHART_TOOLTIP} formatter={(v) => [`₹${Number(v).toLocaleString()}`, "Avg"]} labelFormatter={() => ""} />
             <Area
               type="monotone"
               dataKey="v"
