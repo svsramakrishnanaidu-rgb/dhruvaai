@@ -16,6 +16,8 @@ import {
   mandiComparison, highLow, computeTopMovers,
 } from "@/lib/live-market";
 import { AgmarknetLive } from "@/components/AgmarknetLive";
+import { useAgmarknetLive, type LiveCommodity } from "@/lib/agmarknet-live";
+
 
 export const Route = createFileRoute("/market")({
   head: () => ({
