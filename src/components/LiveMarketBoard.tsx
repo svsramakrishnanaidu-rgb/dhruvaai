@@ -55,12 +55,24 @@ export function LiveMarketBoard({ title = "All-India Live Mandi Board", compact 
   const gainers = useMemo(() => [...data].sort((a, b) => b.deltaPct - a.deltaPct).slice(0, 5), [data]);
   const losers = useMemo(() => [...data].sort((a, b) => a.deltaPct - b.deltaPct).slice(0, 5), [data]);
   const overall = useMemo(() => {
-    if (!data.length) return { avgChange: 0, mandis: 0, topGainer: null as LiveCommodity | null, topLoser: null as LiveCommodity | null, states: 0 };
+    if (!data.length) return { avgChange: 0, mandis: 0, topGainer: null as LiveCommodity | null, topLoser: null as LiveCommodity | null, states: 0, avgModal: 0 };
     const avgChange = data.reduce((s, d) => s + d.deltaPct, 0) / data.length;
+    const avgModal = data.reduce((s, d) => s + d.modal, 0) / data.length;
     const mandis = data.reduce((s, d) => s + d.markets, 0);
     const states = new Set(data.flatMap((d) => d.mandis.map((m) => m.state))).size;
-    return { avgChange, mandis, topGainer: gainers[0] ?? null, topLoser: losers[0] ?? null, states };
+    return { avgChange, avgModal, mandis, topGainer: gainers[0] ?? null, topLoser: losers[0] ?? null, states };
   }, [data, gainers, losers]);
+
+  // Live extremes: highest & lowest mandi rows across every commodity today
+  const extremes = useMemo(() => {
+    type Row = { commodity: string; market: string; state: string; district: string; modal: number };
+    const all: Row[] = [];
+    for (const c of data) for (const m of c.mandis) all.push({ commodity: c.commodity, ...m });
+    if (!all.length) return { top: null as Row | null, low: null as Row | null };
+    let top = all[0]; let low = all[0];
+    for (const r of all) { if (r.modal > top.modal) top = r; if (r.modal < low.modal && r.modal > 0) low = r; }
+    return { top, low };
+  }, [data]);
 
   return (
     <div className="space-y-6">
