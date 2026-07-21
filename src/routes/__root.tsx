@@ -109,12 +109,33 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // Runs before hydration: tags <html> with device/OS/orientation classes so
+  // CSS + components can adapt without a first-paint flash.
+  const deviceDetectScript = `
+    (function(){try{
+      var h=document.documentElement, ua=navigator.userAgent||"", p=navigator.platform||"", mt=navigator.maxTouchPoints||0;
+      var isIOS=/iPad|iPhone|iPod/.test(ua)||(p==='MacIntel'&&mt>1);
+      var isAndroid=/Android/.test(ua);
+      var isMac=/Mac/.test(p)&&!isIOS;
+      var isWin=/Win/.test(p);
+      var isLinux=/Linux/.test(p)&&!isAndroid;
+      var isTouch=mt>0||/Mobi|Tablet/.test(ua);
+      var w=window.innerWidth;
+      var bp = w<640?'xs':w<768?'sm':w<1024?'md':w<1440?'lg':w<1920?'xl':'2xl';
+      var os=isIOS?'ios':isAndroid?'android':isMac?'macos':isWin?'windows':isLinux?'linux':'other';
+      h.classList.add('os-'+os,'bp-'+bp, isTouch?'is-touch':'is-mouse');
+      h.dataset.os=os; h.dataset.bp=bp;
+      var setOrient=function(){h.dataset.orient=window.matchMedia('(orientation: portrait)').matches?'portrait':'landscape';};
+      setOrient(); window.addEventListener('orientationchange', setOrient); window.addEventListener('resize', setOrient);
+    }catch(e){}})();
+  `;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body suppressHydrationWarning>
+        <script dangerouslySetInnerHTML={{ __html: deviceDetectScript }} />
         {children}
         <Scripts />
       </body>
