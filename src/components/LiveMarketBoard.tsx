@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import {
   TrendingUp, TrendingDown, Radio, Clock, Search, ArrowUpDown,
-  Flame, Snowflake, Sparkles, Package, ChevronDown, ChevronUp,
+  Flame, Snowflake, Sparkles, Package, ChevronDown, ChevronUp, ArrowUp, ArrowDown,
 } from "lucide-react";
 import { useAgmarknetLive, type LiveCommodity } from "@/lib/agmarknet-live";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 
 type SortKey = "arrivals" | "modal" | "deltaPct" | "volatility" | "commodity";
 type Filter = "all" | "gainers" | "losers" | "volatile" | "high-arrivals";
@@ -17,7 +18,16 @@ const CHART_TOOLTIP = {
 } as const;
 
 export function LiveMarketBoard({ title = "All-India Live Mandi Board", compact = false }: { title?: string; compact?: boolean }) {
-  const { data, updated, loading, error, stats } = useAgmarknetLive({ refreshMs: 5 * 60 * 1000, limit: 3000 });
+  const REFRESH_MS = 60 * 1000;
+  const { data, updated, loading, error, stats } = useAgmarknetLive({ refreshMs: REFRESH_MS, limit: 3000 });
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const secondsAgo = updated ? Math.max(0, Math.floor((Date.now() - new Date(updated).getTime()) / 1000)) : 0;
+  const nextIn = updated ? Math.max(0, Math.ceil(REFRESH_MS / 1000 - secondsAgo)) : 0;
+  void tick;
   const [q, setQ] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("arrivals");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
@@ -45,12 +55,24 @@ export function LiveMarketBoard({ title = "All-India Live Mandi Board", compact 
   const gainers = useMemo(() => [...data].sort((a, b) => b.deltaPct - a.deltaPct).slice(0, 5), [data]);
   const losers = useMemo(() => [...data].sort((a, b) => a.deltaPct - b.deltaPct).slice(0, 5), [data]);
   const overall = useMemo(() => {
-    if (!data.length) return { avgChange: 0, mandis: 0, topGainer: null as LiveCommodity | null, topLoser: null as LiveCommodity | null, states: 0 };
+    if (!data.length) return { avgChange: 0, mandis: 0, topGainer: null as LiveCommodity | null, topLoser: null as LiveCommodity | null, states: 0, avgModal: 0 };
     const avgChange = data.reduce((s, d) => s + d.deltaPct, 0) / data.length;
+    const avgModal = data.reduce((s, d) => s + d.modal, 0) / data.length;
     const mandis = data.reduce((s, d) => s + d.markets, 0);
     const states = new Set(data.flatMap((d) => d.mandis.map((m) => m.state))).size;
-    return { avgChange, mandis, topGainer: gainers[0] ?? null, topLoser: losers[0] ?? null, states };
+    return { avgChange, avgModal, mandis, topGainer: gainers[0] ?? null, topLoser: losers[0] ?? null, states };
   }, [data, gainers, losers]);
+
+  // Live extremes: highest & lowest mandi rows across every commodity today
+  const extremes = useMemo(() => {
+    type Row = { commodity: string; market: string; state: string; district: string; modal: number };
+    const all: Row[] = [];
+    for (const c of data) for (const m of c.mandis) all.push({ commodity: c.commodity, ...m });
+    if (!all.length) return { top: null as Row | null, low: null as Row | null };
+    let top = all[0]; let low = all[0];
+    for (const r of all) { if (r.modal > top.modal) top = r; if (r.modal < low.modal && r.modal > 0) low = r; }
+    return { top, low };
+  }, [data]);
 
   return (
     <div className="space-y-6">
@@ -67,45 +89,85 @@ export function LiveMarketBoard({ title = "All-India Live Mandi Board", compact 
             </div>
             <h3 className="font-display text-2xl font-bold">{title}</h3>
             <p className="text-xs text-muted-foreground">
-              Real-time daily prices across every reporting state, district and mandi — auto-refreshes every 5 min.
+              Real-time daily prices across every reporting state, district and mandi — streaming from Agmarknet every 60s.
             </p>
           </div>
           <div className="text-right text-xs text-muted-foreground">
             {updated && (
               <div className="inline-flex items-center gap-1">
-                <Clock className="h-3 w-3" /> Updated {new Date(updated).toLocaleTimeString()}
+                <Clock className="h-3 w-3" /> Updated {new Date(updated).toLocaleTimeString()} · {secondsAgo}s ago
               </div>
             )}
             <div className="mt-1 inline-flex items-center gap-1">
-              <Radio className="h-3 w-3 text-primary animate-pulse" /> {stats.total} commodities · {stats.totalArrivals.toLocaleString()} records
+              <Radio className="h-3 w-3 text-primary animate-pulse" /> Next tick in {nextIn}s · {stats.total} commodities
             </div>
           </div>
         </div>
 
-        {/* Overall KPIs */}
+        {/* Overall KPIs — animated */}
         <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-          <Kpi icon={<Package className="h-4 w-4" />} label="Commodities" value={stats.total.toString()} />
-          <Kpi icon={<Radio className="h-4 w-4" />} label="Reporting mandis" value={overall.mandis.toLocaleString()} />
-          <Kpi icon={<Sparkles className="h-4 w-4" />} label="States covered" value={overall.states.toString()} />
-          <Kpi
-            icon={overall.avgChange >= 0 ? <TrendingUp className="h-4 w-4 text-primary" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
-            label="Avg. change"
-            value={`${overall.avgChange >= 0 ? "+" : ""}${overall.avgChange.toFixed(2)}%`}
-            tone={overall.avgChange >= 0 ? "up" : "down"}
+          <KpiNum icon={<Package className="h-4 w-4" />} label="Commodities" value={stats.total} />
+          <KpiNum icon={<Radio className="h-4 w-4" />} label="Reporting mandis" value={overall.mandis} />
+          <KpiNum icon={<Sparkles className="h-4 w-4" />} label="States covered" value={overall.states} />
+          <KpiNum
+            icon={overall.avgModal >= 0 ? <TrendingUp className="h-4 w-4 text-primary" /> : <TrendingDown className="h-4 w-4" />}
+            label="Avg. modal ₹/qtl"
+            value={overall.avgModal}
+            prefix="₹"
           />
-          <Kpi
+          <KpiNum
             icon={<TrendingUp className="h-4 w-4 text-primary" />}
-            label={overall.topGainer ? `Top ▲ ${overall.topGainer.commodity}` : "Top gainer"}
-            value={overall.topGainer ? `+${overall.topGainer.deltaPct.toFixed(1)}%` : "—"}
+            label={overall.topGainer ? `▲ ${overall.topGainer.commodity}` : "Top gainer"}
+            value={overall.topGainer ? overall.topGainer.deltaPct : 0}
+            suffix="%"
+            decimals={1}
             tone="up"
           />
-          <Kpi
+          <KpiNum
             icon={<TrendingDown className="h-4 w-4 text-destructive" />}
-            label={overall.topLoser ? `Top ▼ ${overall.topLoser.commodity}` : "Top loser"}
-            value={overall.topLoser ? `${overall.topLoser.deltaPct.toFixed(1)}%` : "—"}
+            label={overall.topLoser ? `▼ ${overall.topLoser.commodity}` : "Top loser"}
+            value={overall.topLoser ? overall.topLoser.deltaPct : 0}
+            suffix="%"
+            decimals={1}
             tone="down"
           />
         </div>
+
+        {/* Live extremes strip */}
+        {(extremes.top || extremes.low) && (
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {extremes.top && (
+              <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-primary">
+                  <ArrowUp className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] uppercase tracking-widest text-primary">Highest price now</div>
+                  <div className="truncate text-sm font-semibold">{extremes.top.commodity} · {extremes.top.market}</div>
+                  <div className="text-[10px] text-muted-foreground">{extremes.top.district}, {extremes.top.state}</div>
+                </div>
+                <div className="font-display text-xl font-black tabular-nums text-primary">
+                  ₹<AnimatedNumber value={extremes.top.modal} />
+                </div>
+              </div>
+            )}
+            {extremes.low && (
+              <div className="flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-destructive/15 text-destructive">
+                  <ArrowDown className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] uppercase tracking-widest text-destructive">Lowest price now</div>
+                  <div className="truncate text-sm font-semibold">{extremes.low.commodity} · {extremes.low.market}</div>
+                  <div className="text-[10px] text-muted-foreground">{extremes.low.district}, {extremes.low.state}</div>
+                </div>
+                <div className="font-display text-xl font-black tabular-nums text-destructive">
+                  ₹<AnimatedNumber value={extremes.low.modal} />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Trending */}
@@ -185,6 +247,18 @@ export function LiveMarketBoard({ title = "All-India Live Mandi Board", compact 
 }
 
 /* ---------------- pieces ---------------- */
+
+function KpiNum({ icon, label, value, tone, prefix = "", suffix = "", decimals = 0 }: { icon: React.ReactNode; label: string; value: number; tone?: "up" | "down"; prefix?: string; suffix?: string; decimals?: number }) {
+  const fmt = (n: number) => (decimals > 0 ? n.toFixed(decimals) : Math.round(n).toLocaleString());
+  return (
+    <div className="rounded-xl border border-border/60 bg-card/40 p-3">
+      <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-muted-foreground truncate">{icon}<span className="truncate">{label}</span></div>
+      <div className={`mt-1 font-display text-xl font-bold tabular-nums ${tone === "up" ? "text-primary" : tone === "down" ? "text-destructive" : ""}`}>
+        {prefix}<AnimatedNumber value={value} format={fmt} />{suffix}
+      </div>
+    </div>
+  );
+}
 
 function Kpi({ icon, label, value, tone }: { icon: React.ReactNode; label: string; value: string; tone?: "up" | "down" }) {
   return (
