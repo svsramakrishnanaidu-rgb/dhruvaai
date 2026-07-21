@@ -18,6 +18,7 @@ import {
 } from "@/lib/live-market";
 import { LiveMarketBoard } from "@/components/LiveMarketBoard";
 import { MarketInsightsPanel } from "@/components/MarketInsightsPanel";
+import { MarketCommandCenter } from "@/components/MarketCommandCenter";
 
 
 
