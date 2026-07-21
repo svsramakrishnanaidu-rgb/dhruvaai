@@ -9,7 +9,8 @@ import {
 import { useLocation } from "@/lib/location-store";
 import { profileFor } from "@/lib/district-profiles";
 import { HeroBanner } from "@/components/HeroBanner";
-import { TrendingUp, TrendingDown, Activity, MapPin, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Activity, MapPin, Clock, Flame, Droplets, Sprout, IndianRupee } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import heroImg from "@/assets/heroes/market.jpg";
 import {
   useLiveTicker, monthlyTrend, yearlyTrend, intradayTrend,
