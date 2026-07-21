@@ -18,7 +18,16 @@ const CHART_TOOLTIP = {
 } as const;
 
 export function LiveMarketBoard({ title = "All-India Live Mandi Board", compact = false }: { title?: string; compact?: boolean }) {
-  const { data, updated, loading, error, stats } = useAgmarknetLive({ refreshMs: 5 * 60 * 1000, limit: 3000 });
+  const REFRESH_MS = 60 * 1000;
+  const { data, updated, loading, error, stats } = useAgmarknetLive({ refreshMs: REFRESH_MS, limit: 3000 });
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const secondsAgo = updated ? Math.max(0, Math.floor((Date.now() - new Date(updated).getTime()) / 1000)) : 0;
+  const nextIn = updated ? Math.max(0, Math.ceil(REFRESH_MS / 1000 - secondsAgo)) : 0;
+  void tick;
   const [q, setQ] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("arrivals");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
