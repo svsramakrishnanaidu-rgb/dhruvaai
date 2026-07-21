@@ -82,12 +82,29 @@ export function LiveMarketBoard({ title = "All-India Live Mandi Board", compact 
           </div>
         </div>
 
-        {/* KPIs */}
-        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+        {/* Overall KPIs */}
+        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
           <Kpi icon={<Package className="h-4 w-4" />} label="Commodities" value={stats.total.toString()} />
-          <Kpi icon={<TrendingUp className="h-4 w-4 text-primary" />} label="Gainers today" value={stats.gainers.toString()} tone="up" />
-          <Kpi icon={<TrendingDown className="h-4 w-4 text-destructive" />} label="Losers today" value={stats.losers.toString()} tone="down" />
-          <Kpi icon={<Activity className="h-4 w-4" />} label="Avg. modal" value={`₹${stats.avgModal.toLocaleString()}`} />
+          <Kpi icon={<Radio className="h-4 w-4" />} label="Reporting mandis" value={overall.mandis.toLocaleString()} />
+          <Kpi icon={<Sparkles className="h-4 w-4" />} label="States covered" value={overall.states.toString()} />
+          <Kpi
+            icon={overall.avgChange >= 0 ? <TrendingUp className="h-4 w-4 text-primary" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
+            label="Avg. change"
+            value={`${overall.avgChange >= 0 ? "+" : ""}${overall.avgChange.toFixed(2)}%`}
+            tone={overall.avgChange >= 0 ? "up" : "down"}
+          />
+          <Kpi
+            icon={<TrendingUp className="h-4 w-4 text-primary" />}
+            label={overall.topGainer ? `Top ▲ ${overall.topGainer.commodity}` : "Top gainer"}
+            value={overall.topGainer ? `+${overall.topGainer.deltaPct.toFixed(1)}%` : "—"}
+            tone="up"
+          />
+          <Kpi
+            icon={<TrendingDown className="h-4 w-4 text-destructive" />}
+            label={overall.topLoser ? `Top ▼ ${overall.topLoser.commodity}` : "Top loser"}
+            value={overall.topLoser ? `${overall.topLoser.deltaPct.toFixed(1)}%` : "—"}
+            tone="down"
+          />
         </div>
       </div>
 
