@@ -24,9 +24,9 @@ import {
 export const Route = createFileRoute("/analytics")({
   head: () => ({
     meta: [
-      { title: "Agri Analytics — KrishiSense" },
+      { title: "Agri Analytics — Krish Sense" },
       { name: "description", content: "District-wise crop production, area, yield and season analytics from the Ministry of Agriculture 2025-26 Advance Estimates." },
-      { property: "og:title", content: "Agricultural Analytics — KrishiSense" },
+      { property: "og:title", content: "Agricultural Analytics — Krish Sense" },
       { property: "og:description", content: "Interactive visualization of every state, district and crop from India's Advance Estimates 2025-26." },
     ],
   }),

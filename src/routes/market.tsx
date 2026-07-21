@@ -11,7 +11,7 @@ import heroImg from "@/assets/heroes/market.jpg";
 export const Route = createFileRoute("/market")({
   head: () => ({
     meta: [
-      { title: "Market Prices — KrishiSense" },
+      { title: "Market Prices — Krish Sense" },
       { name: "description", content: "Live-style mandi prices, MSP, weekly trend and profit estimator." },
     ],
   }),

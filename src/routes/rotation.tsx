@@ -9,7 +9,7 @@ import heroImg from "@/assets/heroes/rotation.jpg";
 export const Route = createFileRoute("/rotation")({
   head: () => ({
     meta: [
-      { title: "Crop Rotation — KrishiSense" },
+      { title: "Crop Rotation — Krish Sense" },
       { name: "description", content: "Animated rotation wheel to plan sustainable multi-season cropping cycles." },
     ],
   }),

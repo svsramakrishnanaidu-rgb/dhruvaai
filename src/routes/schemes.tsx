@@ -9,7 +9,7 @@ import heroImg from "@/assets/heroes/schemes.jpg";
 export const Route = createFileRoute("/schemes")({
   head: () => ({
     meta: [
-      { title: "Government Schemes — KrishiSense" },
+      { title: "Government Schemes — Krish Sense" },
       { name: "description", content: "Key central and state government agriculture schemes with subsidies and eligibility at a glance." },
     ],
   }),

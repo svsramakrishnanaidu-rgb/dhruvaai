@@ -10,7 +10,7 @@ import heroImg from "@/assets/heroes/fertilizer.jpg";
 export const Route = createFileRoute("/fertilizer")({
   head: () => ({
     meta: [
-      { title: "Fertilizer Calculator — KrishiSense" },
+      { title: "Fertilizer Calculator — Krish Sense" },
       { name: "description", content: "Enter your land size and get exact Urea, DAP, Potash, Zinc, Gypsum and Compost dosages per crop." },
     ],
   }),

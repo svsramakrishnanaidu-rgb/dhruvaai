@@ -18,7 +18,7 @@ export const Route = createFileRoute("/districts/$slug")({
     const d = loaderData?.district;
     return {
       meta: [
-        { title: d ? `${d.name} — Crop Gallery | KrishiSense` : "District — KrishiSense" },
+        { title: d ? `${d.name} — Crop Gallery | Krish Sense` : "District — Krish Sense" },
         { name: "description", content: d ? `Every crop cultivated across ${d.name} (${d.region} AP): season, category and cultivation dossiers.` : "" },
       ],
     };

@@ -60,7 +60,7 @@ import heroImg from "@/assets/heroes/weather.jpg";
 export const Route = createFileRoute("/weather")({
   head: () => ({
     meta: [
-      { title: "Live Weather Intelligence — KrishiSense" },
+      { title: "Live Weather Intelligence — Krish Sense" },
       {
         name: "description",
         content:

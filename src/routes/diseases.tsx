@@ -6,7 +6,7 @@ import { diseaseImage } from "@/lib/disease-image";
 export const Route = createFileRoute("/diseases")({
   head: () => ({
     meta: [
-      { title: "Disease Library — KrishiSense" },
+      { title: "Disease Library — Krish Sense" },
       { name: "description", content: "HD identification for common crop diseases with organic and chemical controls." },
     ],
   }),

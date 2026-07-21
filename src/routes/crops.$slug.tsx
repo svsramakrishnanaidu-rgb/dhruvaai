@@ -23,9 +23,9 @@ export const Route = createFileRoute("/crops/$slug")({
   head: ({ loaderData }: { loaderData?: Crop }) => {
     const crop = loaderData;
     const meta: Array<{ title?: string; name?: string; property?: string; content?: string }> = [
-      { title: crop ? `${crop.name} — Advisory · KrishiSense` : "Crop — KrishiSense" },
+      { title: crop ? `${crop.name} — Advisory · Krish Sense` : "Crop — Krish Sense" },
       { name: "description", content: crop ? `Complete cultivation playbook for ${crop.name}: land prep, seed, fertilizer, diseases, harvest and market.` : "Crop advisory" },
-      { property: "og:title", content: crop ? `${crop.name} · KrishiSense` : "Crop" },
+      { property: "og:title", content: crop ? `${crop.name} · Krish Sense` : "Crop" },
     ];
     if (crop?.image) meta.push({ property: "og:image", content: crop.image });
     return { meta };

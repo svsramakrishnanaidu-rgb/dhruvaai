@@ -14,7 +14,7 @@ export function Footer() {
                 <Sprout className="h-5 w-5 text-primary-foreground" />
               </div>
               <span className="font-display text-lg font-bold">
-                Krishi<span className="text-gradient">Sense</span>
+                Krish <span className="text-gradient">Sense</span>
               </span>
             </div>
             <p className="mt-3 max-w-xs text-sm text-muted-foreground">
@@ -49,7 +49,7 @@ export function Footer() {
           />
         </div>
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border/40 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} KrishiSense. Built by Bhaskar, Ravi, Ramakrishna & Vinay.</p>
+          <p>© {new Date().getFullYear()} Krish Sense. Built by Bhaskar, Ravi, Ramakrishna & Vinay.</p>
           <div className="flex items-center gap-3">
             <a href="#" aria-label="GitHub" className="hover:text-foreground"><Github className="h-4 w-4" /></a>
             <a href="#" aria-label="Twitter" className="hover:text-foreground"><Twitter className="h-4 w-4" /></a>

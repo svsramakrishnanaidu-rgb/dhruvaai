@@ -73,7 +73,7 @@ export function CinematicLoader() {
             </div>
             <div style={{ animation: "fade-up 0.9s var(--ease-out-expo) 0.3s both" }}>
               <div className="font-display text-3xl font-black tracking-tight md:text-5xl">
-                Krishi<span className="text-gradient">Sense</span>
+                Krish <span className="text-gradient">Sense</span>
               </div>
               <div className="mt-2 text-xs uppercase tracking-[0.4em] text-muted-foreground">
                 Smart Agricultural Advisory
