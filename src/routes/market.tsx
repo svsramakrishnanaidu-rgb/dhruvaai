@@ -15,6 +15,7 @@ import {
   useLiveTicker, monthlyTrend, yearlyTrend, intradayTrend,
   mandiComparison, highLow, computeTopMovers,
 } from "@/lib/live-market";
+import { AgmarknetLive } from "@/components/AgmarknetLive";
 
 export const Route = createFileRoute("/market")({
   head: () => ({
@@ -57,6 +58,19 @@ function Market() {
       <div className="mx-auto max-w-7xl px-6 py-12 space-y-12">
         {/* Live ticker strip */}
         <LiveTickerStrip mod={mod} />
+
+        {/* Official government live mandi prices */}
+        <section className="space-y-3">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="font-display text-3xl font-bold">Official Mandi Prices · Live</h2>
+              <p className="text-sm text-muted-foreground">
+                Verified daily prices from Agmarknet (Directorate of Marketing & Inspection, Ministry of Agriculture) via data.gov.in — every state, district and mandi.
+              </p>
+            </div>
+          </div>
+          <AgmarknetLive defaultState={p.state} autoRefreshMs={5 * 60 * 1000} />
+        </section>
 
         {/* Top movers */}
         <section className="grid gap-6 md:grid-cols-2">

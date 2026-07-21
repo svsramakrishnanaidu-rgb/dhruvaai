@@ -16,6 +16,7 @@ import { CountUp } from "@/components/CountUp";
 import { HeroBanner } from "@/components/HeroBanner";
 import heroImg from "@/assets/heroes/analytics.jpg";
 import { LiveAnalysis } from "@/components/LiveAnalysis";
+import { AgmarknetLive } from "@/components/AgmarknetLive";
 import { locationStore, useLocation } from "@/lib/location-store";
 import {
   DISTRICTS, MACRO, KPIS, EXECUTIVE, CHALLENGES, REFERENCES,
@@ -146,6 +147,22 @@ function Analytics() {
       <div className="mx-auto max-w-7xl px-6 py-16">
 
       <LiveAnalysis />
+
+      {/* Live state-wise mandi analytics */}
+      <section className="mt-10 space-y-3">
+        <div>
+          <h2 className="font-display text-3xl font-bold">State-Wise Live Market Analysis</h2>
+          <p className="text-sm text-muted-foreground">
+            Real-time mandi prices sourced from Agmarknet (data.gov.in). Compare states, districts, mandis and varieties with live movement indicators.
+          </p>
+        </div>
+        <AgmarknetLive
+          defaultState={loc.state || ""}
+          defaultCommodity=""
+          compact
+          title="Compare Mandis Across India"
+        />
+      </section>
 
 
 
