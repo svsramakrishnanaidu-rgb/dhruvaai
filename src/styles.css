@@ -274,6 +274,7 @@
 
 @layer base {
   * { border-color: var(--color-border); }
+  html, body { overflow-x: clip; max-width: 100%; }
   html { scroll-behavior: smooth; }
   body {
     background: var(--gradient-hero);
