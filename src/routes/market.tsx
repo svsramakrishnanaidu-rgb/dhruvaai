@@ -69,6 +69,7 @@ function Market() {
             </div>
           </div>
           <AgmarknetLive defaultState={p.state} autoRefreshMs={5 * 60 * 1000} />
+        </section>
 
         {/* Top movers */}
         <section className="grid gap-6 md:grid-cols-2">
