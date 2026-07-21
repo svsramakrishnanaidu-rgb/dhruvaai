@@ -15,6 +15,7 @@ import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
 import { HeroBanner } from "@/components/HeroBanner";
 import heroImg from "@/assets/heroes/analytics.jpg";
+import { LiveAnalysis } from "@/components/LiveAnalysis";
 import { locationStore, useLocation } from "@/lib/location-store";
 import {
   DISTRICTS, MACRO, KPIS, EXECUTIVE, CHALLENGES, REFERENCES,
