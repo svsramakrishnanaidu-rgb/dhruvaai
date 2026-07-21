@@ -17,6 +17,7 @@ type Track = {
 };
 
 const STORAGE_KEY = "krish.music.v1";
+const POS_KEY = "krish.music.pos.v1";
 const ACCEPT = ".mp3,.wav,.flac,.aac,.ogg,.m4a,audio/*";
 
 function fmtSize(b: number) {
@@ -280,8 +281,90 @@ export function MusicPlayer() {
 
   const [duration, setDuration] = useState(0);
 
+  // Draggable position (persisted). Default: below navbar, left edge, safe-area aware.
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const dragState = useRef<{ dx: number; dy: number; moved: boolean } | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(POS_KEY);
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (typeof p?.x === "number" && typeof p?.y === "number") setPos(p);
+      }
+    } catch {}
+  }, []);
+
+  const clampPos = useCallback((x: number, y: number) => {
+    const el = containerRef.current;
+    const w = el?.offsetWidth ?? 260;
+    const h = el?.offsetHeight ?? 44;
+    const pad = 8;
+    const maxX = Math.max(pad, window.innerWidth - w - pad);
+    const maxY = Math.max(pad, window.innerHeight - h - pad);
+    return { x: Math.min(Math.max(pad, x), maxX), y: Math.min(Math.max(pad, y), maxY) };
+  }, []);
+
+  const onDragPointerDown = (e: React.PointerEvent) => {
+    // ignore drags started on interactive controls
+    const target = e.target as HTMLElement;
+    if (target.closest("button,input,select,label,a,[role='slider']")) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    dragState.current = { dx: e.clientX - rect.left, dy: e.clientY - rect.top, moved: false };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+  const onDragPointerMove = (e: React.PointerEvent) => {
+    if (!dragState.current) return;
+    const { dx, dy } = dragState.current;
+    dragState.current.moved = true;
+    const next = clampPos(e.clientX - dx, e.clientY - dy);
+    setPos(next);
+  };
+  const onDragPointerUp = (e: React.PointerEvent) => {
+    if (!dragState.current) return;
+    const moved = dragState.current.moved;
+    dragState.current = null;
+    (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+    if (moved && pos) {
+      try { localStorage.setItem(POS_KEY, JSON.stringify(pos)); } catch {}
+    }
+  };
+
+  useEffect(() => {
+    const onResize = () => setPos((p) => (p ? clampPos(p.x, p.y) : p));
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+    };
+  }, [clampPos]);
+
+  const resetPos = () => {
+    setPos(null);
+    try { localStorage.removeItem(POS_KEY); } catch {}
+  };
+
+  const positionStyle: React.CSSProperties = pos
+    ? { left: pos.x, top: pos.y, right: "auto" }
+    : {
+        left: "max(12px, env(safe-area-inset-left))",
+        top: "calc(5rem + env(safe-area-inset-top))",
+      };
+
   return (
-    <div className="fixed left-3 top-20 z-[60] flex items-start gap-2 sm:top-24">
+    <div
+      ref={containerRef}
+      onPointerDown={onDragPointerDown}
+      onPointerMove={onDragPointerMove}
+      onPointerUp={onDragPointerUp}
+      onPointerCancel={onDragPointerUp}
+      style={{ ...positionStyle, touchAction: "none" }}
+      className="fixed z-[60] flex select-none items-start gap-2"
+    >
       <audio
         ref={audioRef}
         loop={loop && tracks.length === 1}
@@ -334,7 +417,10 @@ export function MusicPlayer() {
                 {currentTrack?.format} · {fmtSize(currentTrack?.size ?? 0)} · {fmtTime(duration)}
               </div>
             </div>
-            <button onClick={() => setOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground">
+            <button onClick={resetPos} aria-label="Reset player position" title="Reset position" className="text-muted-foreground hover:text-foreground">
+              <span className="text-[10px] font-semibold uppercase tracking-wider">Reset</span>
+            </button>
+            <button onClick={() => setOpen(false)} aria-label="Close" className="ml-1 text-muted-foreground hover:text-foreground">
               <X className="h-4 w-4" />
             </button>
           </div>
