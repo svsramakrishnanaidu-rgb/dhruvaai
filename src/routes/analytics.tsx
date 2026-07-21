@@ -145,6 +145,9 @@ function Analytics() {
       />
       <div className="mx-auto max-w-7xl px-6 py-16">
 
+      <LiveAnalysis />
+
+
 
       {/* KPI DASHBOARD */}
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
