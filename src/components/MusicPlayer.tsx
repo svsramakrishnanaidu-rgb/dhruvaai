@@ -417,7 +417,10 @@ export function MusicPlayer() {
                 {currentTrack?.format} · {fmtSize(currentTrack?.size ?? 0)} · {fmtTime(duration)}
               </div>
             </div>
-            <button onClick={() => setOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground">
+            <button onClick={resetPos} aria-label="Reset player position" title="Reset position" className="text-muted-foreground hover:text-foreground">
+              <span className="text-[10px] font-semibold uppercase tracking-wider">Reset</span>
+            </button>
+            <button onClick={() => setOpen(false)} aria-label="Close" className="ml-1 text-muted-foreground hover:text-foreground">
               <X className="h-4 w-4" />
             </button>
           </div>
