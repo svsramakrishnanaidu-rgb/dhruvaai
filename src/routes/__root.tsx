@@ -157,7 +157,7 @@ function RootComponent() {
           <CinematicLoader />
           <MusicPlayer />
           <AnimatedBackground />
-          <div className="relative flex min-h-dvh flex-col">
+          <div className="relative flex min-h-dvh flex-col ks-safe">
             <Navbar onSearchOpen={() => setSearchOpen(true)} />
             <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
               <Outlet />
