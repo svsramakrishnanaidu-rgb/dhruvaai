@@ -16,7 +16,9 @@ import { CountUp } from "@/components/CountUp";
 import { HeroBanner } from "@/components/HeroBanner";
 import heroImg from "@/assets/heroes/analytics.jpg";
 import { LiveAnalysis } from "@/components/LiveAnalysis";
-import { AgmarknetLive } from "@/components/AgmarknetLive";
+import { LiveMarketBoard } from "@/components/LiveMarketBoard";
+import { MarketInsightsPanel } from "@/components/MarketInsightsPanel";
+
 import { locationStore, useLocation } from "@/lib/location-store";
 import {
   DISTRICTS, MACRO, KPIS, EXECUTIVE, CHALLENGES, REFERENCES,
