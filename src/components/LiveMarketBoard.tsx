@@ -248,6 +248,18 @@ export function LiveMarketBoard({ title = "All-India Live Mandi Board", compact 
 
 /* ---------------- pieces ---------------- */
 
+function KpiNum({ icon, label, value, tone, prefix = "", suffix = "", decimals = 0 }: { icon: React.ReactNode; label: string; value: number; tone?: "up" | "down"; prefix?: string; suffix?: string; decimals?: number }) {
+  const fmt = (n: number) => (decimals > 0 ? n.toFixed(decimals) : Math.round(n).toLocaleString());
+  return (
+    <div className="rounded-xl border border-border/60 bg-card/40 p-3">
+      <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-muted-foreground truncate">{icon}<span className="truncate">{label}</span></div>
+      <div className={`mt-1 font-display text-xl font-bold tabular-nums ${tone === "up" ? "text-primary" : tone === "down" ? "text-destructive" : ""}`}>
+        {prefix}<AnimatedNumber value={value} format={fmt} />{suffix}
+      </div>
+    </div>
+  );
+}
+
 function Kpi({ icon, label, value, tone }: { icon: React.ReactNode; label: string; value: string; tone?: "up" | "down" }) {
   return (
     <div className="rounded-xl border border-border/60 bg-card/40 p-3">
