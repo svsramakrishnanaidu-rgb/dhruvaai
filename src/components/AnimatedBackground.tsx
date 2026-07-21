@@ -38,7 +38,7 @@ export function AnimatedBackground() {
         r: 1 + Math.random() * 3,
         vx: (Math.random() - 0.5) * 0.25,
         vy: -0.15 - Math.random() * 0.35,
-        hue: 100 + Math.random() * 60,
+        hue: [280, 195, 320, 155, 240][Math.floor(Math.random() * 5)],
         a: 0.25 + Math.random() * 0.4,
       });
     }
