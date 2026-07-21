@@ -45,9 +45,9 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
         scrolled ? "py-2" : "py-3"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 sm:px-4">
+      <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-3 sm:px-4">
         <div
-          className={`flex flex-1 items-center gap-1 rounded-full border px-2 py-1.5 transition-all sm:px-3 sm:py-2 ${
+          className={`flex min-w-0 flex-1 items-center gap-1 rounded-full border px-2 py-1.5 transition-all sm:px-3 sm:py-2 ${
             scrolled ? "glass shadow-elegant" : "glass"
           }`}
           style={{ boxShadow: scrolled ? "var(--shadow-elegant)" : undefined }}
@@ -61,7 +61,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
             </span>
           </Link>
 
-          <nav aria-label="Primary" className="ml-2 hidden min-w-0 items-center gap-1 lg:flex">
+          <nav aria-label="Primary" className="ml-2 hidden min-w-0 flex-1 items-center gap-1 overflow-hidden xl:flex">
             {NAV.map((item) => {
               const active =
                 item.to === "/"
