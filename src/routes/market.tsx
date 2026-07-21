@@ -84,6 +84,9 @@ function Market() {
           <DeepDive crop={active} mod={mod} district={loc.district} />
         </section>
 
+        {/* Trending Crops — full data */}
+        <TrendingCropsSection mod={mod} onOpen={(s) => setActiveSlug(s)} />
+
         {/* All crops grid */}
         <section className="space-y-4">
           <h2 className="font-display text-3xl font-bold">All Crops · Live Simulation</h2>
