@@ -89,45 +89,85 @@ export function LiveMarketBoard({ title = "All-India Live Mandi Board", compact 
             </div>
             <h3 className="font-display text-2xl font-bold">{title}</h3>
             <p className="text-xs text-muted-foreground">
-              Real-time daily prices across every reporting state, district and mandi — auto-refreshes every 5 min.
+              Real-time daily prices across every reporting state, district and mandi — streaming from Agmarknet every 60s.
             </p>
           </div>
           <div className="text-right text-xs text-muted-foreground">
             {updated && (
               <div className="inline-flex items-center gap-1">
-                <Clock className="h-3 w-3" /> Updated {new Date(updated).toLocaleTimeString()}
+                <Clock className="h-3 w-3" /> Updated {new Date(updated).toLocaleTimeString()} · {secondsAgo}s ago
               </div>
             )}
             <div className="mt-1 inline-flex items-center gap-1">
-              <Radio className="h-3 w-3 text-primary animate-pulse" /> {stats.total} commodities · {stats.totalArrivals.toLocaleString()} records
+              <Radio className="h-3 w-3 text-primary animate-pulse" /> Next tick in {nextIn}s · {stats.total} commodities
             </div>
           </div>
         </div>
 
-        {/* Overall KPIs */}
+        {/* Overall KPIs — animated */}
         <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-          <Kpi icon={<Package className="h-4 w-4" />} label="Commodities" value={stats.total.toString()} />
-          <Kpi icon={<Radio className="h-4 w-4" />} label="Reporting mandis" value={overall.mandis.toLocaleString()} />
-          <Kpi icon={<Sparkles className="h-4 w-4" />} label="States covered" value={overall.states.toString()} />
-          <Kpi
-            icon={overall.avgChange >= 0 ? <TrendingUp className="h-4 w-4 text-primary" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
-            label="Avg. change"
-            value={`${overall.avgChange >= 0 ? "+" : ""}${overall.avgChange.toFixed(2)}%`}
-            tone={overall.avgChange >= 0 ? "up" : "down"}
+          <KpiNum icon={<Package className="h-4 w-4" />} label="Commodities" value={stats.total} />
+          <KpiNum icon={<Radio className="h-4 w-4" />} label="Reporting mandis" value={overall.mandis} />
+          <KpiNum icon={<Sparkles className="h-4 w-4" />} label="States covered" value={overall.states} />
+          <KpiNum
+            icon={overall.avgModal >= 0 ? <TrendingUp className="h-4 w-4 text-primary" /> : <TrendingDown className="h-4 w-4" />}
+            label="Avg. modal ₹/qtl"
+            value={overall.avgModal}
+            prefix="₹"
           />
-          <Kpi
+          <KpiNum
             icon={<TrendingUp className="h-4 w-4 text-primary" />}
-            label={overall.topGainer ? `Top ▲ ${overall.topGainer.commodity}` : "Top gainer"}
-            value={overall.topGainer ? `+${overall.topGainer.deltaPct.toFixed(1)}%` : "—"}
+            label={overall.topGainer ? `▲ ${overall.topGainer.commodity}` : "Top gainer"}
+            value={overall.topGainer ? overall.topGainer.deltaPct : 0}
+            suffix="%"
+            decimals={1}
             tone="up"
           />
-          <Kpi
+          <KpiNum
             icon={<TrendingDown className="h-4 w-4 text-destructive" />}
-            label={overall.topLoser ? `Top ▼ ${overall.topLoser.commodity}` : "Top loser"}
-            value={overall.topLoser ? `${overall.topLoser.deltaPct.toFixed(1)}%` : "—"}
+            label={overall.topLoser ? `▼ ${overall.topLoser.commodity}` : "Top loser"}
+            value={overall.topLoser ? overall.topLoser.deltaPct : 0}
+            suffix="%"
+            decimals={1}
             tone="down"
           />
         </div>
+
+        {/* Live extremes strip */}
+        {(extremes.top || extremes.low) && (
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {extremes.top && (
+              <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-primary">
+                  <ArrowUp className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] uppercase tracking-widest text-primary">Highest price now</div>
+                  <div className="truncate text-sm font-semibold">{extremes.top.commodity} · {extremes.top.market}</div>
+                  <div className="text-[10px] text-muted-foreground">{extremes.top.district}, {extremes.top.state}</div>
+                </div>
+                <div className="font-display text-xl font-black tabular-nums text-primary">
+                  ₹<AnimatedNumber value={extremes.top.modal} />
+                </div>
+              </div>
+            )}
+            {extremes.low && (
+              <div className="flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-destructive/15 text-destructive">
+                  <ArrowDown className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] uppercase tracking-widest text-destructive">Lowest price now</div>
+                  <div className="truncate text-sm font-semibold">{extremes.low.commodity} · {extremes.low.market}</div>
+                  <div className="text-[10px] text-muted-foreground">{extremes.low.district}, {extremes.low.state}</div>
+                </div>
+                <div className="font-display text-xl font-black tabular-nums text-destructive">
+                  ₹<AnimatedNumber value={extremes.low.modal} />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Trending */}
