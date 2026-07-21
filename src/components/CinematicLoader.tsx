@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Sprout } from "lucide-react";
 
-const NAMES = ["Bhaskar", "Ravi", "Ramakrishna", "Vinay"];
+const NAMES = ["MR", "SRK"];
 
 export function CinematicLoader() {
   const [visible, setVisible] = useState(false);
