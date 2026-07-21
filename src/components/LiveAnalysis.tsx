@@ -78,7 +78,7 @@ function MarketPulse({ mod }: { mod: number }) {
             <Tooltip
               contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }}
               labelFormatter={(v) => new Date(Number(v)).toLocaleTimeString()}
-              formatter={(v: number) => [`₹${Math.round(v).toLocaleString()}`, "Index"]}
+              formatter={(v) => [`₹${Math.round(Number(v)).toLocaleString()}`, "Index"]}
             />
             <Area type="monotone" dataKey="v" stroke="var(--primary)" fill="url(#pulseG)" strokeWidth={2} isAnimationActive={false} />
           </AreaChart>
