@@ -9,14 +9,15 @@ import {
 import { useLocation } from "@/lib/location-store";
 import { profileFor } from "@/lib/district-profiles";
 import { HeroBanner } from "@/components/HeroBanner";
-import { TrendingUp, TrendingDown, Activity, Radio, MapPin, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Activity, MapPin, Clock } from "lucide-react";
 import heroImg from "@/assets/heroes/market.jpg";
 import {
   useLiveTicker, monthlyTrend, yearlyTrend, intradayTrend,
-  mandiComparison, highLow, computeTopMovers,
+  mandiComparison, highLow,
 } from "@/lib/live-market";
-import { AgmarknetLive } from "@/components/AgmarknetLive";
-import { useAgmarknetLive, type LiveCommodity } from "@/lib/agmarknet-live";
+import { LiveMarketBoard } from "@/components/LiveMarketBoard";
+import { MarketInsightsPanel } from "@/components/MarketInsightsPanel";
+
 
 
 export const Route = createFileRoute("/market")({
@@ -41,10 +42,6 @@ function Market() {
   const p = profileFor(loc.district);
   const mod = 1 + p.priceModifier;
 
-  const movers = useMemo(() => computeTopMovers(mod), [mod]);
-  const gainers = movers.slice(0, 5);
-  const losers = movers.slice(-5).reverse();
-
   const [activeSlug, setActiveSlug] = useState<string>(CROP_LIST[0].slug);
   const active = CROP_LIST.find((c) => c.slug === activeSlug) ?? CROP_LIST[0];
 
@@ -52,38 +49,27 @@ function Market() {
     <div>
       <HeroBanner
         image={heroImg}
-        eyebrow={`Live Mandi · ${p.state}`}
+        eyebrow="Live Mandi · All India"
         title="Market Intelligence"
-        description={`Live ticker refreshing every few seconds for ${loc.district}. Regional adjustment ${p.priceModifier >= 0 ? "+" : ""}${(p.priceModifier * 100).toFixed(0)}% applied.`}
+        description="Live prices, movers, volatility and AI-generated insights streaming from Agmarknet across every reporting mandi in India."
       />
 
-      <div className="mx-auto max-w-7xl px-6 py-12 space-y-12">
-        {/* Live ticker strip */}
-        <LiveTickerStrip state={p.state} />
+      <div className="mx-auto max-w-7xl px-6 py-12 space-y-14">
+        {/* All-India live board (replaces state-locked ticker + selector) */}
+        <LiveMarketBoard title="All-India Live Mandi Board" />
 
-        {/* Official government live mandi prices */}
-        <section className="space-y-3">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="font-display text-3xl font-bold">Official Mandi Prices · Live</h2>
-              <p className="text-sm text-muted-foreground">
-                Verified daily prices from Agmarknet (Directorate of Marketing & Inspection, Ministry of Agriculture) via data.gov.in — every state, district and mandi.
-              </p>
-            </div>
-          </div>
-          <AgmarknetLive defaultState={p.state} autoRefreshMs={5 * 60 * 1000} />
-        </section>
-
-        {/* Top movers */}
-        <section className="grid gap-6 md:grid-cols-2">
-          <MoverCard title="Top Gainers" tone="up" items={gainers} onPick={setActiveSlug} />
-          <MoverCard title="Top Losers" tone="down" items={losers} onPick={setActiveSlug} />
-        </section>
+        {/* AI-generated market intelligence brief */}
+        <MarketInsightsPanel />
 
         {/* Deep-dive analytics for selected crop */}
         <section className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-display text-3xl font-bold">Deep Analytics</h2>
+            <div>
+              <h2 className="font-display text-3xl font-bold">Deep Analytics</h2>
+              <p className="text-sm text-muted-foreground">
+                Intraday, weekly, monthly and 5-year trends with mandi comparison — regional adjustment for {loc.district} applied.
+              </p>
+            </div>
             <select
               value={activeSlug}
               onChange={(e) => setActiveSlug(e.target.value)}
@@ -99,7 +85,7 @@ function Market() {
 
         {/* All crops grid */}
         <section className="space-y-4">
-          <h2 className="font-display text-3xl font-bold">All Crops · Live</h2>
+          <h2 className="font-display text-3xl font-bold">All Crops · Live Simulation</h2>
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {CROP_LIST.map((c) => (
               <Reveal key={c.slug}>
@@ -113,101 +99,8 @@ function Market() {
   );
 }
 
-/* ---------------- Live ticker strip (marquee) ---------------- */
-function LiveTickerStrip({ state }: { state: string }) {
-  const { data, updated, loading, error } = useAgmarknetLive(state);
-  const items = data.slice(0, 30);
-  return (
-    <div className="glass overflow-hidden rounded-2xl border border-border/60">
-      <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        <span className="inline-flex items-center gap-2">
-          <Radio className="h-3.5 w-3.5 animate-pulse text-primary" />
-          Live · Agmarknet ({state}) · {items.length} commodities
-        </span>
-        {updated && (
-          <span className="inline-flex items-center gap-1 normal-case tracking-normal">
-            <Clock className="h-3 w-3" /> {new Date(updated).toLocaleTimeString()}
-          </span>
-        )}
-      </div>
-      {loading && <div className="p-4 text-sm text-muted-foreground">Loading live mandi prices…</div>}
-      {error && <div className="p-4 text-sm text-destructive">{error}</div>}
-      {!loading && !error && items.length === 0 && (
-        <div className="p-4 text-sm text-muted-foreground">No arrivals reported for {state} today.</div>
-      )}
-      {items.length > 0 && (
-        <>
-          <div className="ticker-scroll flex gap-6 py-3">
-            {[...items, ...items].map((c, i) => (
-              <TickerPill key={c.commodity + i} item={c} />
-            ))}
-          </div>
-          <style>{`
-            .ticker-scroll { animation: mkt-scroll 90s linear infinite; width: max-content; }
-            @keyframes mkt-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-            .ticker-scroll:hover { animation-play-state: paused; }
-          `}</style>
-        </>
-      )}
-    </div>
-  );
-}
-
-function TickerPill({ item }: { item: LiveCommodity }) {
-  const up = item.delta >= 0;
-  return (
-    <div className="flex shrink-0 items-center gap-2 rounded-full border border-border/50 bg-card/60 px-4 py-1.5 text-sm">
-      <span className="font-semibold">{item.commodity}</span>
-      <span className="font-display tabular-nums">₹{item.modal.toLocaleString()}</span>
-      <span className={`inline-flex items-center gap-0.5 text-xs ${up ? "text-primary" : "text-destructive"}`}>
-        {up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-        {up ? "+" : ""}{item.delta} ({item.deltaPct.toFixed(1)}%)
-      </span>
-      <span className="text-xs text-muted-foreground">{item.markets} mandis</span>
-    </div>
-  );
-}
 
 
-/* ---------------- Movers ---------------- */
-function MoverCard({
-  title, tone, items, onPick,
-}: {
-  title: string; tone: "up" | "down";
-  items: { crop: Crop; pct: number; price: number }[];
-  onPick: (slug: string) => void;
-}) {
-  const Icon = tone === "up" ? TrendingUp : TrendingDown;
-  return (
-    <div className="card-elegant p-6">
-      <div className="mb-4 flex items-center gap-2">
-        <Icon className={`h-5 w-5 ${tone === "up" ? "text-primary" : "text-destructive"}`} />
-        <h3 className="font-display text-xl font-bold">{title}</h3>
-      </div>
-      <ul className="space-y-2">
-        {items.map(({ crop, pct, price }) => (
-          <li key={crop.slug}>
-            <button
-              onClick={() => onPick(crop.slug)}
-              className="flex w-full items-center justify-between rounded-xl border border-transparent px-3 py-2 text-left hover:border-border hover:bg-card/60"
-            >
-              <span className="flex items-center gap-2">
-                <span className="text-lg">{crop.emoji}</span>
-                <span className="font-medium">{crop.name}</span>
-              </span>
-              <span className="flex items-center gap-3 text-sm">
-                <span className="font-display tabular-nums">₹{price.toLocaleString()}</span>
-                <span className={`tabular-nums ${pct >= 0 ? "text-primary" : "text-destructive"}`}>
-                  {pct >= 0 ? "+" : ""}{pct.toFixed(1)}%
-                </span>
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 /* ---------------- Deep dive ---------------- */
 function DeepDive({ crop, mod, district }: { crop: Crop; mod: number; district: string }) {
