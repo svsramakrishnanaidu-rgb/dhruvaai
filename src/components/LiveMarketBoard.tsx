@@ -44,6 +44,13 @@ export function LiveMarketBoard({ title = "All-India Live Mandi Board", compact 
 
   const gainers = useMemo(() => [...data].sort((a, b) => b.deltaPct - a.deltaPct).slice(0, 5), [data]);
   const losers = useMemo(() => [...data].sort((a, b) => a.deltaPct - b.deltaPct).slice(0, 5), [data]);
+  const overall = useMemo(() => {
+    if (!data.length) return { avgChange: 0, mandis: 0, topGainer: null as LiveCommodity | null, topLoser: null as LiveCommodity | null, states: 0 };
+    const avgChange = data.reduce((s, d) => s + d.deltaPct, 0) / data.length;
+    const mandis = data.reduce((s, d) => s + d.markets, 0);
+    const states = new Set(data.flatMap((d) => d.mandis.map((m) => m.state))).size;
+    return { avgChange, mandis, topGainer: gainers[0] ?? null, topLoser: losers[0] ?? null, states };
+  }, [data, gainers, losers]);
 
   return (
     <div className="space-y-6">
