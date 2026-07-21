@@ -59,7 +59,7 @@ function Market() {
 
       <div className="mx-auto max-w-7xl px-6 py-12 space-y-12">
         {/* Live ticker strip */}
-        <LiveTickerStrip mod={mod} />
+        <LiveTickerStrip state={p.state} />
 
         {/* Official government live mandi prices */}
         <section className="space-y-3">
