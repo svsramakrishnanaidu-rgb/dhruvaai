@@ -378,7 +378,7 @@ function SeedCalc({ onSave }: { onSave: any }) {
       </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
-        <ResultCard label="Seed required" value={<><CountUp value={Math.round(total * 10) / 10} decimals={1} /> kg</>} sub={`Recommended ${lo}–${hi} kg/acre`} />
+        <ResultCard label="Seed required" value={<><CountUp value={Math.round(total * 10) / 10} precision={1} /> kg</>} sub={`Recommended ${lo}–${hi} kg/acre`} />
         <ResultCard label="Spacing" value={ref.spacingCm} sub="Row × plant" />
         <ResultCard label="Germination adjusted" value={`${((85 / germPct - 1) * 100 >= 0 ? "+" : "")}${(((85 / germPct) - 1) * 100).toFixed(0)}%`} sub="vs. standard 85%" />
       </div>
