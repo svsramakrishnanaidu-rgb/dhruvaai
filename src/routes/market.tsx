@@ -42,10 +42,6 @@ function Market() {
   const p = profileFor(loc.district);
   const mod = 1 + p.priceModifier;
 
-  const movers = useMemo(() => computeTopMovers(mod), [mod]);
-  const gainers = movers.slice(0, 5);
-  const losers = movers.slice(-5).reverse();
-
   const [activeSlug, setActiveSlug] = useState<string>(CROP_LIST[0].slug);
   const active = CROP_LIST.find((c) => c.slug === activeSlug) ?? CROP_LIST[0];
 
@@ -53,38 +49,27 @@ function Market() {
     <div>
       <HeroBanner
         image={heroImg}
-        eyebrow={`Live Mandi · ${p.state}`}
+        eyebrow="Live Mandi · All India"
         title="Market Intelligence"
-        description={`Live ticker refreshing every few seconds for ${loc.district}. Regional adjustment ${p.priceModifier >= 0 ? "+" : ""}${(p.priceModifier * 100).toFixed(0)}% applied.`}
+        description="Live prices, movers, volatility and AI-generated insights streaming from Agmarknet across every reporting mandi in India."
       />
 
-      <div className="mx-auto max-w-7xl px-6 py-12 space-y-12">
-        {/* Live ticker strip */}
-        <LiveTickerStrip state={p.state} />
+      <div className="mx-auto max-w-7xl px-6 py-12 space-y-14">
+        {/* All-India live board (replaces state-locked ticker + selector) */}
+        <LiveMarketBoard title="All-India Live Mandi Board" />
 
-        {/* Official government live mandi prices */}
-        <section className="space-y-3">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="font-display text-3xl font-bold">Official Mandi Prices · Live</h2>
-              <p className="text-sm text-muted-foreground">
-                Verified daily prices from Agmarknet (Directorate of Marketing & Inspection, Ministry of Agriculture) via data.gov.in — every state, district and mandi.
-              </p>
-            </div>
-          </div>
-          <AgmarknetLive defaultState={p.state} autoRefreshMs={5 * 60 * 1000} />
-        </section>
-
-        {/* Top movers */}
-        <section className="grid gap-6 md:grid-cols-2">
-          <MoverCard title="Top Gainers" tone="up" items={gainers} onPick={setActiveSlug} />
-          <MoverCard title="Top Losers" tone="down" items={losers} onPick={setActiveSlug} />
-        </section>
+        {/* AI-generated market intelligence brief */}
+        <MarketInsightsPanel />
 
         {/* Deep-dive analytics for selected crop */}
         <section className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-display text-3xl font-bold">Deep Analytics</h2>
+            <div>
+              <h2 className="font-display text-3xl font-bold">Deep Analytics</h2>
+              <p className="text-sm text-muted-foreground">
+                Intraday, weekly, monthly and 5-year trends with mandi comparison — regional adjustment for {loc.district} applied.
+              </p>
+            </div>
             <select
               value={activeSlug}
               onChange={(e) => setActiveSlug(e.target.value)}
@@ -100,7 +85,7 @@ function Market() {
 
         {/* All crops grid */}
         <section className="space-y-4">
-          <h2 className="font-display text-3xl font-bold">All Crops · Live</h2>
+          <h2 className="font-display text-3xl font-bold">All Crops · Live Simulation</h2>
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {CROP_LIST.map((c) => (
               <Reveal key={c.slug}>
@@ -113,6 +98,7 @@ function Market() {
     </div>
   );
 }
+
 
 /* ---------------- Live ticker strip (marquee) ---------------- */
 function LiveTickerStrip({ state }: { state: string }) {
