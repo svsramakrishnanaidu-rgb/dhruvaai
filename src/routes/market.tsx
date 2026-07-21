@@ -15,6 +15,7 @@ import {
   useLiveTicker, monthlyTrend, yearlyTrend, intradayTrend,
   mandiComparison, highLow, computeTopMovers,
 } from "@/lib/live-market";
+import { AgmarknetLive } from "@/components/AgmarknetLive";
 
 export const Route = createFileRoute("/market")({
   head: () => ({
