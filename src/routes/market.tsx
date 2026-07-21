@@ -19,6 +19,8 @@ import {
 import { LiveMarketBoard } from "@/components/LiveMarketBoard";
 import { MarketInsightsPanel } from "@/components/MarketInsightsPanel";
 import { MarketCommandCenter } from "@/components/MarketCommandCenter";
+import { TopTrendingBar } from "@/components/TopTrendingBar";
+import { APFamousCrops } from "@/components/APFamousCrops";
 
 
 
@@ -57,8 +59,14 @@ function Market() {
       />
 
       <div className="mx-auto max-w-7xl px-6 py-12 space-y-14">
+        {/* Live trending bar — hottest crop right now in AP vs India */}
+        <TopTrendingBar />
+
         {/* Enterprise command center: status · KPIs · alerts · leaderboard · AI signals */}
         <MarketCommandCenter />
+
+        {/* Guntur / AP famous crops — live from Agmarknet */}
+        <APFamousCrops />
 
         {/* All-India live board (replaces state-locked ticker + selector) */}
         <LiveMarketBoard title="All-India Live Mandi Board" />
