@@ -38,7 +38,7 @@ export function AnimatedBackground() {
         r: 1 + Math.random() * 3,
         vx: (Math.random() - 0.5) * 0.25,
         vy: -0.15 - Math.random() * 0.35,
-        hue: 100 + Math.random() * 60,
+        hue: [280, 195, 320, 155, 240][Math.floor(Math.random() * 5)],
         a: 0.25 + Math.random() * 0.4,
       });
     }
@@ -51,7 +51,7 @@ export function AnimatedBackground() {
       ctx.clearRect(0, 0, w, h);
       // soft radial spotlight following mouse
       const g = ctx.createRadialGradient(mx, my, 0, mx, my, 420);
-      g.addColorStop(0, "rgba(180,255,150,0.10)");
+      g.addColorStop(0, "rgba(140,120,255,0.14)");
       g.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, w, h);
@@ -92,6 +92,31 @@ export function AnimatedBackground() {
         }}
       />
       <canvas ref={ref} className="absolute inset-0 h-full w-full" aria-hidden />
+      {/* aurora blobs */}
+      <div
+        aria-hidden
+        className="absolute -left-24 top-1/3 h-[520px] w-[520px] rounded-full opacity-40 blur-3xl"
+        style={{
+          background: "radial-gradient(circle, color-mix(in oklab, var(--primary) 60%, transparent), transparent 65%)",
+          animation: "float-y 12s ease-in-out infinite",
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute right-[-8rem] top-10 h-[440px] w-[440px] rounded-full opacity-35 blur-3xl"
+        style={{
+          background: "radial-gradient(circle, color-mix(in oklab, var(--accent) 55%, transparent), transparent 65%)",
+          animation: "float-y 16s ease-in-out infinite reverse",
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute bottom-[-6rem] left-1/3 h-[520px] w-[520px] rounded-full opacity-30 blur-3xl"
+        style={{
+          background: "radial-gradient(circle, color-mix(in oklab, var(--monsoon) 60%, transparent), transparent 65%)",
+          animation: "float-y 20s ease-in-out infinite",
+        }}
+      />
       {/* drifting leaves */}
       {Array.from({ length: 6 }).map((_, i) => (
         <span
