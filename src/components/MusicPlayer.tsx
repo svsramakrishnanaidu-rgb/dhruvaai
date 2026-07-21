@@ -17,6 +17,7 @@ type Track = {
 };
 
 const STORAGE_KEY = "krish.music.v1";
+const POS_KEY = "krish.music.pos.v1";
 const ACCEPT = ".mp3,.wav,.flac,.aac,.ogg,.m4a,audio/*";
 
 function fmtSize(b: number) {
