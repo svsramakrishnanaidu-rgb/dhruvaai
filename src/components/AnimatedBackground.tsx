@@ -92,6 +92,31 @@ export function AnimatedBackground() {
         }}
       />
       <canvas ref={ref} className="absolute inset-0 h-full w-full" aria-hidden />
+      {/* aurora blobs */}
+      <div
+        aria-hidden
+        className="absolute -left-24 top-1/3 h-[520px] w-[520px] rounded-full opacity-40 blur-3xl"
+        style={{
+          background: "radial-gradient(circle, color-mix(in oklab, var(--primary) 60%, transparent), transparent 65%)",
+          animation: "float-y 12s ease-in-out infinite",
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute right-[-8rem] top-10 h-[440px] w-[440px] rounded-full opacity-35 blur-3xl"
+        style={{
+          background: "radial-gradient(circle, color-mix(in oklab, var(--accent) 55%, transparent), transparent 65%)",
+          animation: "float-y 16s ease-in-out infinite reverse",
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute bottom-[-6rem] left-1/3 h-[520px] w-[520px] rounded-full opacity-30 blur-3xl"
+        style={{
+          background: "radial-gradient(circle, color-mix(in oklab, var(--monsoon) 60%, transparent), transparent 65%)",
+          animation: "float-y 20s ease-in-out infinite",
+        }}
+      />
       {/* drifting leaves */}
       {Array.from({ length: 6 }).map((_, i) => (
         <span
