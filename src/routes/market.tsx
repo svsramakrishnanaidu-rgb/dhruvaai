@@ -16,6 +16,8 @@ import {
   mandiComparison, highLow, computeTopMovers,
 } from "@/lib/live-market";
 import { AgmarknetLive } from "@/components/AgmarknetLive";
+import { useAgmarknetLive, type LiveCommodity } from "@/lib/agmarknet-live";
+
 
 export const Route = createFileRoute("/market")({
   head: () => ({
@@ -57,7 +59,7 @@ function Market() {
 
       <div className="mx-auto max-w-7xl px-6 py-12 space-y-12">
         {/* Live ticker strip */}
-        <LiveTickerStrip mod={mod} />
+        <LiveTickerStrip state={p.state} />
 
         {/* Official government live mandi prices */}
         <section className="space-y-3">
@@ -112,49 +114,60 @@ function Market() {
 }
 
 /* ---------------- Live ticker strip (marquee) ---------------- */
-function LiveTickerStrip({ mod }: { mod: number }) {
-  const items = CROP_LIST.slice(0, 20);
+function LiveTickerStrip({ state }: { state: string }) {
+  const { data, updated, loading, error } = useAgmarknetLive(state);
+  const items = data.slice(0, 30);
   return (
     <div className="glass overflow-hidden rounded-2xl border border-border/60">
-      <div className="flex items-center gap-3 border-b border-border/60 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        <Radio className="h-3.5 w-3.5 animate-pulse text-primary" />
-        Live · updates every 4s
+      <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <span className="inline-flex items-center gap-2">
+          <Radio className="h-3.5 w-3.5 animate-pulse text-primary" />
+          Live · Agmarknet ({state}) · {items.length} commodities
+        </span>
+        {updated && (
+          <span className="inline-flex items-center gap-1 normal-case tracking-normal">
+            <Clock className="h-3 w-3" /> {new Date(updated).toLocaleTimeString()}
+          </span>
+        )}
       </div>
-      <div className="ticker-scroll flex gap-6 py-3">
-        {[...items, ...items].map((c, i) => (
-          <TickerPill key={c.slug + i} crop={c} mod={mod} />
-        ))}
-      </div>
-      <style>{`
-        .ticker-scroll {
-          animation: mkt-scroll 60s linear infinite;
-          width: max-content;
-        }
-        @keyframes mkt-scroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-        .ticker-scroll:hover { animation-play-state: paused; }
-      `}</style>
+      {loading && <div className="p-4 text-sm text-muted-foreground">Loading live mandi prices…</div>}
+      {error && <div className="p-4 text-sm text-destructive">{error}</div>}
+      {!loading && !error && items.length === 0 && (
+        <div className="p-4 text-sm text-muted-foreground">No arrivals reported for {state} today.</div>
+      )}
+      {items.length > 0 && (
+        <>
+          <div className="ticker-scroll flex gap-6 py-3">
+            {[...items, ...items].map((c, i) => (
+              <TickerPill key={c.commodity + i} item={c} />
+            ))}
+          </div>
+          <style>{`
+            .ticker-scroll { animation: mkt-scroll 90s linear infinite; width: max-content; }
+            @keyframes mkt-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+            .ticker-scroll:hover { animation-play-state: paused; }
+          `}</style>
+        </>
+      )}
     </div>
   );
 }
 
-function TickerPill({ crop, mod }: { crop: Crop; mod: number }) {
-  const { price, delta } = useLiveTicker(crop.marketPrice.price * mod);
-  const up = delta >= 0;
+function TickerPill({ item }: { item: LiveCommodity }) {
+  const up = item.delta >= 0;
   return (
     <div className="flex shrink-0 items-center gap-2 rounded-full border border-border/50 bg-card/60 px-4 py-1.5 text-sm">
-      <span>{crop.emoji}</span>
-      <span className="font-semibold">{crop.name}</span>
-      <span className="font-display tabular-nums">₹{price.toLocaleString()}</span>
+      <span className="font-semibold">{item.commodity}</span>
+      <span className="font-display tabular-nums">₹{item.modal.toLocaleString()}</span>
       <span className={`inline-flex items-center gap-0.5 text-xs ${up ? "text-primary" : "text-destructive"}`}>
         {up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-        {up ? "+" : ""}{delta.toFixed(0)}
+        {up ? "+" : ""}{item.delta} ({item.deltaPct.toFixed(1)}%)
       </span>
+      <span className="text-xs text-muted-foreground">{item.markets} mandis</span>
     </div>
   );
 }
+
 
 /* ---------------- Movers ---------------- */
 function MoverCard({
