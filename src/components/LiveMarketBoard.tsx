@@ -281,7 +281,7 @@ function CommodityCard({ item, expanded, onToggle }: { item: LiveCommodity; expa
                 </defs>
                 <XAxis dataKey="x" hide />
                 <YAxis hide domain={["auto", "auto"]} />
-                <Tooltip contentStyle={CHART_TOOLTIP} formatter={(v: number) => `₹${v.toLocaleString()}`} />
+                <Tooltip contentStyle={CHART_TOOLTIP} formatter={(v) => `₹${Number(v).toLocaleString()}`} />
                 <Area type="monotone" dataKey="y" stroke={up ? "var(--primary)" : "var(--destructive)"} fill={`url(#sp-${item.commodity})`} strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
