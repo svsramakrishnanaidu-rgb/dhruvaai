@@ -161,6 +161,41 @@
   }
 }
 
+@utility aurora-border {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-aurora);
+    background-size: 220% 220%;
+    animation: aurora-spin 14s linear infinite;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.8;
+  }
+}
+
+@utility neon {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent),
+    0 0 24px -4px color-mix(in oklab, var(--primary) 55%, transparent),
+    0 0 60px -10px color-mix(in oklab, var(--accent) 45%, transparent);
+}
+
+@keyframes aurora-spin {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 @utility story-link {
   position: relative;
   display: inline-block;
