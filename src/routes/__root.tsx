@@ -15,7 +15,7 @@ import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CinematicLoader } from "@/components/CinematicLoader";
-import { BackgroundMusic } from "@/components/BackgroundMusic";
+import { MusicPlayer } from "@/components/MusicPlayer";
 import { SearchDialog } from "@/components/SearchDialog";
 import { LeoAssistant } from "@/components/LeoAssistant";
 import { I18nProvider } from "@/lib/i18n";
