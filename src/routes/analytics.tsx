@@ -18,6 +18,7 @@ import heroImg from "@/assets/heroes/analytics.jpg";
 import { LiveAnalysis } from "@/components/LiveAnalysis";
 import { LiveMarketBoard } from "@/components/LiveMarketBoard";
 import { MarketInsightsPanel } from "@/components/MarketInsightsPanel";
+import { MarketCommandCenter } from "@/components/MarketCommandCenter";
 
 import { locationStore, useLocation } from "@/lib/location-store";
 import {
