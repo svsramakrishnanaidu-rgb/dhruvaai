@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import {
   TrendingUp, TrendingDown, Radio, Clock, Search, ArrowUpDown,
-  Flame, Snowflake, Sparkles, Package, ChevronDown, ChevronUp,
+  Flame, Snowflake, Sparkles, Package, ChevronDown, ChevronUp, ArrowUp, ArrowDown,
 } from "lucide-react";
 import { useAgmarknetLive, type LiveCommodity } from "@/lib/agmarknet-live";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 
 type SortKey = "arrivals" | "modal" | "deltaPct" | "volatility" | "commodity";
 type Filter = "all" | "gainers" | "losers" | "volatile" | "high-arrivals";
