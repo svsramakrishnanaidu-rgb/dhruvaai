@@ -15,6 +15,7 @@ import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
 import { HeroBanner } from "@/components/HeroBanner";
 import heroImg from "@/assets/heroes/analytics.jpg";
+import { LiveAnalysis } from "@/components/LiveAnalysis";
 import { locationStore, useLocation } from "@/lib/location-store";
 import {
   DISTRICTS, MACRO, KPIS, EXECUTIVE, CHALLENGES, REFERENCES,
@@ -143,6 +144,9 @@ function Analytics() {
         description="A spatial & quantitative matrix of area, yield and annual output metrics across India's foremost agricultural clusters — Rice, Wheat, Pulses, Oilseeds and Commercial crops."
       />
       <div className="mx-auto max-w-7xl px-6 py-16">
+
+      <LiveAnalysis />
+
 
 
       {/* KPI DASHBOARD */}
