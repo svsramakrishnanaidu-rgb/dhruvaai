@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import {
   TrendingUp, TrendingDown, Radio, Clock, Search, ArrowUpDown,
-  Flame, Snowflake, Sparkles, Package, Activity, ChevronDown, ChevronUp,
+  Flame, Snowflake, Sparkles, Package, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { useAgmarknetLive, type LiveCommodity } from "@/lib/agmarknet-live";
 
