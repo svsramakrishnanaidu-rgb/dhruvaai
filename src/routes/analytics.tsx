@@ -148,6 +148,22 @@ function Analytics() {
 
       <LiveAnalysis />
 
+      {/* Live state-wise mandi analytics */}
+      <section className="mt-10 space-y-3">
+        <div>
+          <h2 className="font-display text-3xl font-bold">State-Wise Live Market Analysis</h2>
+          <p className="text-sm text-muted-foreground">
+            Real-time mandi prices sourced from Agmarknet (data.gov.in). Compare states, districts, mandis and varieties with live movement indicators.
+          </p>
+        </div>
+        <AgmarknetLive
+          defaultState={loc.state || ""}
+          defaultCommodity=""
+          compact
+          title="Compare Mandis Across India"
+        />
+      </section>
+
 
 
       {/* KPI DASHBOARD */}
