@@ -1,510 +1,493 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { CROP_LIST, type Crop } from "@/data/crops";
-import { Reveal } from "@/components/Reveal";
+import { useEffect, useMemo, useState } from "react";
 import {
-  LineChart, Line, AreaChart, Area, BarChart, Bar,
-  ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid,
-} from "recharts";
-import { useLocation } from "@/lib/location-store";
-import { profileFor } from "@/lib/district-profiles";
+  TrendingUp, TrendingDown, Minus, Search, Star, MapPin, Clock,
+  Radio, Flame, RefreshCw, SlidersHorizontal, IndianRupee, Activity,
+} from "lucide-react";
+import { AreaChart, Area, ResponsiveContainer, YAxis, Tooltip } from "recharts";
+import { useAgmarknetLive, type LiveCommodity } from "@/lib/agmarknet-live";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { HeroBanner } from "@/components/HeroBanner";
-import { TrendingUp, TrendingDown, Activity, MapPin, Clock, Flame, Droplets, Sprout, IndianRupee } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import heroImg from "@/assets/heroes/market.jpg";
-import {
-  useLiveTicker, monthlyTrend, yearlyTrend, intradayTrend,
-  mandiComparison, highLow,
-} from "@/lib/live-market";
-import { LiveMarketBoard } from "@/components/LiveMarketBoard";
-import { MarketInsightsPanel } from "@/components/MarketInsightsPanel";
-import { MarketCommandCenter } from "@/components/MarketCommandCenter";
-import { TopTrendingBar } from "@/components/TopTrendingBar";
-import { APFamousCrops } from "@/components/APFamousCrops";
-
-
 
 export const Route = createFileRoute("/market")({
   head: () => ({
     meta: [
-      { title: "Live Market Prices — Krish Sense" },
-      { name: "description", content: "Live-updating mandi prices, intraday & yearly trends, mandi comparison, top movers and MSP for every crop." },
+      { title: "Live Crop Market — Krish Sense" },
+      { name: "description", content: "Real-time mandi prices for India and Andhra Pradesh with trending crop signals, live search and stack-style dashboard cards." },
+      { property: "og:title", content: "Live Crop Market — Krish Sense" },
+      { property: "og:description", content: "Real-time mandi prices, trending crops and district signals across India and Andhra Pradesh." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Market,
+  component: MarketPage,
 });
 
-const CHART_TOOLTIP = {
-  background: "var(--card)",
-  border: "1px solid var(--border)",
-  borderRadius: 12,
-  fontSize: 12,
-} as const;
+/* ------------------------------------------------------------------ */
+/*  Utilities                                                          */
+/* ------------------------------------------------------------------ */
 
-function Market() {
-  const loc = useLocation();
-  const p = profileFor(loc.district);
-  const mod = 1 + p.priceModifier;
+const FAV_KEY = "ks.market.favs";
+type SortKey = "trending" | "priceHigh" | "priceLow" | "updated" | "gainers" | "losers";
 
-  const [activeSlug, setActiveSlug] = useState<string>(CROP_LIST[0].slug);
-  const active = CROP_LIST.find((c) => c.slug === activeSlug) ?? CROP_LIST[0];
+function useFavorites() {
+  const [favs, setFavs] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(FAV_KEY);
+      if (raw) setFavs(new Set(JSON.parse(raw) as string[]));
+    } catch { /* ignore */ }
+  }, []);
+  const toggle = (name: string) => {
+    setFavs((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name); else next.add(name);
+      try { localStorage.setItem(FAV_KEY, JSON.stringify([...next])); } catch { /* ignore */ }
+      return next;
+    });
+  };
+  return { favs, toggle };
+}
+
+function trendTone(pct: number): { label: "up" | "down" | "flat"; cls: string; icon: typeof TrendingUp } {
+  if (pct > 0.25) return { label: "up", cls: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25", icon: TrendingUp };
+  if (pct < -0.25) return { label: "down", cls: "text-red-400 bg-red-500/10 border-red-500/25", icon: TrendingDown };
+  return { label: "flat", cls: "text-muted-foreground bg-muted/40 border-border/60", icon: Minus };
+}
+
+function timeAgo(iso: string): string {
+  if (!iso) return "—";
+  const diff = Math.max(0, Date.now() - new Date(iso).getTime());
+  const s = Math.floor(diff / 1000);
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  return `${h}h ago`;
+}
+
+function useNow(intervalMs = 1000) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), intervalMs);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+  return now;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Stack Card                                                         */
+/* ------------------------------------------------------------------ */
+
+interface StackCardProps {
+  c: LiveCommodity;
+  updated: string;
+  rank?: number;
+  isFav: boolean;
+  onFav: () => void;
+}
+
+function StackCard({ c, updated, rank, isFav, onFav }: StackCardProps) {
+  const tone = trendTone(c.deltaPct);
+  const TrendIcon = tone.icon;
+  const gradientId = `spark-${c.commodity.replace(/[^a-z0-9]/gi, "")}`;
+  const arrow = tone.label === "up" ? "▲" : tone.label === "down" ? "▼" : "➜";
+
+  return (
+    <article
+      className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/60 p-4 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-elegant sm:p-5"
+      style={{ animation: "fade-in 0.4s ease-out both" }}
+    >
+      {/* Corner accents */}
+      <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-primary/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100 opacity-60" />
+      {rank !== undefined && (
+        <div className="absolute left-3 top-3 grid h-6 w-6 place-items-center rounded-full bg-primary/20 text-[10px] font-bold text-primary ring-1 ring-primary/40">
+          {rank}
+        </div>
+      )}
+
+      {/* Header */}
+      <header className={`flex items-start justify-between gap-2 ${rank !== undefined ? "pl-8" : ""}`}>
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate font-display text-base font-bold leading-tight sm:text-lg">{c.commodity}</h3>
+          <div className="mt-1 flex items-center gap-1 truncate text-[11px] text-muted-foreground">
+            <MapPin className="h-3 w-3 shrink-0" />
+            <span className="truncate">{c.topMarket || "—"}</span>
+          </div>
+        </div>
+        <button
+          onClick={onFav}
+          aria-label={isFav ? "Remove favorite" : "Add favorite"}
+          className="shrink-0 rounded-full p-1.5 text-muted-foreground transition hover:bg-secondary/60 hover:text-primary"
+        >
+          <Star className={`h-4 w-4 transition ${isFav ? "fill-primary text-primary" : ""}`} />
+        </button>
+      </header>
+
+      {/* Price */}
+      <div className="mt-3 flex items-end justify-between gap-2">
+        <div className="min-w-0">
+          <div className="flex items-baseline gap-1 font-display text-2xl font-black tabular-nums sm:text-3xl">
+            <IndianRupee className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+            <AnimatedNumber value={c.modal} />
+          </div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">₹ / Quintal</div>
+        </div>
+        <div className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-bold tabular-nums ${tone.cls}`}>
+          <TrendIcon className="h-3 w-3" />
+          <span>{arrow}</span>
+          <span>{c.deltaPct >= 0 ? "+" : ""}{c.deltaPct.toFixed(2)}%</span>
+        </div>
+      </div>
+
+      {/* Sparkline */}
+      <div className="mt-3 h-14 -mx-1">
+        <ResponsiveContainer>
+          <AreaChart data={c.weekly} margin={{ top: 2, right: 2, left: 2, bottom: 0 }}>
+            <defs>
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={tone.label === "down" ? "#f87171" : "var(--primary)"} stopOpacity={0.55} />
+                <stop offset="100%" stopColor={tone.label === "down" ? "#f87171" : "var(--primary)"} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <YAxis hide domain={["auto", "auto"]} />
+            <Tooltip
+              contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 11 }}
+              formatter={(v) => [`₹${v}`, "Avg"]}
+              labelFormatter={(l) => `Date: ${l}`}
+            />
+            <Area
+              type="monotone"
+              dataKey="avg"
+              stroke={tone.label === "down" ? "#f87171" : "var(--primary)"}
+              strokeWidth={2}
+              fill={`url(#${gradientId})`}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Footer meta */}
+      <footer className="mt-3 flex items-center justify-between border-t border-border/40 pt-2.5 text-[10px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1">
+          <span className={`h-1.5 w-1.5 rounded-full ${c.status === "OPEN" ? "bg-emerald-400 animate-pulse" : "bg-muted-foreground/50"}`} />
+          {c.status === "OPEN" ? "LIVE" : "CLOSED"}
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Clock className="h-3 w-3" />
+          {timeAgo(updated)}
+        </span>
+        <span className="tabular-nums">{c.markets} mandis</span>
+      </footer>
+    </article>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Board                                                              */
+/* ------------------------------------------------------------------ */
+
+interface BoardProps {
+  title: string;
+  subtitle: string;
+  scope: "India" | "Andhra Pradesh";
+  data: LiveCommodity[];
+  updated: string;
+  loading: boolean;
+  error: string | null;
+  favs: Set<string>;
+  onFav: (name: string) => void;
+}
+
+function Board({ title, subtitle, scope, data, updated, loading, error, favs, onFav }: BoardProps) {
+  const [q, setQ] = useState("");
+  const [sort, setSort] = useState<SortKey>("trending");
+  const [favOnly, setFavOnly] = useState(false);
+
+  const filtered = useMemo(() => {
+    let list = [...data];
+    if (q.trim()) {
+      const s = q.toLowerCase();
+      list = list.filter((d) => d.commodity.toLowerCase().includes(s) || d.topMarket.toLowerCase().includes(s));
+    }
+    if (favOnly) list = list.filter((d) => favs.has(d.commodity));
+    switch (sort) {
+      case "priceHigh": list.sort((a, b) => b.modal - a.modal); break;
+      case "priceLow":  list.sort((a, b) => a.modal - b.modal); break;
+      case "gainers":   list.sort((a, b) => b.deltaPct - a.deltaPct); break;
+      case "losers":    list.sort((a, b) => a.deltaPct - b.deltaPct); break;
+      case "updated":   list.sort((a, b) => b.arrivals - a.arrivals); break;
+      case "trending":  list.sort((a, b) => (b.arrivals * Math.abs(b.deltaPct)) - (a.arrivals * Math.abs(a.deltaPct))); break;
+    }
+    return list;
+  }, [data, q, sort, favOnly, favs]);
+
+  return (
+    <section className="space-y-4">
+      {/* Header */}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="min-w-0">
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+            <Radio className="h-3 w-3 animate-pulse" /> {scope} · Live
+          </div>
+          <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{title}</h2>
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
+        </div>
+        <div className="text-right text-[11px] text-muted-foreground">
+          <div className="inline-flex items-center gap-1">
+            <RefreshCw className="h-3 w-3" /> Auto-refresh · 60s
+          </div>
+          {updated && <div>Last update {timeAgo(updated)}</div>}
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border/60 bg-card/40 p-2 backdrop-blur-md">
+        <div className="relative min-w-0 flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search crop or mandi…"
+            className="w-full rounded-xl border border-border/50 bg-background/70 py-2 pl-9 pr-3 text-sm outline-none placeholder:text-muted-foreground/70 focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
+        <div className="inline-flex items-center gap-1 rounded-xl border border-border/50 bg-background/70 px-2 py-1.5 text-xs">
+          <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortKey)}
+            className="bg-transparent text-xs font-medium outline-none"
+          >
+            <option value="trending">Trending</option>
+            <option value="gainers">Top Gainers</option>
+            <option value="losers">Top Losers</option>
+            <option value="priceHigh">Price · High to Low</option>
+            <option value="priceLow">Price · Low to High</option>
+            <option value="updated">Most Active</option>
+          </select>
+        </div>
+        <button
+          onClick={() => setFavOnly((v) => !v)}
+          className={`inline-flex items-center gap-1 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
+            favOnly ? "border-primary bg-primary text-primary-foreground" : "border-border/50 bg-background/70 text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Star className={`h-3.5 w-3.5 ${favOnly ? "fill-current" : ""}`} /> Favorites
+        </button>
+      </div>
+
+      {/* Error */}
+      {error && (
+        <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+
+      {/* Grid */}
+      {loading && !filtered.length ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-56 animate-pulse rounded-2xl bg-muted/30" />
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="rounded-2xl border border-border/60 bg-card/40 p-10 text-center">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-muted/40">
+            <Search className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <p className="mt-3 text-sm text-muted-foreground">
+            {favOnly ? "No favorites yet. Tap ⭐ on any card to pin it." : "No live prices match your search."}
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filtered.slice(0, 32).map((c) => (
+            <StackCard
+              key={`${scope}-${c.commodity}`}
+              c={c}
+              updated={updated}
+              isFav={favs.has(c.commodity)}
+              onFav={() => onFav(c.commodity)}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Trending Panel                                                     */
+/* ------------------------------------------------------------------ */
+
+function TrendingPanel({ india, ap, favs, onFav, updated }: {
+  india: LiveCommodity[]; ap: LiveCommodity[];
+  favs: Set<string>; onFav: (n: string) => void; updated: string;
+}) {
+  const combined = useMemo(() => {
+    const map = new Map<string, LiveCommodity>();
+    for (const c of [...ap, ...india]) {
+      const key = c.commodity;
+      const existing = map.get(key);
+      if (!existing || c.arrivals > existing.arrivals) map.set(key, c);
+    }
+    return [...map.values()]
+      .filter((c) => c.arrivals >= 3)
+      .sort((a, b) => (b.arrivals * (1 + Math.abs(b.deltaPct) / 10)) - (a.arrivals * (1 + Math.abs(a.deltaPct) / 10)))
+      .slice(0, 8);
+  }, [india, ap]);
+
+  return (
+    <section className="space-y-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+            <Flame className="h-3 w-3" /> Trending Now
+          </div>
+          <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">Hottest Crops · India + AP</h2>
+          <p className="text-sm text-muted-foreground">Ranked by combined market activity and price momentum.</p>
+        </div>
+      </div>
+
+      {combined.length === 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-52 animate-pulse rounded-2xl bg-muted/30" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {combined.map((c, i) => (
+            <StackCard
+              key={`trend-${c.commodity}`}
+              c={c}
+              updated={updated}
+              rank={i + 1}
+              isFav={favs.has(c.commodity)}
+              onFav={() => onFav(c.commodity)}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  KPI Strip                                                          */
+/* ------------------------------------------------------------------ */
+
+function KpiStrip({
+  indiaData, apData, updated, loading,
+}: {
+  indiaData: LiveCommodity[]; apData: LiveCommodity[]; updated: string; loading: boolean;
+}) {
+  const now = useNow(1000);
+  const stats = useMemo(() => {
+    const all = [...indiaData, ...apData];
+    const gainers = all.filter((c) => c.deltaPct > 0).length;
+    const losers = all.filter((c) => c.deltaPct < 0).length;
+    const mandis = all.reduce((s, c) => s + c.markets, 0);
+    return { total: all.length, gainers, losers, mandis };
+  }, [indiaData, apData]);
+  const age = updated ? Math.floor((now - new Date(updated).getTime()) / 1000) : 0;
+
+  const cards = [
+    { label: "Commodities Tracked", value: stats.total, icon: Activity, tone: "text-primary" },
+    { label: "Gainers", value: stats.gainers, icon: TrendingUp, tone: "text-emerald-400" },
+    { label: "Losers", value: stats.losers, icon: TrendingDown, tone: "text-red-400" },
+    { label: "Reporting Mandis", value: stats.mandis, icon: MapPin, tone: "text-primary" },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      {cards.map((k) => {
+        const Icon = k.icon;
+        return (
+          <div key={k.label} className="rounded-2xl border border-border/60 bg-card/50 p-4 backdrop-blur-md">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.label}</span>
+              <Icon className={`h-4 w-4 ${k.tone}`} />
+            </div>
+            <div className="mt-1 font-display text-2xl font-black tabular-nums sm:text-3xl">
+              {loading ? "…" : <AnimatedNumber value={k.value} />}
+            </div>
+          </div>
+        );
+      })}
+      <div className="col-span-2 md:col-span-4">
+        <div className="flex items-center justify-between rounded-full border border-border/60 bg-card/40 px-4 py-2 text-[11px] text-muted-foreground">
+          <span className="inline-flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            Streaming from Agmarknet · Ministry of Agriculture (data.gov.in)
+          </span>
+          <span className="tabular-nums">Feed age: {age}s · Next tick in {Math.max(0, 60 - (age % 60))}s</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Page                                                               */
+/* ------------------------------------------------------------------ */
+
+function MarketPage() {
+  const india = useAgmarknetLive({ limit: 3000, refreshMs: 60_000 });
+  const ap = useAgmarknetLive({ state: "Andhra Pradesh", limit: 2000, refreshMs: 60_000 });
+  const { favs, toggle } = useFavorites();
 
   return (
     <div>
       <HeroBanner
         image={heroImg}
-        eyebrow="Live Mandi · All India"
-        title="Market Intelligence"
-        description="Live prices, movers, volatility and AI-generated insights streaming from Agmarknet across every reporting mandi in India."
+        eyebrow="Live Trading Dashboard"
+        title="Crop Market"
+        description="A real-time agricultural trading floor — live mandi prices across India and Andhra Pradesh with trending signals, stack-card intelligence and auto-refresh."
       />
 
-      <div className="mx-auto max-w-7xl px-6 py-12 space-y-14">
-        {/* Live trending bar — hottest crop right now in AP vs India */}
-        <TopTrendingBar />
+      <div className="ks-container space-y-14 py-10 sm:py-14">
+        <KpiStrip
+          indiaData={india.data}
+          apData={ap.data}
+          updated={india.updated || ap.updated}
+          loading={india.loading && ap.loading}
+        />
 
-        {/* Enterprise command center: status · KPIs · alerts · leaderboard · AI signals */}
-        <MarketCommandCenter />
+        <TrendingPanel
+          india={india.data}
+          ap={ap.data}
+          favs={favs}
+          onFav={toggle}
+          updated={india.updated || ap.updated}
+        />
 
-        {/* Guntur / AP famous crops — live from Agmarknet */}
-        <APFamousCrops />
+        <Board
+          title="India Live Crops"
+          subtitle="Latest mandi prices streaming from every reporting market across India."
+          scope="India"
+          data={india.data}
+          updated={india.updated}
+          loading={india.loading}
+          error={india.error}
+          favs={favs}
+          onFav={toggle}
+        />
 
-        {/* All-India live board (replaces state-locked ticker + selector) */}
-        <LiveMarketBoard title="All-India Live Mandi Board" />
-
-        {/* AI-generated market intelligence brief */}
-        <MarketInsightsPanel />
-
-        {/* Deep-dive analytics for selected crop */}
-        <section className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="font-display text-3xl font-bold">Deep Analytics</h2>
-              <p className="text-sm text-muted-foreground">
-                Intraday, weekly, monthly and 5-year trends with mandi comparison — regional adjustment for {loc.district} applied.
-              </p>
-            </div>
-            <select
-              value={activeSlug}
-              onChange={(e) => setActiveSlug(e.target.value)}
-              className="rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium"
-            >
-              {CROP_LIST.map((c) => (
-                <option key={c.slug} value={c.slug}>{c.emoji} {c.name}</option>
-              ))}
-            </select>
-          </div>
-          <DeepDive crop={active} mod={mod} district={loc.district} />
-        </section>
-
-        {/* Trending Crops — full data */}
-        <TrendingCropsSection mod={mod} onOpen={(s) => setActiveSlug(s)} />
-
-        {/* All crops grid */}
-        <section className="space-y-4">
-          <h2 className="font-display text-3xl font-bold">All Crops · Live Simulation</h2>
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {CROP_LIST.map((c) => (
-              <Reveal key={c.slug}>
-                <CropLiveCard crop={c} mod={mod} onOpen={() => setActiveSlug(c.slug)} />
-              </Reveal>
-            ))}
-          </div>
-        </section>
+        <Board
+          title="Andhra Pradesh Live Crops"
+          subtitle="District-wise AP mandi rates — paddy, chilli, cotton, turmeric, groundnut and more."
+          scope="Andhra Pradesh"
+          data={ap.data}
+          updated={ap.updated}
+          loading={ap.loading}
+          error={ap.error}
+          favs={favs}
+          onFav={toggle}
+        />
       </div>
-    </div>
-  );
-}
-
-
-
-
-/* ---------------- Deep dive ---------------- */
-function DeepDive({ crop, mod, district }: { crop: Crop; mod: number; district: string }) {
-  const intraday = useMemo(() => intradayTrend(crop, mod), [crop, mod]);
-  const monthly = useMemo(() => monthlyTrend(crop, mod), [crop, mod]);
-  const yearly = useMemo(() => yearlyTrend(crop, mod), [crop, mod]);
-  const mandis = useMemo(() => mandiComparison(crop, district, mod), [crop, district, mod]);
-  const week = crop.marketPrice.trend.map((t) => ({ label: t.day, price: Math.round(t.price * mod) }));
-  const { price: livePrice, delta, updatedAt } = useLiveTicker(crop.marketPrice.price * mod);
-  const hlM = highLow(monthly);
-  const hlY = highLow(yearly);
-  const msp = crop.marketPrice.msp;
-  const vsMsp = ((livePrice - msp) / msp) * 100;
-
-  return (
-    <div className="card-elegant overflow-hidden">
-      {/* Header */}
-      <div className="grid gap-6 border-b border-border/60 p-6 md:grid-cols-4">
-        <div className="md:col-span-2">
-          <div className="flex items-center gap-3">
-            <span className="text-4xl">{crop.emoji}</span>
-            <div>
-              <div className="font-display text-2xl font-bold">{crop.name}</div>
-              <div className="text-xs text-muted-foreground">{crop.scientificName}</div>
-            </div>
-          </div>
-          <div className="mt-4 flex items-end gap-3">
-            <div className="font-display text-5xl font-black tabular-nums">₹{livePrice.toLocaleString()}</div>
-            <span className={`mb-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
-              delta >= 0 ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
-            }`}>
-              {delta >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-              {delta >= 0 ? "+" : ""}{delta.toFixed(0)}
-            </span>
-          </div>
-          <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
-            <span>{crop.marketPrice.unit}</span>
-            <span>·</span>
-            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(updatedAt).toLocaleTimeString()}</span>
-          </div>
-        </div>
-        <Stat label="MSP" value={`₹${msp.toLocaleString()}`} sub={`${vsMsp >= 0 ? "+" : ""}${vsMsp.toFixed(1)}% vs MSP`} tone={vsMsp >= 0 ? "up" : "down"} />
-        <Stat label="Year High / Low" value={`₹${hlY.high.toLocaleString()}`} sub={`Low ₹${hlY.low.toLocaleString()}`} />
-      </div>
-
-      {/* Charts grid */}
-      <div className="grid gap-6 p-6 md:grid-cols-2">
-        <ChartCard title="Intraday · Today" icon={<Activity className="h-4 w-4" />}>
-          <ResponsiveContainer>
-            <AreaChart data={intraday}>
-              <defs>
-                <linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.5} />
-                  <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
-              <XAxis dataKey="label" fontSize={11} stroke="var(--muted-foreground)" />
-              <YAxis fontSize={11} stroke="var(--muted-foreground)" domain={["auto", "auto"]} />
-              <Tooltip contentStyle={CHART_TOOLTIP} />
-              <Area type="monotone" dataKey="price" stroke="var(--primary)" fill="url(#gArea)" strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard title="Weekly Trend" icon={<TrendingUp className="h-4 w-4" />}>
-          <ResponsiveContainer>
-            <LineChart data={week}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
-              <XAxis dataKey="label" fontSize={11} stroke="var(--muted-foreground)" />
-              <YAxis fontSize={11} stroke="var(--muted-foreground)" domain={["auto", "auto"]} />
-              <Tooltip contentStyle={CHART_TOOLTIP} />
-              <Line type="monotone" dataKey="price" stroke="var(--primary)" strokeWidth={2.5} dot={{ r: 3 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard title={`Monthly · ${hlM.low.toLocaleString()} – ${hlM.high.toLocaleString()}`} icon={<Activity className="h-4 w-4" />}>
-          <ResponsiveContainer>
-            <BarChart data={monthly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
-              <XAxis dataKey="label" fontSize={11} stroke="var(--muted-foreground)" />
-              <YAxis fontSize={11} stroke="var(--muted-foreground)" domain={["auto", "auto"]} />
-              <Tooltip contentStyle={CHART_TOOLTIP} />
-              <Bar dataKey="price" fill="var(--primary)" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard title="5-Year History" icon={<TrendingUp className="h-4 w-4" />}>
-          <ResponsiveContainer>
-            <AreaChart data={yearly}>
-              <defs>
-                <linearGradient id="gYear" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--accent, var(--primary))" stopOpacity={0.5} />
-                  <stop offset="100%" stopColor="var(--accent, var(--primary))" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
-              <XAxis dataKey="label" fontSize={11} stroke="var(--muted-foreground)" />
-              <YAxis fontSize={11} stroke="var(--muted-foreground)" domain={["auto", "auto"]} />
-              <Tooltip contentStyle={CHART_TOOLTIP} />
-              <Area type="monotone" dataKey="price" stroke="var(--primary)" fill="url(#gYear)" strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      {/* Mandi comparison */}
-      <div className="border-t border-border/60 p-6">
-        <div className="mb-3 flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-primary" />
-          <h4 className="font-display text-lg font-bold">Nearby Mandi Comparison</h4>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-              <tr>
-                <th className="pb-2">Mandi</th>
-                <th className="pb-2">Distance</th>
-                <th className="pb-2 text-right">Price</th>
-                <th className="pb-2 text-right">vs Live</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mandis.map((m) => {
-                const diff = ((m.price - livePrice) / livePrice) * 100;
-                return (
-                  <tr key={m.mandi} className="border-t border-border/50">
-                    <td className="py-2">{m.mandi}</td>
-                    <td className="py-2 text-muted-foreground">{m.distanceKm} km</td>
-                    <td className="py-2 text-right font-display tabular-nums">₹{m.price.toLocaleString()}</td>
-                    <td className={`py-2 text-right tabular-nums ${diff >= 0 ? "text-primary" : "text-destructive"}`}>
-                      {diff >= 0 ? "+" : ""}{diff.toFixed(1)}%
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Stat({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "up" | "down" }) {
-  return (
-    <div className="rounded-xl border border-border/60 bg-card/40 p-4">
-      <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-1 font-display text-2xl font-bold tabular-nums">{value}</div>
-      {sub && (
-        <div className={`mt-1 text-xs ${tone === "up" ? "text-primary" : tone === "down" ? "text-destructive" : "text-muted-foreground"}`}>
-          {sub}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ChartCard({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border border-border/60 bg-card/40 p-4">
-      <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-        {icon} {title}
-      </div>
-      <div className="h-56">{children}</div>
-    </div>
-  );
-}
-
-/* ---------------- Per-crop live card ---------------- */
-function CropLiveCard({ crop, mod, onOpen }: { crop: Crop; mod: number; onOpen: () => void }) {
-  const { price, delta, updatedAt } = useLiveTicker(crop.marketPrice.price * mod);
-  const week = crop.marketPrice.trend.map((t) => ({ ...t, price: Math.round(t.price * mod) }));
-  const first = week[0].price, last = week[week.length - 1].price;
-  const wkPct = (((last - first) / first) * 100).toFixed(1);
-  const up = delta >= 0;
-
-  return (
-    <button onClick={onOpen} className="card-elegant hover-lift w-full p-6 text-left">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">{crop.emoji}</span>
-            <h3 className="font-display text-xl font-bold">{crop.name}</h3>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <div className="font-display text-3xl font-black tabular-nums">₹{price.toLocaleString()}</div>
-            <span className={`text-xs ${up ? "text-primary" : "text-destructive"}`}>
-              {up ? "+" : ""}{delta.toFixed(0)}
-            </span>
-          </div>
-          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-            <span>{crop.marketPrice.unit} · MSP ₹{crop.marketPrice.msp.toLocaleString()}</span>
-          </div>
-        </div>
-        <div className="flex flex-col items-end gap-1">
-          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
-            Number(wkPct) >= 0 ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
-          }`}>
-            {Number(wkPct) >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-            {Number(wkPct) >= 0 ? "+" : ""}{wkPct}% wk
-          </span>
-          <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-            {new Date(updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-          </span>
-        </div>
-      </div>
-      <div className="mt-4 h-24">
-        <ResponsiveContainer>
-          <AreaChart data={week}>
-            <defs>
-              <linearGradient id={`ga-${crop.slug}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.5} />
-                <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <XAxis dataKey="day" hide />
-            <YAxis hide domain={["auto", "auto"]} />
-            <Tooltip contentStyle={CHART_TOOLTIP} />
-            <Area type="monotone" dataKey="price" stroke="var(--primary)" fill={`url(#ga-${crop.slug})`} strokeWidth={2} />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    </button>
-  );
-}
-
-/* ---------------- Trending Crops (full data) ---------------- */
-function TrendingCropsSection({ mod, onOpen }: { mod: number; onOpen: (slug: string) => void }) {
-  const trending = useMemo(
-    () => CROP_LIST.filter((c) => c.trending).sort((a, b) => b.profitPct - a.profitPct),
-    []
-  );
-  if (!trending.length) return null;
-  return (
-    <section className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
-            <Flame className="h-3 w-3" /> Trending Now · {trending.length} crops
-          </div>
-          <h2 className="mt-2 font-display text-3xl font-bold">Trending Crops · Full Market Data</h2>
-          <p className="text-sm text-muted-foreground">
-            Live mandi price, MSP spread, weekly momentum, profitability and agronomy — for every trending crop.
-          </p>
-        </div>
-      </div>
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {trending.map((c) => (
-          <Reveal key={c.slug}>
-            <TrendingCropCard crop={c} mod={mod} onOpen={() => onOpen(c.slug)} />
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function TrendingCropCard({ crop, mod, onOpen }: { crop: Crop; mod: number; onOpen: () => void }) {
-  const { price, delta, updatedAt } = useLiveTicker(crop.marketPrice.price * mod);
-  const week = crop.marketPrice.trend.map((t) => ({ ...t, price: Math.round(t.price * mod) }));
-  const first = week[0].price, last = week[week.length - 1].price;
-  const wkPct = ((last - first) / first) * 100;
-  const msp = crop.marketPrice.msp;
-  const vsMsp = ((price - msp) / msp) * 100;
-  const up = delta >= 0;
-
-  return (
-    <div className="card-elegant hover-lift overflow-hidden">
-      <div className="relative h-40 overflow-hidden">
-        <img src={crop.image} alt={crop.name} className="h-full w-full object-cover transition-transform duration-500 hover:scale-110" loading="lazy" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-        <div className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-primary/90 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
-          <Flame className="h-3 w-3" /> Trending
-        </div>
-        <div className="absolute right-3 top-3 rounded-full bg-background/80 px-2 py-1 text-[10px] font-semibold backdrop-blur">
-          +{crop.profitPct}% profit
-        </div>
-        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{crop.emoji}</span>
-              <h3 className="font-display text-xl font-bold drop-shadow">{crop.name}</h3>
-            </div>
-            <div className="text-[11px] italic text-muted-foreground">{crop.scientificName}</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-4 p-5">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <div className="flex items-baseline gap-2">
-              <div className="font-display text-3xl font-black tabular-nums">₹{price.toLocaleString()}</div>
-              <span className={`text-xs ${up ? "text-primary" : "text-destructive"}`}>{up ? "+" : ""}{delta.toFixed(0)}</span>
-            </div>
-            <div className="text-[11px] text-muted-foreground">{crop.marketPrice.unit}</div>
-          </div>
-          <div className="text-right">
-            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
-              wkPct >= 0 ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
-            }`}>
-              {wkPct >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-              {wkPct >= 0 ? "+" : ""}{wkPct.toFixed(1)}% wk
-            </span>
-            <div className="mt-1 inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-              {new Date(updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-            </div>
-          </div>
-        </div>
-
-        <div className="h-20 -mx-1">
-          <ResponsiveContainer>
-            <AreaChart data={week}>
-              <defs>
-                <linearGradient id={`tg-${crop.slug}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.55} />
-                  <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="day" hide />
-              <YAxis hide domain={["auto", "auto"]} />
-              <Tooltip contentStyle={CHART_TOOLTIP} />
-              <Area type="monotone" dataKey="price" stroke="var(--primary)" fill={`url(#tg-${crop.slug})`} strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          <MiniStat icon={<IndianRupee className="h-3 w-3" />} label="MSP" value={`₹${msp.toLocaleString()}`} sub={`${vsMsp >= 0 ? "+" : ""}${vsMsp.toFixed(1)}% vs MSP`} tone={vsMsp >= 0 ? "up" : "down"} />
-          <MiniStat icon={<Sprout className="h-3 w-3" />} label="Yield" value={crop.yield} />
-          <MiniStat icon={<Droplets className="h-3 w-3" />} label="Water" value={crop.waterNeed} />
-          <MiniStat icon={<Activity className="h-3 w-3" />} label="Season" value={crop.season} />
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 rounded-lg border border-border/60 bg-card/40 p-3 text-[11px]">
-          <div><span className="text-muted-foreground">Soil</span><div className="font-semibold">{crop.soilType}</div></div>
-          <div><span className="text-muted-foreground">Climate</span><div className="font-semibold">{crop.climate}</div></div>
-          <div><span className="text-muted-foreground">Temp</span><div className="font-semibold">{crop.temperature}</div></div>
-          <div><span className="text-muted-foreground">Rainfall</span><div className="font-semibold">{crop.rainfall}</div></div>
-        </div>
-
-        {crop.suitableDistricts?.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {crop.suitableDistricts.slice(0, 4).map((d) => (
-              <span key={d} className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/40 px-2 py-0.5 text-[10px]">
-                <MapPin className="h-2.5 w-2.5" /> {d}
-              </span>
-            ))}
-            {crop.suitableDistricts.length > 4 && (
-              <span className="text-[10px] text-muted-foreground">+{crop.suitableDistricts.length - 4} more</span>
-            )}
-          </div>
-        )}
-
-        <div className="flex gap-2 pt-1">
-          <button onClick={onOpen} className="flex-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition hover:opacity-90">
-            Deep analytics
-          </button>
-          <Link
-            to="/crops/$slug"
-            params={{ slug: crop.slug }}
-            className="flex-1 rounded-lg border border-border bg-card px-3 py-2 text-center text-xs font-semibold transition hover:bg-muted"
-          >
-            Full crop guide →
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MiniStat({ icon, label, value, sub, tone }: { icon: React.ReactNode; label: string; value: string; sub?: string; tone?: "up" | "down" }) {
-  return (
-    <div className="rounded-lg border border-border/60 bg-card/40 p-2">
-      <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-        {icon} {label}
-      </div>
-      <div className="mt-0.5 font-display text-sm font-bold tabular-nums">{value}</div>
-      {sub && (
-        <div className={`text-[10px] ${tone === "up" ? "text-primary" : tone === "down" ? "text-destructive" : "text-muted-foreground"}`}>
-          {sub}
-        </div>
-      )}
     </div>
   );
 }
