@@ -1,18 +1,14 @@
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { Mic, MicOff, X, Volume2, VolumeX, Camera, Loader2, Settings2, Play, Square } from "lucide-react";
+import { MessageCircle, X, Send, Camera, Loader2, Sparkles, Trash2, Image as ImageIcon } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { leoChat, leoIdentify, leoTranscribe } from "@/lib/leo.functions";
+import { leoChat, leoIdentify } from "@/lib/leo.functions";
 import { buildLeoKnowledge } from "@/lib/leo-knowledge";
 import { useI18n, type Lang } from "@/lib/i18n";
 import { locationStore, useLocation } from "@/lib/location-store";
 import { leoMemory, useLeoMemory } from "@/lib/leo-memory";
 import { CROP_LIST } from "@/data/crops";
-import { useReducedMotion } from "@/lib/reduced-motion";
-import { useLeoSettings, PERSONAS, pickVoice } from "@/lib/leo-settings";
-import { LeoAvatarAnime } from "./LeoAvatarAnime";
-import { LeoSettingsPanel } from "./LeoSettingsPanel";
 
 type Intent =
   | { type: "navigate"; path: string; highlight?: string }
@@ -23,129 +19,76 @@ type Intent =
   | { type: "favorite"; slug: string }
   | null;
 
-const LANG_TO_BCP47: Record<Lang, string> = { en: "en-IN", te: "te-IN", hi: "hi-IN" };
-
-const GREETING: Record<Lang, string> = {
-  en: "Hi! I'm LEO, your voice-first farming assistant. Ask about crops, diseases, fertilizers, or say 'open cotton' and I'll take you there.",
-  te: "నమస్తే! నేను లియో, మీ వాయిస్ ఆధారిత వ్యవసాయ సహాయకుడిని. మాట్లాడండి — పంటలు, తెగుళ్ళు, ఎరువుల గురించి అడగండి.",
-  hi: "नमस्ते! मैं लियो हूँ, आपका वॉइस-आधारित कृषि सहायक। बस बोलिए — फसलों, बीमारियों, उर्वरकों के बारे में पूछें।",
-};
-
-const STATE_LABEL: Record<Lang, { listening: string; transcribing: string; thinking: string; speaking: string; idle: string; muted: string; identifying: string }> = {
-  en: { listening: "Listening…", transcribing: "Recognizing clearly…", thinking: "Thinking…", speaking: "Speaking…", idle: "Ready", muted: "Muted", identifying: "Analyzing photo…" },
-  te: { listening: "వింటున్నాను…", transcribing: "స్పష్టంగా గుర్తిస్తున్నాను…", thinking: "ఆలోచిస్తున్నాను…", speaking: "మాట్లాడుతున్నాను…", idle: "సిద్ధం", muted: "మ్యూట్", identifying: "చిత్రాన్ని విశ్లేషిస్తున్నాను…" },
-  hi: { listening: "सुन रहा हूँ…", transcribing: "साफ़ पहचान रहा हूँ…", thinking: "सोच रहा हूँ…", speaking: "बोल रहा हूँ…", idle: "तैयार", muted: "म्यूट", identifying: "फ़ोटो जाँच रहा हूँ…" },
-};
+type Msg = { id: string; role: "user" | "assistant"; content: string; image?: string; pending?: boolean };
 
 const CROP_SLUGS = CROP_LIST.map((c) => c.slug);
+const STORAGE_KEY = "leo.chat.v1";
+
+const GREETING: Record<Lang, string> = {
+  en: "Hi! I'm LEO. Ask me about crops, diseases, fertilisers, weather or market prices — or upload a leaf photo to identify a disease.",
+  te: "నమస్తే! నేను లియో. పంటలు, తెగుళ్ళు, ఎరువులు, వాతావరణం లేదా మార్కెట్ ధరల గురించి అడగండి — లేదా ఆకు ఫోటో అప్‌లోడ్ చేయండి.",
+  hi: "नमस्ते! मैं लियो हूँ। फसलों, बीमारियों, उर्वरकों, मौसम या बाज़ार भाव के बारे में पूछें — या पत्ते की फ़ोटो अपलोड करें।",
+};
+
+const PLACEHOLDER: Record<Lang, string> = {
+  en: "Ask LEO anything about farming…",
+  te: "వ్యవసాయం గురించి ఏదైనా అడగండి…",
+  hi: "खेती के बारे में कुछ भी पूछें…",
+};
+
+const uid = () => Math.random().toString(36).slice(2, 10);
 
 export function LeoAssistant() {
-  const { lang, setLang } = useI18n();
+  const { lang } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
   const memory = useLeoMemory();
-  const settings = useLeoSettings();
   const chat = useServerFn(leoChat);
   const identify = useServerFn(leoIdentify);
-  const transcribe = useServerFn(leoTranscribe);
-  const reducedMotion = useReducedMotion();
 
   const [open, setOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [listening, setListening] = useState(false);
-  const [transcribing, setTranscribing] = useState(false);
-  const [thinking, setThinking] = useState(false);
-  const [speaking, setSpeaking] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [captionUser, setCaptionUser] = useState("");
-  const [captionLeo, setCaptionLeo] = useState("");
-  const [lastReply, setLastReply] = useState("");   // for manual Speak
-  const [supported, setSupported] = useState(true);
-  const [greeted, setGreeted] = useState(false);
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
   const [identifying, setIdentifying] = useState(false);
-  const [idResult, setIdResult] = useState<any>(null);
-  const [mouth, setMouth] = useState(0);            // 0..1 lip-sync level
-  const [summoning, setSummoning] = useState(false); // burst animation on wake / open
+  const [messages, setMessages] = useState<Msg[]>([]);
+  const [unread, setUnread] = useState(0);
 
-  const historyRef = useRef<{ role: "user" | "assistant"; content: string }[]>([]);
-  const pushHistory = (role: "user" | "assistant", content: string) => {
-    historyRef.current = [...historyRef.current, { role, content }].slice(-12);
-  };
-  const recRef = useRef<any>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const mediaStreamRef = useRef<MediaStream | null>(null);
-  const interruptRef = useRef<any>(null);
   const langRef = useRef<Lang>(lang);
   langRef.current = lang;
-  const settingsRef = useRef(settings);
-  settingsRef.current = settings;
-  const speakingRef = useRef(false);
-  const listeningRef = useRef(false);
-  const thinkingRef = useRef(false);
-  const openRef = useRef(false);
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const mouthRAF = useRef<number | null>(null);
-  useEffect(() => { thinkingRef.current = thinking; }, [thinking]);
-  useEffect(() => { openRef.current = open; }, [open]);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // === Lip-sync driver: sine-modulated envelope while speaking ===
+  // Hydrate persisted transcript
   useEffect(() => {
-    if (!speaking) {
-      if (mouthRAF.current) cancelAnimationFrame(mouthRAF.current);
-      setMouth(0);
-      return;
-    }
-    let t0 = performance.now();
-    const tick = () => {
-      const t = (performance.now() - t0) / 1000;
-      // Layered sine waves emulate phoneme envelope
-      const v = 0.45
-        + 0.35 * Math.sin(t * 11)
-        + 0.20 * Math.sin(t * 4.7 + 1.3)
-        + 0.10 * Math.sin(t * 23 + 0.5);
-      const clamped = Math.max(0.05, Math.min(1, (v + 0.4) / 1.6));
-      setMouth(clamped);
-      mouthRAF.current = requestAnimationFrame(tick);
-    };
-    mouthRAF.current = requestAnimationFrame(tick);
-    return () => { if (mouthRAF.current) cancelAnimationFrame(mouthRAF.current); };
-  }, [speaking]);
-
-  // === TTS ===
-  const stopSpeaking = useCallback(() => {
-    try { window.speechSynthesis?.cancel(); } catch {}
-    setSpeaking(false);
-    speakingRef.current = false;
-    try { interruptRef.current?.stop(); } catch {}
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Msg[];
+        if (Array.isArray(parsed) && parsed.length) { setMessages(parsed); return; }
+      }
+    } catch {}
+    setMessages([{ id: uid(), role: "assistant", content: GREETING[langRef.current] }]);
   }, []);
 
-  const speak = useCallback((text: string, onDone?: () => void) => {
-    if (muted || typeof window === "undefined" || !("speechSynthesis" in window)) {
-      onDone?.();
-      return;
-    }
-    try {
-      window.speechSynthesis.cancel();
-      const s = settingsRef.current;
-      const persona = PERSONAS.find((p) => p.id === s.persona)!;
-      const targetLang = s.voiceLang || LANG_TO_BCP47[langRef.current];
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = targetLang;
-      u.rate = Math.max(0.5, Math.min(1.8, s.rate)) * persona.rate;
-      u.pitch = Math.max(0.1, Math.min(2, persona.pitch));
-      try {
-        const voices = window.speechSynthesis.getVoices();
-        const match = pickVoice(voices, s.persona, targetLang);
-        if (match) u.voice = match;
-      } catch {}
-      u.onstart = () => { setSpeaking(true); speakingRef.current = true; };
-      u.onend = () => { setSpeaking(false); speakingRef.current = false; onDone?.(); };
-      u.onerror = () => { setSpeaking(false); speakingRef.current = false; onDone?.(); };
-      window.speechSynthesis.speak(u);
-    } catch { onDone?.(); }
-  }, [muted]);
+  // Persist (debounced via microtask coalescing)
+  useEffect(() => {
+    if (!messages.length) return;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-40))); } catch {}
+  }, [messages]);
 
-  // === Intents ===
+  // Autoscroll on new content
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [messages, open]);
+
+  // Track unread while closed
+  useEffect(() => {
+    if (open) setUnread(0);
+  }, [open]);
+
   const runIntent = useCallback((intent: Intent) => {
     if (!intent) return;
     switch (intent.type) {
@@ -158,43 +101,29 @@ export function LeoAssistant() {
         }
         break;
       case "setDistrict": locationStore.set({ district: intent.district }); break;
-      case "setLanguage":
-        if (intent.lang === "en" || intent.lang === "te" || intent.lang === "hi") setLang(intent.lang);
-        break;
-      case "toggleTheme": document.documentElement.classList.toggle("light"); break;
       case "openSearch": window.dispatchEvent(new CustomEvent("leo:openSearch")); break;
+      case "toggleTheme": document.documentElement.classList.toggle("light"); break;
       case "favorite": if (intent.slug) leoMemory.toggleFavorite(intent.slug); break;
     }
-  }, [navigate, setLang]);
+  }, [navigate]);
 
-  const startListeningRef = useRef<() => void>(() => {});
+  const send = useCallback(async (raw: string) => {
+    const text = raw.trim();
+    if (!text || busy) return;
+    const userMsg: Msg = { id: uid(), role: "user", content: text };
+    const pendingId = uid();
+    setMessages((prev) => [...prev, userMsg, { id: pendingId, role: "assistant", content: "", pending: true }]);
+    setInput("");
+    setBusy(true);
+    leoMemory.setLastQuery(text);
 
-  const blobToDataUrl = (blob: Blob) => new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(blob);
-  });
-
-  const stopAudioTracks = useCallback(() => {
-    try { mediaStreamRef.current?.getTracks().forEach((track) => track.stop()); } catch {}
-    mediaStreamRef.current = null;
-    mediaRecorderRef.current = null;
-  }, []);
-
-  // === Ask ===
-  const ask = useCallback(async (message: string) => {
-    if (!message.trim()) return;
-    setThinking(true);
-    setCaptionLeo("");
-    leoMemory.setLastQuery(message);
-    pushHistory("user", message);
     try {
+      const history = messages.slice(-6).map((m) => ({ role: m.role, content: m.content }));
       const res = await chat({
         data: {
-          message,
+          message: text,
           lang: langRef.current,
-          history: historyRef.current.slice(-6),
+          history,
           context: {
             district: location.district, state: location.state,
             recentCrops: memory.recentCrops, favorites: memory.favorites,
@@ -209,347 +138,46 @@ export function LeoAssistant() {
           }),
         },
       });
-      setThinking(false);
-      setCaptionLeo(res.speak);
-      setLastReply(res.speak);
-      pushHistory("assistant", res.speak);
-      const s = settingsRef.current;
-      // No auto-restart: LEO only speaks the reply. User taps mic to talk again.
-      if (s.autoSpeak) speak(res.speak);
+      setMessages((prev) => prev.map((m) => m.id === pendingId ? { ...m, content: res.speak, pending: false } : m));
+      if (!open) setUnread((u) => u + 1);
       runIntent(res.intent as Intent);
-    } catch {
-      setThinking(false);
+    } catch (e) {
       const fallback: Record<Lang, string> = {
         en: "I couldn't reach the server. Please try again.",
         te: "సర్వర్‌ను చేరుకోలేకపోయాను. మళ్ళీ ప్రయత్నించండి.",
         hi: "सर्वर तक नहीं पहुँच सका। कृपया पुनः प्रयास करें।",
       };
-      const msg = fallback[langRef.current];
-      setCaptionLeo(msg); setLastReply(msg);
-      if (settingsRef.current.autoSpeak) speak(msg);
+      setMessages((prev) => prev.map((m) => m.id === pendingId ? { ...m, content: fallback[langRef.current], pending: false } : m));
+    } finally {
+      setBusy(false);
+      requestAnimationFrame(() => inputRef.current?.focus());
     }
-  }, [chat, location.district, location.state, memory.recentCrops, memory.favorites, runIntent, speak, open]);
-
-  // === Main STT ===
-  const startListening = useCallback(() => {
-    if (typeof window === "undefined") return;
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) { setSupported(false); return; }
-    if (listeningRef.current) return;
-    stopSpeaking();
-    // Clear stale captions so the box is fresh each session.
-    setCaptionUser(""); setCaptionLeo(""); setIdResult(null);
-    // Warm-up delay: give TTS a moment to fully release audio so the mic
-    // doesn't immediately capture the tail of LEO's own voice.
-    setTimeout(async () => {
-      if (listeningRef.current) return;
-      let finalised = false;
-      let bestTranscript = "";
-      let bestConfidence = 0;
-      let settleTimer: number | null = null;
-      let recorderStop: (() => Promise<Blob | null>) | null = null;
-
-      try {
-        if (navigator.mediaDevices?.getUserMedia && "MediaRecorder" in window) {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-          });
-          mediaStreamRef.current = stream;
-          const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus"
-            : MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4"
-            : "";
-          const chunks: Blob[] = [];
-          const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
-          mediaRecorderRef.current = recorder;
-          recorder.ondataavailable = (event) => { if (event.data?.size) chunks.push(event.data); };
-          recorderStop = () => new Promise((resolve) => {
-            const finish = () => {
-              stopAudioTracks();
-              resolve(chunks.length ? new Blob(chunks, { type: recorder.mimeType || "audio/webm" }) : null);
-            };
-            recorder.onstop = finish;
-            if (recorder.state !== "inactive") recorder.stop(); else finish();
-          });
-          recorder.start();
-        }
-      } catch {
-        stopAudioTracks();
-      }
-
-      const finish = async (candidate: string, preferProRecognition: boolean) => {
-        if (finalised) return;
-        finalised = true;
-        if (settleTimer) window.clearTimeout(settleTimer);
-        try { recRef.current?.stop(); } catch {}
-        setListening(false); listeningRef.current = false;
-
-        let text = candidate.trim();
-        if (settingsRef.current.proRecognition && preferProRecognition && recorderStop) {
-          setTranscribing(true);
-          try {
-            const blob = await recorderStop();
-            if (blob && blob.size > 2048) {
-              const audioDataUrl = await blobToDataUrl(blob);
-              const res = await transcribe({ data: { audioDataUrl, lang: langRef.current } });
-              if (res.text?.trim()) text = res.text.trim();
-              if (res.error && !text) setCaptionLeo(res.error);
-            }
-          } catch {
-            // Keep the browser transcript if premium STT cannot complete.
-          } finally {
-            setTranscribing(false);
-          }
-        } else if (recorderStop) {
-          recorderStop().catch(() => stopAudioTracks());
-        }
-
-        if (text) {
-          setCaptionUser(text);
-          ask(text);
-        } else {
-          const msg: Record<Lang, string> = {
-            en: "I couldn't hear that clearly. Please speak once more, a little closer to the mic.",
-            te: "స్పష్టంగా వినిపించలేదు. మైక్‌కు కొంచెం దగ్గరగా మళ్లీ మాట్లాడండి.",
-            hi: "साफ़ सुनाई नहीं दिया। कृपया माइक के थोड़ा पास आकर फिर बोलिए।",
-          };
-          setCaptionLeo(msg[langRef.current]);
-        }
-      };
-
-      try {
-        const rec = new SR();
-        rec.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
-        rec.interimResults = true;
-        rec.continuous = false;
-        rec.maxAlternatives = 3;
-        rec.onstart = () => { setListening(true); listeningRef.current = true; setCaptionUser(""); };
-        rec.onresult = (e: any) => {
-          let interim = "", finalT = "";
-          for (let i = e.resultIndex; i < e.results.length; i++) {
-            const r = e.results[i];
-            const alt = r[0];
-            const transcript = alt?.transcript || "";
-            const confidence = typeof alt?.confidence === "number" ? alt.confidence : 0;
-            if (transcript.trim()) { bestTranscript = transcript.trim(); bestConfidence = Math.max(bestConfidence, confidence); }
-            if (r.isFinal) finalT += transcript; else interim += transcript;
-          }
-          setCaptionUser(finalT || interim);
-          if (settleTimer) window.clearTimeout(settleTimer);
-          if (finalT) {
-            const weak = bestConfidence === 0 || bestConfidence < 0.72 || finalT.trim().split(/\s+/).length <= 2;
-            finish(finalT, weak);
-          } else if (bestTranscript) {
-            settleTimer = window.setTimeout(() => finish(bestTranscript, true), 1500);
-          }
-        };
-        rec.onerror = () => { finish(bestTranscript, true); };
-        rec.onend = () => { if (!finalised) finish(bestTranscript, true); };
-        recRef.current = rec;
-        rec.start();
-      } catch { finish(bestTranscript, true); }
-    }, 400);
-  }, [ask, stopSpeaking, stopAudioTracks, transcribe]);
-
-  startListeningRef.current = startListening;
-
-  const stopListening = useCallback(() => {
-    try { recRef.current?.stop(); } catch {}
-    try { mediaRecorderRef.current?.stop(); } catch {}
-    stopAudioTracks();
-    setListening(false); listeningRef.current = false;
-  }, [stopAudioTracks]);
-
-  // === Barge-in with sensitivity ===
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR || !speaking) return;
-    // Sensitivity: 1(off-ish) → require 12 chars; 5(instant) → 1 char
-    const threshold = Math.max(1, 14 - settingsRef.current.bargeSensitivity * 3);
-    let rec: any;
-    try {
-      rec = new SR();
-      rec.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
-      rec.continuous = true; rec.interimResults = true;
-      let triggered = false;
-      rec.onresult = (e: any) => {
-        const t = Array.from(e.results as any).map((r: any) => r[0].transcript).join("").trim();
-        if (!triggered && t.length >= threshold) {
-          triggered = true;
-          try { rec.stop(); } catch {}
-          stopSpeaking();
-          // No auto-restart of mic; user taps the mic to reply.
-        }
-      };
-      rec.onerror = () => {}; rec.onend = () => {};
-      interruptRef.current = rec;
-      rec.start();
-    } catch {}
-    return () => { try { rec?.stop(); } catch {} };
-  }, [speaking, startListening, stopSpeaking]);
-
-  // === Auto-greet ===
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (sessionStorage.getItem("leo.greeted")) { setGreeted(true); return; }
-    const timer = setTimeout(() => {
-      setOpen(true);
-      const g = GREETING[langRef.current];
-      setCaptionLeo(g); setLastReply(g);
-      historyRef.current = []; pushHistory("assistant", g);
-      if (settingsRef.current.autoSpeak) {
-        speak(g);
-      }
-      sessionStorage.setItem("leo.greeted", "1");
-      setGreeted(true);
-    }, 3200);
-    return () => clearTimeout(timer);
-  }, [speak, startListening]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") { try { document.documentElement.lang = lang; } catch {} }
-  }, [lang]);
-
-  // === Wake word — custom phrases, robust matching, standby while busy ===
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR || !greeted || !settings.wakeEnabled) return;
-    let stopped = false;
-    let wake: any = null;
-    let restartTimer: number | null = null;
-
-    const normalize = (s: string) =>
-      s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
-
-    const leoAliases = ["leo", "lio", "leyo", "leeo", "le o", "rio", "లియో", "లీయో", "लियो", "लीओ"];
-    const expandPhrase = (phrase: string) => {
-      const n = normalize(phrase);
-      const variants = new Set([n]);
-      if (/\bleo\b|\blio\b|లియో|लियो|लीओ/u.test(n)) {
-        for (const alias of leoAliases) {
-          variants.add(n.replace(/\bleo\b|\blio\b|లియో|लियो|लीओ/gu, normalize(alias)));
-        }
-      }
-      return [...variants].filter(Boolean);
-    };
-
-    const rawPhrases = (settings.wakePhrases?.length ? settings.wakePhrases : ["hey leo"])
-      .flatMap(expandPhrase).filter(Boolean);
-    if (rawPhrases.length === 0) return;
-    const minConf = Math.max(0, Math.min(1, settings.wakeConfidence ?? 0.4));
-
-    const matches = (text: string) => {
-      const t = normalize(text);
-      if (!t) return false;
-      // substring match — works with any script (Latin, Telugu, Hindi…)
-      return rawPhrases.some((p) => t.includes(p));
-    };
-
-    const busy = () => speakingRef.current || listeningRef.current || thinkingRef.current || openRef.current;
-
-    const trigger = () => {
-      setSummoning(true);
-      setTimeout(() => setSummoning(false), 1400);
-      setOpen(true);
-      setTimeout(() => { if (!speakingRef.current) startListeningRef.current(); }, 1500);
-    };
-
-    const scheduleRestart = (ms = 800) => {
-      if (stopped) return;
-      if (restartTimer) window.clearTimeout(restartTimer);
-      restartTimer = window.setTimeout(() => { restartTimer = null; start(); }, ms);
-    };
-
-    const start = () => {
-      if (stopped) return;
-      if (busy()) { scheduleRestart(1200); return; }
-      try {
-        wake = new SR();
-        wake.lang = settingsRef.current.voiceLang || LANG_TO_BCP47[langRef.current];
-        wake.continuous = true;
-        wake.interimResults = true; // catch short nicknames faster
-        let fired = false;
-        wake.onresult = (e: any) => {
-          if (fired || busy()) return;
-          for (let i = e.resultIndex; i < e.results.length; i++) {
-            const r = e.results[i];
-            const alt = r[0];
-            if (!alt) continue;
-            const conf = typeof alt.confidence === "number" ? alt.confidence : 0;
-            // On interim results confidence is often 0; only enforce minConf on finals.
-            const passConf = r.isFinal ? (conf === 0 || conf >= minConf) : true;
-            if (passConf && matches(alt.transcript || "")) {
-              fired = true;
-              try { wake.stop(); } catch {}
-              trigger();
-              return;
-            }
-          }
-        };
-        wake.onerror = (ev: any) => {
-          // no-speech / audio-capture / aborted — just restart
-          try { wake.stop(); } catch {}
-          scheduleRestart(ev?.error === "not-allowed" ? 5000 : 1200);
-        };
-        wake.onend = () => { if (!fired) scheduleRestart(600); };
-        wake.start();
-      } catch {
-        scheduleRestart(1500);
-      }
-    };
-
-    const enable = () => { window.removeEventListener("click", enable); start(); };
-    // If user already interacted (greeting shown), start immediately; else wait for gesture.
-    if (sessionStorage.getItem("leo.greeted")) start();
-    else window.addEventListener("click", enable, { once: true });
-
-    return () => {
-      stopped = true;
-      if (restartTimer) window.clearTimeout(restartTimer);
-      try { wake?.stop(); } catch {}
-      window.removeEventListener("click", enable);
-    };
-  }, [greeted, settings.wakeEnabled, settings.wakePhrases, settings.wakeConfidence, settings.voiceLang]);
-
-
-  // === Keep-alive: Chrome pauses speechSynthesis after ~15s. Nudge it. ===
-  useEffect(() => {
-    if (!speaking || typeof window === "undefined") return;
-    const iv = window.setInterval(() => {
-      try {
-        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-          window.speechSynthesis.pause();
-          window.speechSynthesis.resume();
-        }
-      } catch {}
-    }, 10000);
-    return () => window.clearInterval(iv);
-  }, [speaking]);
-
+  }, [busy, chat, location.district, location.state, memory.recentCrops, memory.favorites, messages, open, runIntent]);
 
   const handleFile = useCallback(async (file: File) => {
     if (!file || !file.type.startsWith("image/")) return;
-    if (file.size > 8 * 1024 * 1024) { setCaptionLeo("Image too large — please pick one under 8MB."); return; }
-    setIdentifying(true); setIdResult(null);
+    if (file.size > 8 * 1024 * 1024) return;
+    setIdentifying(true);
     const reader = new FileReader();
     reader.onload = async () => {
+      const dataUrl = String(reader.result || "");
+      const userMsg: Msg = { id: uid(), role: "user", content: "📷 Identify this photo", image: dataUrl };
+      const pendingId = uid();
+      setMessages((prev) => [...prev, userMsg, { id: pendingId, role: "assistant", content: "", pending: true }]);
       try {
-        const dataUrl = String(reader.result || "");
         const res = await identify({ data: { imageDataUrl: dataUrl, lang: langRef.current, kind: "any" } });
-        setIdResult(res); setIdentifying(false);
-        setCaptionLeo(res.summary); setLastReply(`${res.summary} ${res.advice}`);
-        if (settingsRef.current.autoSpeak) speak(`${res.summary}. ${res.advice}`);
+        const body = [res.summary, res.advice].filter(Boolean).join("\n\n");
+        setMessages((prev) => prev.map((m) => m.id === pendingId ? { ...m, content: body || "No confident match.", pending: false } : m));
         if (res.topMatches?.[0]?.name) leoMemory.recordDisease(res.topMatches[0].name);
+        if (!open) setUnread((u) => u + 1);
       } catch {
+        setMessages((prev) => prev.map((m) => m.id === pendingId ? { ...m, content: "I couldn't analyse that photo. Try a clearer close-up.", pending: false } : m));
+      } finally {
         setIdentifying(false);
-        const msg = "I couldn't analyze that photo. Try a clearer close-up.";
-        setCaptionLeo(msg); setLastReply(msg);
-        if (settingsRef.current.autoSpeak) speak(msg);
       }
     };
     reader.readAsDataURL(file);
-  }, [identify, speak]);
+  }, [identify, open]);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => {
@@ -557,245 +185,147 @@ export function LeoAssistant() {
     if (m) leoMemory.recordCrop(m[1]);
   }, [pathname]);
 
-  const labels = STATE_LABEL[lang];
-  const status = muted ? labels.muted
-    : identifying ? labels.identifying
-    : transcribing ? labels.transcribing
-    : thinking ? labels.thinking
-    : speaking ? labels.speaking
-    : listening ? labels.listening
-    : labels.idle;
+  const clearChat = () => {
+    setMessages([{ id: uid(), role: "assistant", content: GREETING[langRef.current] }]);
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  };
 
-  const avatarState: "idle" | "listening" | "thinking" | "speaking" =
-    speaking ? "speaking" : listening ? "listening" : thinking ? "thinking" : "idle";
+  const suggestions = [
+    lang === "te" ? "వరిలో బ్లాస్ట్ ఎలా నివారించాలి?" : lang === "hi" ? "गेहूँ में रस्ट कैसे रोकें?" : "How do I prevent rice blast?",
+    lang === "te" ? "పత్తికి DAP ఎంత?" : lang === "hi" ? "कपास के लिए DAP कितना?" : "How much DAP for cotton?",
+    lang === "te" ? "ఈరోజు మార్కెట్ ధరలు" : lang === "hi" ? "आज के बाज़ार भाव" : "Today's market prices",
+  ];
 
   return (
     <>
-      {/* Live captions overlay */}
-      {(captionUser || captionLeo || thinking || transcribing) && (open || speaking || listening || transcribing) && (
-        <div className="pointer-events-none fixed inset-x-0 top-[76px] z-[68] flex justify-center px-3">
-          <div className="max-w-3xl space-y-1 rounded-2xl border border-border/50 bg-background/70 px-4 py-2 text-center text-sm shadow-lg backdrop-blur-xl">
-            {captionUser && (listening || transcribing) && (
-              <p className="text-primary"><span className="opacity-60">You:</span> {captionUser}</p>
-            )}
-            {(captionLeo || thinking || transcribing) && (
-              <p><span className="opacity-60">LEO:</span> {transcribing ? labels.transcribing : thinking ? "…" : captionLeo}</p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Floating launcher */}
+      {/* Launcher */}
       <button
-        aria-label={open ? "Close LEO voice assistant" : "Open LEO voice assistant"}
+        aria-label={open ? "Close LEO" : "Open LEO chat"}
         aria-pressed={open}
-        onClick={() => {
-          const nowOpen = !open;
-          setOpen(nowOpen);
-          if (nowOpen) {
-            // Don't auto-start the mic — user taps the mic when ready.
-            // This prevents cutting off LEO's greeting and prevents the mic
-            // from capturing LEO's own voice.
-          } else {
-            stopListening(); stopSpeaking();
-            setCaptionUser(""); setCaptionLeo(""); setLastReply(""); setIdResult(null);
-          }
-        }}
-        className="fixed bottom-5 right-5 z-[70] grid h-16 w-16 place-items-center overflow-hidden rounded-full text-primary-foreground shadow-2xl transition hover:scale-105 active:scale-95"
+        onClick={() => setOpen((o) => !o)}
+        className="fixed bottom-5 right-5 z-[70] grid h-14 w-14 place-items-center rounded-full text-primary-foreground shadow-2xl transition hover:scale-105 active:scale-95"
         style={{
           background: "var(--gradient-primary, linear-gradient(135deg,#4ade80,#16a34a))",
           boxShadow: "0 10px 40px -5px color-mix(in oklab, var(--primary, #16a34a) 60%, transparent), 0 0 0 6px color-mix(in oklab, var(--primary, #16a34a) 15%, transparent)",
         }}
       >
-        <div className="scale-[1.15]">
-          <LeoAvatarAnime mouthLevel={mouth} state={avatarState} size={62} waving={!open && !reducedMotion} />
-        </div>
+        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {!open && unread > 0 && (
+          <span className="absolute -right-1 -top-1 grid h-6 min-w-6 place-items-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white shadow">
+            {unread}
+          </span>
+        )}
       </button>
-
-      {/* Summoning burst — plays each time the wake phrase fires */}
-      {summoning && !reducedMotion && (
-        <div className="pointer-events-none fixed inset-0 z-[69] grid place-items-center" aria-hidden>
-          <div className="leo-summon-ring" />
-          <div className="leo-summon-ring leo-summon-ring--2" />
-          <div className="leo-summon-ring leo-summon-ring--3" />
-          <div className="leo-summon-seal" />
-          <div className="leo-summon-flash" />
-          <style>{`
-            @keyframes leo-summon-ring { 0% { transform: scale(0.15); opacity: 0.9; } 100% { transform: scale(2.4); opacity: 0; } }
-            @keyframes leo-summon-seal { 0% { transform: rotate(0) scale(0.4); opacity: 0; } 30% { opacity: 1; } 100% { transform: rotate(360deg) scale(1.6); opacity: 0; } }
-            @keyframes leo-summon-flash { 0% { opacity: 0; } 25% { opacity: 0.55; } 100% { opacity: 0; } }
-            .leo-summon-ring {
-              position: absolute; width: 260px; height: 260px; border-radius: 999px;
-              border: 2px solid color-mix(in oklab, var(--primary, #16a34a) 85%, white);
-              box-shadow: 0 0 60px color-mix(in oklab, var(--primary, #16a34a) 70%, transparent);
-              animation: leo-summon-ring 1.2s ease-out forwards;
-            }
-            .leo-summon-ring--2 { animation-delay: 0.15s; border-color: color-mix(in oklab, var(--primary, #16a34a) 60%, white); }
-            .leo-summon-ring--3 { animation-delay: 0.3s; border-color: color-mix(in oklab, var(--primary, #16a34a) 40%, white); }
-            .leo-summon-seal {
-              position: absolute; width: 220px; height: 220px; border-radius: 999px;
-              background:
-                conic-gradient(from 0deg, transparent 0 40deg, color-mix(in oklab, var(--primary, #16a34a) 70%, transparent) 40deg 50deg,
-                transparent 50deg 130deg, color-mix(in oklab, var(--primary, #16a34a) 70%, transparent) 130deg 140deg,
-                transparent 140deg 220deg, color-mix(in oklab, var(--primary, #16a34a) 70%, transparent) 220deg 230deg,
-                transparent 230deg 310deg, color-mix(in oklab, var(--primary, #16a34a) 70%, transparent) 310deg 320deg, transparent 320deg 360deg);
-              -webkit-mask: radial-gradient(circle, transparent 62%, black 63%, black 100%);
-                      mask: radial-gradient(circle, transparent 62%, black 63%, black 100%);
-              animation: leo-summon-seal 1.3s ease-out forwards;
-              filter: drop-shadow(0 0 24px color-mix(in oklab, var(--primary, #16a34a) 60%, transparent));
-            }
-            .leo-summon-flash {
-              position: absolute; inset: 0;
-              background: radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--primary, #16a34a) 45%, transparent), transparent 45%);
-              animation: leo-summon-flash 1s ease-out forwards;
-            }
-          `}</style>
-        </div>
-      )}
 
       {open && (
         <div className="fixed inset-x-0 bottom-0 z-[71] flex justify-end p-2 sm:inset-auto sm:bottom-24 sm:right-5">
           <div
-            className="w-full max-w-sm overflow-hidden rounded-3xl border border-border/60 shadow-2xl backdrop-blur-xl"
-            style={{ background: "color-mix(in oklab, var(--background) 92%, transparent)" }}
-            role="dialog" aria-label="LEO voice assistant"
+            className="flex w-full max-w-md flex-col overflow-hidden rounded-3xl border border-border/60 shadow-2xl backdrop-blur-xl"
+            style={{ background: "color-mix(in oklab, var(--background) 94%, transparent)", height: "min(72vh, 640px)" }}
+            role="dialog" aria-label="LEO chat assistant"
           >
             <header className="flex items-center justify-between border-b border-border/60 px-4 py-3">
               <div className="flex items-center gap-3">
+                <div className="grid h-9 w-9 place-items-center rounded-full text-primary-foreground"
+                  style={{ background: "var(--gradient-primary, linear-gradient(135deg,#4ade80,#16a34a))" }}>
+                  <Sparkles className="h-4 w-4" />
+                </div>
                 <div>
-                  <div className="text-sm font-semibold">LEO · {PERSONAS.find((p) => p.id === settings.persona)?.label}</div>
-                  <div className="text-[11px] uppercase tracking-widest text-muted-foreground" aria-live="polite">{status}</div>
+                  <div className="text-sm font-semibold">LEO · AI Agri Assistant</div>
+                  <div className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                    {busy || identifying ? "Thinking…" : "Online"}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button aria-label="Voice settings" onClick={() => setSettingsOpen(true)} className="rounded-full p-2 hover:bg-secondary">
-                  <Settings2 className="h-4 w-4" />
+                <button aria-label="Clear chat" onClick={clearChat} className="rounded-full p-2 hover:bg-secondary">
+                  <Trash2 className="h-4 w-4" />
                 </button>
-                <button aria-label={muted ? "Unmute" : "Mute"} onClick={() => { setMuted((m) => !m); stopSpeaking(); }} className="rounded-full p-2 hover:bg-secondary">
-                  {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-                </button>
-                <button aria-label="Close" onClick={() => { setOpen(false); stopListening(); stopSpeaking(); setCaptionUser(""); setCaptionLeo(""); setLastReply(""); setIdResult(null); }} className="rounded-full p-2 hover:bg-secondary">
+                <button aria-label="Close" onClick={() => setOpen(false)} className="rounded-full p-2 hover:bg-secondary">
                   <X className="h-4 w-4" />
                 </button>
               </div>
             </header>
 
-            {/* Anime avatar stage with live lip-sync */}
-            <div className="relative grid place-items-center px-6 pb-3 pt-5">
-              <div
-                className="rounded-full"
-                style={{
-                  padding: 6,
-                  background: "radial-gradient(circle at 30% 20%, color-mix(in oklab, var(--primary) 40%, transparent), transparent 65%)",
-                  filter: (speaking || listening) && !reducedMotion ? "drop-shadow(0 12px 28px color-mix(in oklab, var(--primary) 40%, transparent))" : undefined,
-                  animation: (speaking || listening) && !reducedMotion ? "leo-orb-pulse 2.4s ease-in-out infinite" : undefined,
-                }}
-              >
-                <LeoAvatarAnime mouthLevel={mouth} state={avatarState} size={200} waving={avatarState === "idle" && !reducedMotion} />
-              </div>
-              <Waveform active={listening || speaking || transcribing} reducedMotion={reducedMotion} />
-              <p className="mt-3 min-h-[2.5rem] max-w-full text-center text-sm text-muted-foreground">
-                {listening && captionUser ? <span className="text-primary">{captionUser}</span>
-                  : transcribing ? labels.transcribing
-                  : thinking ? "…"
-                  : captionLeo || (!greeted ? GREETING[lang] : "")}
-              </p>
-              {/* Manual Speak button when autoSpeak is off */}
-              {!settings.autoSpeak && lastReply && !thinking && (
-                <button
-                  onClick={() => (speaking ? stopSpeaking() : speak(lastReply))}
-                  className="mt-2 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20"
-                >
-                  {speaking ? <><Square className="h-3 w-3" /> Stop</> : <><Play className="h-3 w-3" /> Speak reply</>}
-                </button>
+            <div ref={scrollerRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+              {messages.map((m) => <Bubble key={m.id} msg={m} />)}
+              {messages.length <= 1 && (
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {suggestions.map((s) => (
+                    <button key={s} onClick={() => send(s)}
+                      className="rounded-full border border-border/60 bg-secondary/40 px-3 py-1.5 text-xs hover:bg-secondary">
+                      {s}
+                    </button>
+                  ))}
+                </div>
               )}
-              <style>{`@keyframes leo-orb-pulse { 0%,100% { transform: scale(1);} 50% { transform: scale(1.04);} }`}</style>
             </div>
 
-            {(identifying || idResult) && (
-              <div className="mx-4 mb-3 rounded-2xl border border-border/60 bg-background/50 p-3 text-xs">
-                {identifying && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Loader2 className="h-3 w-3 animate-spin" /> {labels.identifying}
-                  </div>
-                )}
-                {idResult && idResult.topMatches?.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="font-semibold text-foreground">Top matches</div>
-                    {idResult.topMatches.map((t: any, i: number) => (
-                      <div key={i} className="rounded-lg bg-secondary/70 p-2">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium">{t.name}</span>
-                          <span className="text-muted-foreground">{t.confidence}%</span>
-                        </div>
-                        {t.scientificName && <div className="italic text-muted-foreground">{t.scientificName}</div>}
-                        {t.symptoms && <div className="mt-1"><b>Symptoms:</b> {t.symptoms}</div>}
-                        {t.organicControl && <div><b>Organic:</b> {t.organicControl}</div>}
-                        {t.chemicalControl && <div><b>Chemical:</b> {t.chemicalControl}</div>}
-                      </div>
-                    ))}
-                    {idResult.advice && <p className="text-muted-foreground">{idResult.advice}</p>}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="flex items-center justify-center gap-4 border-t border-border/60 px-4 py-4">
-              <button aria-label="Identify plant from photo" onClick={() => fileRef.current?.click()} className="grid h-12 w-12 place-items-center rounded-full border border-border/60 hover:bg-secondary">
-                <Camera className="h-5 w-5" />
+            <form
+              onSubmit={(e) => { e.preventDefault(); send(input); }}
+              className="flex items-end gap-2 border-t border-border/60 px-3 py-3"
+            >
+              <button type="button" aria-label="Upload photo" onClick={() => fileRef.current?.click()}
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border/60 hover:bg-secondary">
+                {identifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
               </button>
-              <button
-                onClick={listening ? stopListening : startListening}
-                aria-label={listening ? "Stop listening" : "Start voice"}
-                aria-pressed={listening}
-                className="grid h-16 w-16 place-items-center rounded-full text-primary-foreground transition"
-                style={{
-                  background: listening ? "#ef4444" : "var(--gradient-primary)",
-                  boxShadow: listening
-                    ? "0 0 0 10px rgba(239,68,68,0.20), 0 0 0 20px rgba(239,68,68,0.10)"
-                    : "0 0 0 6px color-mix(in oklab, var(--primary) 22%, transparent)",
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); }
                 }}
+                placeholder={PLACEHOLDER[lang]}
+                rows={1}
+                className="min-h-[40px] max-h-32 flex-1 resize-none rounded-2xl border border-border/60 bg-background/60 px-3 py-2 text-sm outline-none focus:border-primary/60"
+              />
+              <button
+                type="submit"
+                disabled={busy || !input.trim()}
+                aria-label="Send"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-primary-foreground transition disabled:opacity-40"
+                style={{ background: "var(--gradient-primary, linear-gradient(135deg,#4ade80,#16a34a))" }}
               >
-                {listening ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </button>
-              <div className="grid h-12 w-12 place-items-center rounded-full border border-border/60 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                {(settings.voiceLang || LANG_TO_BCP47[lang]).slice(0, 2)}
-              </div>
               <input ref={fileRef} type="file" accept="image/*" capture="environment" className="hidden"
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
-            </div>
-
-            {!supported && (
-              <p className="border-t border-border/60 px-4 py-3 text-center text-xs text-muted-foreground">
-                Voice recognition isn't supported in this browser. Try Chrome, Edge, or Safari on a recent device.
-              </p>
-            )}
+            </form>
           </div>
         </div>
       )}
-
-      <LeoSettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </>
   );
 }
 
-function Waveform({ active, reducedMotion }: { active: boolean; reducedMotion: boolean }) {
-  const bars = useMemo(() => new Array(14).fill(0), []);
+const Bubble = memo(function Bubble({ msg }: { msg: Msg }) {
+  const isUser = msg.role === "user";
   return (
-    <div className="mt-3 flex h-8 items-center gap-1" aria-hidden="true">
-      {bars.map((_, i) => (
-        <span
-          key={i}
-          className={active ? "leo-wave-bar" : ""}
-          style={{
-            display: "inline-block", width: 3, height: 26, borderRadius: 2,
-            background: "color-mix(in oklab, var(--primary) 75%, transparent)",
-            animationDelay: `${(i % 7) * 90}ms`,
-            transform: active && !reducedMotion ? undefined : "scaleY(0.35)",
-            opacity: active ? 1 : 0.35,
-          }}
-        />
-      ))}
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+      <div
+        className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
+          isUser
+            ? "rounded-br-md text-primary-foreground"
+            : "rounded-bl-md border border-border/60 bg-secondary/50"
+        }`}
+        style={isUser ? { background: "var(--gradient-primary, linear-gradient(135deg,#4ade80,#16a34a))" } : undefined}
+      >
+        {msg.image && (
+          <img src={msg.image} alt="" className="mb-2 max-h-48 w-full rounded-xl object-cover" />
+        )}
+        {msg.pending ? (
+          <span className="inline-flex items-center gap-1 text-muted-foreground">
+            <span className="leo-dot" /><span className="leo-dot" style={{ animationDelay: "0.15s" }} /><span className="leo-dot" style={{ animationDelay: "0.3s" }} />
+            <style>{`
+              .leo-dot { display:inline-block; width:6px; height:6px; border-radius:999px; background:currentColor; animation: leo-blink 1s ease-in-out infinite; }
+              @keyframes leo-blink { 0%,80%,100% { opacity: 0.2; transform: translateY(0);} 40% { opacity: 1; transform: translateY(-2px);} }
+            `}</style>
+          </span>
+        ) : (
+          <span className="whitespace-pre-wrap">{msg.content}</span>
+        )}
+      </div>
     </div>
   );
-}
+});
