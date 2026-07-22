@@ -154,7 +154,7 @@ function StackCard({ c, updated, rank, isFav, onFav }: StackCardProps) {
             <YAxis hide domain={["auto", "auto"]} />
             <Tooltip
               contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 11 }}
-              formatter={(v: number) => [`₹${v}`, "Avg"]}
+              formatter={(v) => [`₹${v}`, "Avg"]}
               labelFormatter={(l) => `Date: ${l}`}
             />
             <Area
