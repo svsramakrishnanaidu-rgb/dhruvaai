@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import type { LabCenter } from "@/lib/soil-atlas.functions";
 
 // Load Google Maps JS API once, then resolve.
-let loaderPromise: Promise<typeof google> | null = null;
+let loaderPromise: Promise<any> | null = null;
 function loadMapsApi() {
   if (typeof window === "undefined") return Promise.reject("no window");
   const w = window as any;
