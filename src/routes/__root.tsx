@@ -181,11 +181,12 @@ function RootComponent() {
           <AnimatedBackground />
           <div className="relative flex min-h-dvh flex-col ks-safe">
             <Navbar onSearchOpen={() => setSearchOpen(true)} />
-            <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
+            <main id="main" tabIndex={-1} className="flex-1 pb-20 focus:outline-none lg:pb-0">
               <Outlet />
             </main>
             <Footer />
           </div>
+          <MobileBottomNav />
           <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
           
         </TranslationProvider>
