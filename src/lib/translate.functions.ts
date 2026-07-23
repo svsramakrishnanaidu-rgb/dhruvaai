@@ -7,7 +7,7 @@ import { createServerFn } from "@tanstack/react-start";
  * The AI returns strict JSON so we can safely map back.
  */
 export const translateBatch = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => {
+  .validator((data: unknown) => {
     const d = data as { items?: unknown; lang?: string };
     const items = Array.isArray(d?.items) ? d.items.map((s) => String(s ?? "")).slice(0, 120) : [];
     const lang = d?.lang === "te" || d?.lang === "hi" ? d.lang : "en";

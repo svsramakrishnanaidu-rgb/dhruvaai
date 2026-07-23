@@ -44,7 +44,7 @@ Schema:
 }`;
 
 export const generateMarketInsights = createServerFn({ method: "POST" })
-  .inputValidator((input: { snapshot: MarketInsightSummary[]; scope?: string }) => input)
+  .validator((input: { snapshot: MarketInsightSummary[]; scope?: string }) => input)
   .handler(async ({ data }): Promise<MarketInsights> => {
     const key = process.env.LOVABLE_API_KEY;
     if (!key) {

@@ -56,7 +56,7 @@ function toNum(v: unknown): number {
 }
 
 export const fetchAgmarknet = createServerFn({ method: "GET" })
-  .inputValidator((input: {
+  .validator((input: {
     state?: string;
     district?: string;
     market?: string;
