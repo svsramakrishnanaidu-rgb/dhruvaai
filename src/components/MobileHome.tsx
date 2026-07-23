@@ -23,8 +23,8 @@ import { useAgmarknetLive } from "@/lib/agmarknet-live";
    ============================================================ */
 export function MobileHome() {
   const loc = useLocation();
-  const p = profileFor(loc.district);
   const trending = CROP_LIST.filter((c) => c.trending).slice(0, 8);
+
 
   return (
     <div
