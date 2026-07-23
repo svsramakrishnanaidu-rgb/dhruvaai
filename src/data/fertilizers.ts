@@ -817,8 +817,23 @@ export const SOILS = [
   { name: "Acidic", image: img("acidic soil"), ph: "4.5-6.0", fertilizerHint: "Lime + rock phosphate." },
 ] as const;
 
+// ── Merge extended catalog (brand grades, WSF, chelated micros, biofert,
+//    organic manures, slow-release, hydroponic, boron/silicon/sulphur) ──
+import { FERTILIZERS_EXTRA } from "./fertilizers-extended";
+import heroUrea from "@/assets/fert-hero-urea.jpg";
+import heroDap from "@/assets/fert-hero-dap.jpg";
+import heroNpk from "@/assets/fert-hero-npk.jpg";
+import heroMop from "@/assets/fert-hero-mop.jpg";
+import heroWsf from "@/assets/fert-hero-wsf.jpg";
+import heroOrganic from "@/assets/fert-hero-organic.jpg";
+import heroBio from "@/assets/fert-hero-bio.jpg";
+import heroNano from "@/assets/fert-hero-nano.jpg";
+
+export const FERTILIZERS_ALL: Fertilizer[] = [...FERTILIZERS, ...FERTILIZERS_EXTRA];
+
 // ── Helpers ────────────────────────────────────────────────
-export const FERTILIZERS_BY_SLUG = Object.fromEntries(FERTILIZERS.map((f) => [f.slug, f]));
+export const FERTILIZERS_BY_SLUG: Record<string, Fertilizer> =
+  Object.fromEntries(FERTILIZERS_ALL.map((f) => [f.slug, f]));
 
 export const CATEGORIES: FertilizerCategory[] = [
   "Nitrogen", "Phosphatic", "Potassic", "Complex NPK", "Micronutrient",
@@ -827,5 +842,27 @@ export const CATEGORIES: FertilizerCategory[] = [
 
 export function fertilizersForCrop(cropName: string) {
   const c = cropName.toLowerCase();
-  return FERTILIZERS.filter((f) => f.suitableCrops.some((x) => x.toLowerCase().includes(c)));
+  return FERTILIZERS_ALL.filter((f) => f.suitableCrops.some((x) => x.toLowerCase().includes(c)));
 }
+
+/**
+ * Deterministic mapping of every fertilizer to one of the 8 AI-generated
+ * hero images. Used by the index and hero cards for a premium, uniform look
+ * while still keeping per-item photo galleries.
+ */
+export function heroAIFor(f: Fertilizer): string {
+  const k = `${f.slug} ${f.name}`.toLowerCase();
+  if (k.includes("nano")) return heroNano;
+  if (k.includes("urea") && !k.includes("thio")) return heroUrea;
+  if (k.includes("dap") || k.includes("map ") || k.includes("mono-ammonium")) return heroDap;
+  if (k.includes("mop") || k.includes("muriate") || k.includes("potash chloride")) return heroMop;
+  if (f.category === "Bio-fertilizer" || k.includes("azolla") || k.includes("bga") || k.includes("rhizobium")) return heroBio;
+  if (f.category === "Organic" || f.category === "Soil amendment") return heroOrganic;
+  if (f.category === "Liquid / Water-soluble" || f.form === "Crystal" || f.form === "Liquid") return heroWsf;
+  if (f.category === "Complex NPK") return heroNpk;
+  if (f.category === "Nitrogen") return heroUrea;
+  if (f.category === "Phosphatic") return heroDap;
+  if (f.category === "Potassic") return heroMop;
+  return heroNpk;
+}
+

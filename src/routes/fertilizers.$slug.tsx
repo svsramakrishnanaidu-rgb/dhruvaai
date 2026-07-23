@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
-import { FERTILIZERS_BY_SLUG, FERTILIZERS, NUTRIENTS, METHODS, type Fertilizer } from "@/data/fertilizers";
+import { FERTILIZERS_BY_SLUG, FERTILIZERS_ALL as FERTILIZERS, NUTRIENTS, METHODS, type Fertilizer } from "@/data/fertilizers";
 import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
 import {
