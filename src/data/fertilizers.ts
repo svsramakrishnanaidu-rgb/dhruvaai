@@ -74,51 +74,75 @@ export type ApplicationMethod =
   | "Drone spray"
   | "Basal";
 
-const img = (q: string, w = 1200, h = 800) =>
-  `https://source.unsplash.com/${w}x${h}/?${encodeURIComponent(q)}`;
+// Deterministic content-based imagery.
+// Primary source: LoremFlickr (Flickr photos matched to comma-separated tags,
+// stable per `lock` seed). Fallback: Picsum with a stable seed so a broken
+// tag combo still renders a picture instead of a grey box.
+const hash = (s: string) => {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = (h ^ s.charCodeAt(i)) * 16777619;
+  return Math.abs(h | 0);
+};
+const slug = (s: string) =>
+  s.toLowerCase().replace(/[^a-z0-9\s,]/g, "").trim().replace(/\s+/g, ",");
+const img = (q: string, w = 1200, h = 800) => {
+  const tags = slug(q);
+  const lock = hash(`${tags}-${w}x${h}`);
+  return `https://loremflickr.com/${w}/${h}/${tags}/all?lock=${lock}`;
+};
 
 const mk = (
-  slug: string,
+  slugId: string,
   name: string,
   data: Omit<Fertilizer, "slug" | "name" | "images"> & { imageKeywords?: string[] },
 ): Fertilizer => {
   const kw = data.imageKeywords ?? [name.toLowerCase(), "fertilizer"];
+  const key = kw[0];
+  const soil = data.suitableSoils[0]?.toLowerCase() ?? "loam";
+  const crop0 = data.suitableCrops[0]?.toLowerCase() ?? "crop";
   return {
-    slug,
+    slug: slugId,
     name,
     ...data,
     images: {
-      hero: img(`${kw[0]} fertilizer bag`),
+      hero: img(`${key},fertilizer,bag,agriculture`),
       packaging: [
-        img(`${kw[0]} fertilizer bag`),
-        img(`${kw[0]} fertilizer package`),
-        img(`${kw[0]} sack farm warehouse`),
+        img(`${key},fertilizer,bag,package`),
+        img(`${key},sack,warehouse,farm`),
+        img(`${key},fertilizer,retail,shop`),
+        img(`${key},bulk,bag,storage`),
       ],
-      granules: img(`${kw[0]} ${data.form.toLowerCase()} closeup macro`),
+      granules: img(`${key},${data.form.toLowerCase()},macro,closeup`),
       application: [
-        img(`${kw[0]} field application`),
-        img(`tractor fertilizer spreader`),
-        img(`fertilizer broadcasting farm worker`),
+        img(`${key},field,application,farmer`),
+        img(`tractor,fertilizer,spreader,field`),
+        img(`fertilizer,broadcasting,farm,worker`),
+        img(`drip,irrigation,fertigation,${crop0}`),
+        img(`foliar,spray,${crop0},farm`),
       ],
-      label: img(`fertilizer label bag ${kw[0]}`),
-      cropApplication: (data.suitableCrops.slice(0, 4)).map((c) => ({
+      label: img(`fertilizer,label,${key},bag,package`),
+      cropApplication: data.suitableCrops.slice(0, 6).map((c) => ({
         crop: c,
-        url: img(`${c.toLowerCase()} crop field ${kw[0]}`),
+        url: img(`${c.toLowerCase()},crop,field,healthy,${key}`),
       })),
       beforeAfter: {
-        before: img(`unhealthy ${data.suitableCrops[0]?.toLowerCase() ?? "crop"} yellow leaves`),
-        after: img(`healthy green ${data.suitableCrops[0]?.toLowerCase() ?? "crop"} field`),
+        before: img(`${crop0},yellow,leaves,deficiency,unhealthy`),
+        after: img(`${crop0},green,healthy,field,harvest`),
       },
-      soil: img(`${data.suitableSoils[0]?.toLowerCase() ?? "loam"} soil texture farm`),
-      root: img(`healthy plant root system soil`),
-      deficiency: img(`${kw[0]} nutrient deficiency plant leaf`),
-      storage: img(`fertilizer warehouse storage bags`),
-      safety: img(`farmer safety gloves mask fertilizer`),
+      soil: img(`${soil},soil,texture,farm,agriculture`),
+      root: img(`plant,root,system,soil,healthy`),
+      deficiency: img(`${key},nutrient,deficiency,leaf,plant`),
+      storage: img(`fertilizer,warehouse,storage,bags,shed`),
+      safety: img(`farmer,safety,gloves,mask,fertilizer`),
       gallery: [
-        img(`${kw[0]} farm india`),
-        img(`${kw[0]} agriculture close`),
-        img(`fertilizer application drone spray`),
-        img(`hand holding fertilizer granules`),
+        img(`${key},farm,india,agriculture`),
+        img(`${key},agriculture,closeup,detail`),
+        img(`${key},${data.category.toLowerCase()},farming`),
+        img(`fertilizer,drone,spray,precision,agriculture`),
+        img(`hand,holding,fertilizer,granules,soil`),
+        img(`${crop0},harvest,yield,${key}`),
+        img(`${soil},field,plowed,${crop0}`),
+        img(`agriculture,laboratory,soil,test,${key}`),
       ],
     },
   };
