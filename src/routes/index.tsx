@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
+import { MobileHome } from "@/components/MobileHome";
+
 import { CountUp } from "@/components/CountUp";
 import { useLocation } from "@/lib/location-store";
 import { profileFor } from "@/lib/district-profiles";
