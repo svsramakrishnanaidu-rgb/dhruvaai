@@ -13,11 +13,12 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { Navbar } from "@/components/Navbar";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Footer } from "@/components/Footer";
 import { CinematicLoader } from "@/components/CinematicLoader";
 import { MusicPlayer } from "@/components/MusicPlayer";
 import { SearchDialog } from "@/components/SearchDialog";
-import { LeoAssistant } from "@/components/LeoAssistant";
+
 import { I18nProvider } from "@/lib/i18n";
 import { TranslationProvider } from "@/lib/translate-cache";
 import { useLocation as useUserLocation } from "@/lib/location-store";
@@ -75,7 +76,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#0b1512" },
+      { name: "theme-color", content: "#1a0a0c" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
@@ -180,13 +181,14 @@ function RootComponent() {
           <AnimatedBackground />
           <div className="relative flex min-h-dvh flex-col ks-safe">
             <Navbar onSearchOpen={() => setSearchOpen(true)} />
-            <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
+            <main id="main" tabIndex={-1} className="flex-1 pb-20 focus:outline-none lg:pb-0">
               <Outlet />
             </main>
             <Footer />
           </div>
+          <MobileBottomNav />
           <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
-          <LeoAssistant />
+          
         </TranslationProvider>
       </I18nProvider>
     </QueryClientProvider>
