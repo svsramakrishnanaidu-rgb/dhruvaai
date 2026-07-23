@@ -34,18 +34,25 @@ function Home() {
   const featured = trending[0] ?? CROP_LIST[0];
 
   return (
-    <div className="relative">
-      <HeroSection loc={loc} p={p} featured={featured} heroImg={heroImg} />
-      <MarqueeStrip />
-      <FeatureGrid />
-      <TrendingSection trending={trending} />
-      <CategoriesSection />
-      <StatsSection cropsCount={CROP_LIST.length} />
-      <TestimonialsSection />
-      <CTASection />
-    </div>
+    <>
+      {/* Mobile — completely reimagined bento dashboard */}
+      <MobileHome />
+
+      {/* Desktop / tablet — original cinematic home */}
+      <div className="relative hidden lg:block">
+        <HeroSection loc={loc} p={p} featured={featured} heroImg={heroImg} />
+        <MarqueeStrip />
+        <FeatureGrid />
+        <TrendingSection trending={trending} />
+        <CategoriesSection />
+        <StatsSection cropsCount={CROP_LIST.length} />
+        <TestimonialsSection />
+        <CTASection />
+      </div>
+    </>
   );
 }
+
 
 /* ============================================================
    HERO
