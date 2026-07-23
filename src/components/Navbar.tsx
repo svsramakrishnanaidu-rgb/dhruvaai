@@ -21,6 +21,7 @@ const NAV = [
   { to: "/diseases", key: "nav.diseases" },
   { to: "/schemes", key: "nav.schemes" },
   { to: "/districts", key: "nav.districts" },
+  { to: "/atlas", key: "nav.atlas" },
 ] as const;
 
 export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
