@@ -138,6 +138,8 @@ function FertilizerHub() {
       <div className="mx-auto max-w-7xl px-6 py-14 space-y-16">
         {/* Live subsidy strip */}
         <div className="card-elegant relative overflow-hidden p-5">
+          <style>{`@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
+
           <div className="flex items-center gap-3">
             <span className="relative flex h-2 w-2">
               <span className={`absolute inset-0 rounded-full ${subsidy?.source === "live" ? "bg-emerald-400" : "bg-amber-400"} animate-ping opacity-75`} />
