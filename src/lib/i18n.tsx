@@ -24,6 +24,7 @@ const en: Dict = {
   "nav.diseases": "Diseases",
   "nav.schemes": "Schemes",
   "nav.districts": "Districts",
+  "nav.atlas": "Soil Atlas",
   "nav.paddyFuture": "Paddy Future",
   "nav.about": "About",
   "nav.contact": "Contact",
