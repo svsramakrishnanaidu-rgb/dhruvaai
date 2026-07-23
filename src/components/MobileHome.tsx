@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { useLocation } from "@/lib/location-store";
-import { profileFor } from "@/lib/district-profiles";
+
 import {
   cachedLiveWeather,
   fetchLiveWeather,
