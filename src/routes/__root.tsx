@@ -186,7 +186,7 @@ function RootComponent() {
             <Footer />
           </div>
           <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
-          <LeoAssistant />
+          
         </TranslationProvider>
       </I18nProvider>
     </QueryClientProvider>
