@@ -64,7 +64,7 @@ export function MobileHome() {
 
           <QuickActions />
           <SchemesTile />
-          <AnalyticsTile profileYield={p.yieldIndex ?? 0.92} />
+          <AnalyticsTile profileYield={0.92} />
         </div>
       </div>
     </div>
