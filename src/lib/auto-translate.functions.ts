@@ -14,7 +14,7 @@ const LANG_NAME: Record<"te" | "hi", string> = {
 };
 
 export const translateBatch = createServerFn({ method: "POST" })
-  .inputValidator((i: unknown) => In.parse(i))
+  .validator((i: unknown) => In.parse(i))
   .handler(async ({ data }): Promise<{ translations: string[] }> => {
     const key = process.env.LOVABLE_API_KEY;
     if (!key) return { translations: data.texts.map((t) => t) };
