@@ -35,13 +35,28 @@ export function MobileHome() {
           <WeatherTile district={loc.district} />
           <MarketPulseTile />
           <TrendingRail
-            items={trending.map((c) => ({
-              slug: c.slug,
-              name: c.name,
-              image: c.image,
-              tag: c.season,
-            }))}
+            items={trending.map((c) => {
+              const trend = c.marketPrice?.trend ?? [];
+              const first = trend[0]?.price ?? c.marketPrice?.price ?? 0;
+              const last = trend[trend.length - 1]?.price ?? c.marketPrice?.price ?? 0;
+              const momentum = first > 0 ? ((last - first) / first) * 100 : 0;
+              const regionCount = c.suitableDistricts?.length ?? 0;
+              return {
+                slug: c.slug,
+                name: c.name,
+                image: c.image,
+                season: c.season,
+                price: c.marketPrice?.price ?? 0,
+                unit: c.marketPrice?.unit ?? "qtl",
+                yieldText: c.yield,
+                waterNeed: c.waterNeed,
+                momentum,
+                regionClass:
+                  regionCount >= 8 ? "Core Zone" : regionCount >= 4 ? "Tier-1" : "Niche",
+              };
+            })}
           />
+
           <QuickActions />
           <SchemesTile />
           <AnalyticsTile profileYield={0.92} />
@@ -231,50 +246,181 @@ function Sparkline({ points, colorVar }: { points: number[]; colorVar: string })
 /* ============================================================
    TRENDING CROPS RAIL
    ============================================================ */
-function TrendingRail({
-  items,
-}: {
-  items: { slug: string; name: string; image: string; tag: string }[];
-}) {
+type TrendingItem = {
+  slug: string;
+  name: string;
+  image: string;
+  season: string;
+  price: number;
+  unit: string;
+  yieldText: string;
+  waterNeed: "Low" | "Medium" | "High";
+  momentum: number;
+  regionClass: string;
+};
+
+function TrendingRail({ items }: { items: TrendingItem[] }) {
+  const fmt = (n: number) =>
+    n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
+  const waterTone: Record<TrendingItem["waterNeed"], { dot: string; label: string }> = {
+    Low: { dot: "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]", label: "Low Water" },
+    Medium: { dot: "bg-yellow-400 shadow-[0_0_6px_rgba(250,204,21,0.8)]", label: "Moderate Water" },
+    High: { dot: "bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.8)]", label: "High Water Needs" },
+  };
+
   return (
     <div className="col-span-2 mt-2">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-display text-gradient text-sm tracking-[0.2em]">
-          TRENDING CROPS
-        </h3>
+      {/* Section header — Cinematic dossier */}
+      <div className="mb-5 flex items-end justify-between px-1">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <div
+              className="h-2 w-2 rotate-45 bg-accent"
+              style={{ boxShadow: "0 0 8px var(--accent)" }}
+            />
+            <span className="font-display text-[10px] font-medium uppercase tracking-[0.2em] text-accent/60">
+              Market Intelligence
+            </span>
+          </div>
+          <h3 className="font-display text-2xl font-black uppercase tracking-tighter text-accent">
+            Trending Crops
+          </h3>
+        </div>
         <Link
           to="/crops"
-          className="font-display text-[10px] font-bold tracking-widest text-accent"
+          className="font-display border-b border-accent/40 pb-1 text-[10px] font-bold uppercase tracking-widest text-accent"
         >
-          VIEW ALL
+          View All
         </Link>
       </div>
-      <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {items.map((c) => (
-          <Link
-            key={c.slug}
-            to="/crops/$slug"
-            params={{ slug: c.slug }}
-            className="card-elegant min-w-[132px] shrink-0 snap-start p-3 transition active:scale-[0.97]"
-          >
-            <div className="mb-2 h-16 w-full overflow-hidden rounded-xl bg-background gold-border">
-              <img
-                src={c.image}
-                alt={c.name}
-                loading="lazy"
-                className="h-full w-full object-cover"
+
+      {/* Scrollable rail */}
+      <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {items.map((c, idx) => {
+          const positive = c.momentum >= 0;
+          const stable = Math.abs(c.momentum) < 3;
+          const badgeBg = stable ? "bg-foreground text-background" : "bg-accent text-background";
+          const arrowColor = stable
+            ? "border-t-foreground"
+            : "border-t-accent";
+          const water = waterTone[c.waterNeed];
+
+          return (
+            <Link
+              key={c.slug}
+              to="/crops/$slug"
+              params={{ slug: c.slug }}
+              className={`group relative w-[280px] shrink-0 snap-start overflow-hidden border border-accent/30 bg-card transition active:scale-[0.98] ${
+                idx > 0 ? "opacity-90" : ""
+              }`}
+            >
+              {/* Grain overlay */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 opacity-10"
+                style={{
+                  backgroundImage:
+                    "url('https://www.transparenttextures.com/patterns/asfalt-dark.png')",
+                }}
               />
-            </div>
-            <span className="block truncate text-xs font-bold text-foreground">
-              {c.name}
-            </span>
-            <span className="block truncate text-[10px] text-accent/70">{c.tag}</span>
-          </Link>
-        ))}
+
+              {/* Image area */}
+              <div className="relative h-44 overflow-hidden bg-background">
+                <img
+                  src={c.image}
+                  alt={c.name}
+                  loading="lazy"
+                  className="h-full w-full object-cover grayscale brightness-[0.55] transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+
+                {/* Momentum badge */}
+                <div className="absolute left-3 top-3 flex items-center">
+                  <div
+                    className={`font-display px-2 py-1 text-[10px] font-black uppercase tracking-tighter ${badgeBg}`}
+                  >
+                    {positive ? "+" : ""}
+                    {c.momentum.toFixed(1)}% {stable ? "Stable" : "Momentum"}
+                  </div>
+                  <div
+                    className={`h-0 w-0 border-r-[12px] border-t-[18px] border-r-transparent ${arrowColor}`}
+                  />
+                </div>
+
+                {/* Water status */}
+                <div className="absolute bottom-3 right-3">
+                  <div className="flex items-center gap-1.5 border border-accent/20 bg-background/60 px-2 py-1 backdrop-blur-md">
+                    <div className={`h-1.5 w-1.5 rounded-full ${water.dot}`} />
+                    <span className="font-display text-[9px] font-bold uppercase tracking-tighter text-foreground/80">
+                      {water.label}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content area */}
+              <div className="relative space-y-4 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 space-y-0.5">
+                    <h4 className="font-display truncate text-xl font-bold uppercase leading-none tracking-tight text-foreground">
+                      {c.name}
+                    </h4>
+                    <p className="font-display text-[10px] font-medium uppercase tracking-[0.2em] text-accent/60">
+                      {c.season}
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="font-display text-lg font-black leading-none tracking-tighter text-accent">
+                      ₹{fmt(c.price)}
+                    </p>
+                    <p className="font-display text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                      per {c.unit}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Data grid */}
+                <div className="grid grid-cols-2 gap-px border border-accent/20 bg-accent/20">
+                  <div className="bg-card p-3">
+                    <p className="font-display mb-1 text-[8px] uppercase tracking-widest text-muted-foreground">
+                      Projected Yield
+                    </p>
+                    <p className="truncate text-sm font-bold text-foreground/90">
+                      {c.yieldText}
+                    </p>
+                  </div>
+                  <div className="bg-card p-3">
+                    <p className="font-display mb-1 text-[8px] uppercase tracking-widest text-muted-foreground">
+                      Region Class
+                    </p>
+                    <p className="font-display truncate text-sm font-bold uppercase text-foreground/90">
+                      {c.regionClass}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom accent line */}
+              <div className="h-1 w-full bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-center gap-3">
+        <div className="h-px w-8 bg-accent" />
+        <div className="flex gap-1.5">
+          <div className="h-1.5 w-1.5 rotate-45 bg-accent" />
+          <div className="h-1.5 w-1.5 rotate-45 border border-accent/40 bg-accent/20" />
+          <div className="h-1.5 w-1.5 rotate-45 border border-accent/40 bg-accent/20" />
+        </div>
+        <div className="h-px w-8 bg-accent/30" />
       </div>
     </div>
   );
 }
+
 
 /* ============================================================
    QUICK ACTIONS 2×2
