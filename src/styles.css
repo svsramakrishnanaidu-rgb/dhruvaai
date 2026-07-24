@@ -651,5 +651,8 @@ p, li { text-wrap: pretty; }
 }
 
 /* Icon color states */
-@utility icon-silver { color: #D9D9D9; transition: color .25s ease; }
-@utility icon-silver:hover { color: var(--gold-3); }
+@utility icon-silver {
+  color: #D9D9D9;
+  transition: color .25s ease;
+  &:hover { color: var(--gold-3); }
+}
