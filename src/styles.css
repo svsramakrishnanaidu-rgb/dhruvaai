@@ -176,8 +176,6 @@
   box-shadow: var(--shadow-elegant);
   border-radius: var(--radius-2xl);
   transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s var(--ease-out-expo), border-color 0.4s ease;
-}
-@utility card-elegant {
   &::before {
     content: "";
     position: absolute;
@@ -187,7 +185,30 @@
     border-radius: inherit;
     pointer-events: none;
   }
+  &:hover { border-color: rgba(212,175,55,0.35); }
 }
+
+@utility gold-border {
+  border: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+@utility btn-gold {
+  background: var(--gradient-gold);
+  color: #111111;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 24px -8px rgba(212, 175, 55, 0.55), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: transform .25s var(--ease-out-expo), box-shadow .25s ease, filter .25s ease;
+  &:hover { filter: brightness(1.05); box-shadow: 0 12px 32px -8px rgba(241, 199, 91, 0.7), inset 0 1px 0 rgba(255,255,255,0.35); transform: translateY(-1px); }
+}
+
+@utility metallic-text {
+  background: linear-gradient(180deg, #F1C75B 0%, #D4AF37 45%, #8b6b1f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 
 
 @utility hover-lift {
