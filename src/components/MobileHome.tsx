@@ -331,8 +331,11 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
       {/* Scrollable rail */}
       <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((c, idx) => {
-          const positive = c.momentum >= 0;
-          const stable = Math.abs(c.momentum) < 3;
+          const liveMomentum = liveMap.get(c.name.toLowerCase().trim());
+          const momentum = liveMomentum ?? c.momentum;
+          const isLive = liveMomentum !== undefined;
+          const positive = momentum >= 0;
+          const stable = Math.abs(momentum) < 3;
           const badgeBg = stable ? "bg-foreground text-background" : "bg-accent text-background";
           const arrowColor = stable
             ? "border-t-foreground"
@@ -371,15 +374,23 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
                 {/* Momentum badge */}
                 <div className="absolute left-3 top-3 flex items-center">
                   <div
-                    className={`font-display px-2 py-1 text-[10px] font-black uppercase tracking-tighter ${badgeBg}`}
+                    className={`font-display flex items-center gap-1.5 px-2 py-1 text-[10px] font-black uppercase tracking-tighter ${badgeBg}`}
                   >
-                    {positive ? "+" : ""}
-                    {c.momentum.toFixed(1)}% {stable ? "Stable" : "Momentum"}
+                    {isLive && (
+                      <span
+                        aria-hidden
+                        className="h-1.5 w-1.5 animate-pulse rounded-full bg-current"
+                        style={{ boxShadow: "0 0 6px currentColor" }}
+                      />
+                    )}
+                    <LiveMomentum value={momentum} positive={positive} />
+                    {stable ? "Stable" : isLive ? "Live" : "Momentum"}
                   </div>
                   <div
                     className={`h-0 w-0 border-r-[12px] border-t-[18px] border-r-transparent ${arrowColor}`}
                   />
                 </div>
+
 
                 {/* Water status */}
                 <div className="absolute bottom-3 right-3">
