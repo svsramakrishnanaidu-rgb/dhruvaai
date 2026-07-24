@@ -16,45 +16,17 @@ import {
 import { useAgmarknetLive } from "@/lib/agmarknet-live";
 
 /* ============================================================
-   MOBILE HOME — K.G.F. "Charcoal & Gold" luxury bento.
-   Palette: bg #111111, surface #1A1A1A/#222, gold #D4AF37,
-   bright gold #F1C75B, bronze #A97142, profit #16C784.
-   Typography: Orbitron display / Inter body.
-   Rendered on <lg screens; desktop keeps its own layout.
+   MOBILE HOME — Uses the same K.G.F. design system tokens
+   (card-elegant, glass, text-gradient, btn-gold) and Orbitron
+   display / Inter body fonts as the desktop site. No hardcoded
+   hex values; everything flows from src/styles.css.
    ============================================================ */
 export function MobileHome() {
   const loc = useLocation();
   const trending = CROP_LIST.filter((c) => c.trending).slice(0, 8);
 
   return (
-    <div
-      className="ks-mobile-home relative min-h-screen w-full overflow-x-clip pb-24 lg:hidden"
-      style={{
-        background:
-          "radial-gradient(1000px 600px at 50% -10%, rgba(212,175,55,0.18), transparent 60%), linear-gradient(180deg, #0d0d0d 0%, #161616 55%, #0f0f0f 100%)",
-        color: "#F5F5F5",
-        fontFamily: "'Inter', 'Manrope', system-ui, sans-serif",
-      }}
-    >
-      {/* Ambient gold aurora */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[380px] opacity-80"
-        style={{
-          background:
-            "radial-gradient(60% 60% at 50% 0%, rgba(241,199,91,0.22), transparent 70%)",
-        }}
-      />
-      {/* Faint film grain */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.06] mix-blend-overlay"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>\")",
-        }}
-      />
-
+    <div className="relative min-h-screen w-full overflow-x-clip bg-background pb-24 text-foreground lg:hidden">
       <Header loc={loc} />
 
       <div className="relative z-10 px-4">
@@ -62,7 +34,6 @@ export function MobileHome() {
           <HeroTile />
           <WeatherTile district={loc.district} />
           <MarketPulseTile />
-
           <TrendingRail
             items={trending.map((c) => ({
               slug: c.slug,
@@ -71,7 +42,6 @@ export function MobileHome() {
               tag: c.season,
             }))}
           />
-
           <QuickActions />
           <SchemesTile />
           <AnalyticsTile profileYield={0.92} />
@@ -82,38 +52,19 @@ export function MobileHome() {
 }
 
 /* ============================================================
-   Shared luxury surface style
-   ============================================================ */
-const SURFACE: React.CSSProperties = {
-  background:
-    "linear-gradient(180deg, rgba(36,36,36,0.95) 0%, rgba(26,26,26,0.95) 100%)",
-  border: "1px solid rgba(212,175,55,0.14)",
-  boxShadow:
-    "0 20px 50px -30px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.04)",
-};
-
-const DISPLAY_FONT = "'Orbitron', 'Rajdhani', system-ui, sans-serif";
-
-/* ============================================================
-   HEADER — live location + language + notifications
+   HEADER
    ============================================================ */
 function Header({ loc }: { loc: { state: string; district: string } }) {
   return (
     <header className="relative z-10 flex items-center justify-between px-6 pb-2 pt-6">
       <div className="flex min-w-0 flex-col">
         <div className="flex items-center gap-1.5">
-          <span
-            className="inline-block h-2 w-2 animate-pulse rounded-full"
-            style={{ background: "#D4AF37", boxShadow: "0 0 10px #D4AF37" }}
-          />
-          <span
-            className="text-[10px] font-bold uppercase tracking-[0.24em]"
-            style={{ color: "rgba(241,199,91,0.7)", fontFamily: DISPLAY_FONT }}
-          >
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-primary shadow-[0_0_10px_var(--primary)]" />
+          <span className="font-display text-[10px] font-bold uppercase tracking-[0.24em] text-accent/80">
             Live Location
           </span>
         </div>
-        <span className="mt-0.5 truncate text-sm font-semibold">
+        <span className="mt-0.5 truncate text-sm font-semibold text-foreground">
           {loc.state} · {loc.district}
         </span>
       </div>
@@ -121,28 +72,20 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
         <Link
           to="/districts"
           aria-label="Change district"
-          className="grid h-9 w-9 place-items-center rounded-xl active:scale-95"
-          style={SURFACE}
+          className="card-elegant grid h-9 w-9 place-items-center rounded-xl active:scale-95"
         >
-          <MapPin className="h-4 w-4" style={{ color: "#F1C75B" }} />
+          <MapPin className="h-4 w-4 text-accent" />
         </Link>
-        <div
-          className="rounded-md px-2 py-1 text-[10px] font-bold"
-          style={{ ...SURFACE, color: "#F1C75B", fontFamily: DISPLAY_FONT }}
-        >
+        <div className="card-elegant font-display px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-accent">
           EN
         </div>
         <button
           type="button"
           aria-label="Notifications"
-          className="relative grid h-9 w-9 place-items-center rounded-xl active:scale-95"
-          style={SURFACE}
+          className="card-elegant relative grid h-9 w-9 place-items-center rounded-xl active:scale-95"
         >
-          <span
-            className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full"
-            style={{ background: "#D4AF37", boxShadow: "0 0 6px #D4AF37" }}
-          />
-          <Bell className="h-4 w-4" style={{ color: "#F1C75B" }} />
+          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_6px_var(--primary)]" />
+          <Bell className="h-4 w-4 text-accent" />
         </button>
       </div>
     </header>
@@ -154,57 +97,24 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
    ============================================================ */
 function HeroTile() {
   return (
-    <div
-      className="relative col-span-2 overflow-hidden rounded-3xl p-6"
-      style={SURFACE}
-    >
+    <div className="card-elegant relative col-span-2 overflow-hidden p-6">
       <div
         aria-hidden
-        className="absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
-        style={{ background: "rgba(241,199,91,0.28)" }}
+        className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
+        style={{ background: "color-mix(in oklab, var(--accent) 35%, transparent)" }}
       />
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-px"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, rgba(241,199,91,0.6), transparent)",
-        }}
-      />
-      <div
-        className="mb-2 text-[10px] font-bold uppercase tracking-[0.32em]"
-        style={{ color: "#A97142", fontFamily: DISPLAY_FONT }}
-      >
-        K · G · F  Edition
+      <div className="font-display mb-2 text-[10px] font-bold uppercase tracking-[0.32em] text-muted-foreground">
+        K · G · F · Edition
       </div>
-      <h1
-        className="mb-3 text-[42px] uppercase leading-[0.9] tracking-tighter"
-        style={{
-          fontFamily: DISPLAY_FONT,
-          backgroundImage:
-            "linear-gradient(135deg, #F1C75B 0%, #D4AF37 45%, #A97142 100%)",
-          WebkitBackgroundClip: "text",
-          backgroundClip: "text",
-          color: "transparent",
-        }}
-      >
+      <h1 className="font-display text-gradient mb-3 text-[42px] uppercase leading-[0.9] tracking-tighter">
         KRISH<br />SENSE
       </h1>
-      <p
-        className="mb-5 max-w-[220px] text-xs leading-relaxed"
-        style={{ color: "rgba(245,245,245,0.65)" }}
-      >
+      <p className="mb-5 max-w-[220px] text-xs leading-relaxed text-muted-foreground">
         Precision agricultural intelligence, forged for the modern Indian farmer.
       </p>
       <Link
         to="/crops"
-        className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest active:scale-95"
-        style={{
-          background: "linear-gradient(135deg, #F1C75B 0%, #D4AF37 55%, #C89B3C 100%)",
-          color: "#111111",
-          boxShadow: "0 12px 30px -10px rgba(212,175,55,0.55)",
-          fontFamily: DISPLAY_FONT,
-        }}
+        className="btn-gold font-display inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[11px] uppercase tracking-widest active:scale-95"
       >
         Explore Crops
         <ArrowRight className="h-3 w-3" />
@@ -235,32 +145,22 @@ function WeatherTile({ district }: { district: string }) {
   const sky = wx ? codeToSky(wx.weatherCode) : "—";
 
   return (
-    <div className="rounded-3xl p-5" style={SURFACE}>
+    <div className="card-elegant p-5">
       <div className="mb-4 flex items-start justify-between">
         <div
-          className="grid h-10 w-10 place-items-center rounded-full"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(241,199,91,0.35), transparent)",
-            border: "1px solid rgba(212,175,55,0.25)",
-          }}
+          className="grid h-10 w-10 place-items-center rounded-full gold-border"
+          style={{ background: "linear-gradient(135deg, color-mix(in oklab, var(--accent) 35%, transparent), transparent)" }}
         >
-          <Sun className="h-5 w-5" style={{ color: "#F1C75B" }} />
+          <Sun className="h-5 w-5 text-accent" />
         </div>
-        <span
-          className="text-[10px] font-bold uppercase tracking-widest"
-          style={{ color: "rgba(212,175,55,0.7)", fontFamily: DISPLAY_FONT }}
-        >
+        <span className="font-display text-[10px] font-bold uppercase tracking-widest text-accent/70">
           Live
         </span>
       </div>
-      <div
-        className="text-2xl font-bold tracking-tight"
-        style={{ fontFamily: DISPLAY_FONT, color: "#F5F5F5" }}
-      >
+      <div className="font-display text-2xl font-bold tracking-tight text-foreground">
         {temp != null ? `${temp}°C` : "—"}
       </div>
-      <div className="mt-0.5 truncate text-[11px]" style={{ color: "rgba(245,245,245,0.6)" }}>
+      <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
         {sky} · {district}
       </div>
     </div>
@@ -278,38 +178,34 @@ function MarketPulseTile() {
 
   const pct = gainer?.deltaPct ?? 0;
   const positive = pct >= 0;
-  const color = positive ? "#16C784" : "#8B1E1E";
+  const colorVar = positive ? "var(--leaf)" : "var(--destructive)";
 
   return (
-    <Link
-      to="/market"
-      className="block rounded-3xl p-5 transition active:scale-[0.98]"
-      style={SURFACE}
-    >
-      <div
-        className="mb-4 text-[10px] font-bold uppercase tracking-widest"
-        style={{ color: "rgba(212,175,55,0.7)", fontFamily: DISPLAY_FONT }}
-      >
+    <Link to="/market" className="card-elegant block p-5 transition active:scale-[0.98]">
+      <div className="font-display mb-4 text-[10px] font-bold uppercase tracking-widest text-accent/70">
         Market Pulse
       </div>
-      <div className="mb-1 truncate text-xs font-semibold" style={{ color: "#F5F5F5" }}>
+      <div className="mb-1 truncate text-xs font-semibold text-foreground">
         {loading ? "Loading…" : gainer?.commodity ?? "No data"}
       </div>
       <div className="flex items-end gap-2">
         <div
-          className="text-xl font-bold tracking-tight"
-          style={{ color, fontFamily: DISPLAY_FONT }}
+          className="font-display text-xl font-bold tracking-tight"
+          style={{ color: colorVar }}
         >
           {positive ? "+" : ""}
           {pct.toFixed(1)}%
         </div>
-        <Sparkline color={color} points={gainer?.weekly?.map((p) => p.avg) ?? [1, 1.2, 1.1, 1.5, 1.4, 1.8, 2]} />
+        <Sparkline
+          colorVar={colorVar}
+          points={gainer?.weekly?.map((p) => p.avg) ?? [1, 1.2, 1.1, 1.5, 1.4, 1.8, 2]}
+        />
       </div>
     </Link>
   );
 }
 
-function Sparkline({ points, color }: { points: number[]; color: string }) {
+function Sparkline({ points, colorVar }: { points: number[]; colorVar: string }) {
   if (!points.length) return null;
   const max = Math.max(...points);
   const min = Math.min(...points);
@@ -325,7 +221,7 @@ function Sparkline({ points, color }: { points: number[]; color: string }) {
             className="w-1 rounded-sm"
             style={{
               height: `${Math.max(15, h)}%`,
-              background: color,
+              background: colorVar,
               opacity: isLast ? 1 : 0.25 + (i / arr.length) * 0.5,
             }}
           />
@@ -346,23 +242,12 @@ function TrendingRail({
   return (
     <div className="col-span-2 mt-2">
       <div className="mb-3 flex items-center justify-between">
-        <h3
-          className="text-sm tracking-[0.2em]"
-          style={{
-            fontFamily: DISPLAY_FONT,
-            backgroundImage:
-              "linear-gradient(135deg, #F1C75B 0%, #D4AF37 60%, #A97142 100%)",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-          }}
-        >
+        <h3 className="font-display text-gradient text-sm tracking-[0.2em]">
           TRENDING CROPS
         </h3>
         <Link
           to="/crops"
-          className="text-[10px] font-bold tracking-widest"
-          style={{ color: "#F1C75B", fontFamily: DISPLAY_FONT }}
+          className="font-display text-[10px] font-bold tracking-widest text-accent"
         >
           VIEW ALL
         </Link>
@@ -373,13 +258,9 @@ function TrendingRail({
             key={c.slug}
             to="/crops/$slug"
             params={{ slug: c.slug }}
-            className="min-w-[132px] shrink-0 snap-start rounded-2xl p-3 transition active:scale-[0.97]"
-            style={SURFACE}
+            className="card-elegant min-w-[132px] shrink-0 snap-start p-3 transition active:scale-[0.97]"
           >
-            <div
-              className="mb-2 h-16 w-full overflow-hidden rounded-xl"
-              style={{ background: "#0d0d0d", border: "1px solid rgba(212,175,55,0.12)" }}
-            >
+            <div className="mb-2 h-16 w-full overflow-hidden rounded-xl bg-background gold-border">
               <img
                 src={c.image}
                 alt={c.name}
@@ -387,13 +268,10 @@ function TrendingRail({
                 className="h-full w-full object-cover"
               />
             </div>
-            <span className="block truncate text-xs font-bold" style={{ color: "#F5F5F5" }}>{c.name}</span>
-            <span
-              className="block truncate text-[10px]"
-              style={{ color: "rgba(241,199,91,0.65)" }}
-            >
-              {c.tag}
+            <span className="block truncate text-xs font-bold text-foreground">
+              {c.name}
             </span>
+            <span className="block truncate text-[10px] text-accent/70">{c.tag}</span>
           </Link>
         ))}
       </div>
@@ -409,33 +287,38 @@ function QuickActions() {
     to: string;
     label: string;
     Icon: typeof Calculator;
-    color: string;
+    tone: "accent" | "primary" | "leaf" | "bronze";
   }[] = [
-    { to: "/calculators", label: "Calculators", Icon: Calculator, color: "#F1C75B" },
-    { to: "/fertilizers", label: "Fertilizers", Icon: FlaskConical, color: "#D4AF37" },
-    { to: "/diseases", label: "Diseases", Icon: ShieldAlert, color: "#16C784" },
-    { to: "/rotation", label: "Rotation", Icon: RefreshCw, color: "#A97142" },
+    { to: "/calculators", label: "Calculators", Icon: Calculator, tone: "accent" },
+    { to: "/fertilizers", label: "Fertilizers", Icon: FlaskConical, tone: "primary" },
+    { to: "/diseases", label: "Diseases", Icon: ShieldAlert, tone: "leaf" },
+    { to: "/rotation", label: "Rotation", Icon: RefreshCw, tone: "bronze" },
   ];
+  const toneVar: Record<typeof items[number]["tone"], string> = {
+    accent: "var(--accent)",
+    primary: "var(--primary)",
+    leaf: "var(--leaf)",
+    bronze: "var(--loam)",
+  };
   return (
     <div className="col-span-2 mt-2 grid grid-cols-2 gap-3">
-      {items.map(({ to, label, Icon, color }) => (
+      {items.map(({ to, label, Icon, tone }) => (
         <Link
           key={to}
           to={to}
-          className="flex items-center gap-3 rounded-2xl p-4 transition active:scale-[0.97]"
-          style={SURFACE}
+          className="card-elegant flex items-center gap-3 p-4 transition active:scale-[0.97]"
         >
           <div
             className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
             style={{
-              background: `${color}1F`,
-              color,
-              border: `1px solid ${color}33`,
+              background: `color-mix(in oklab, ${toneVar[tone]} 15%, transparent)`,
+              color: toneVar[tone],
+              border: `1px solid color-mix(in oklab, ${toneVar[tone]} 30%, transparent)`,
             }}
           >
             <Icon className="h-4 w-4" />
           </div>
-          <span className="truncate text-xs font-semibold" style={{ color: "#F5F5F5" }}>{label}</span>
+          <span className="truncate text-xs font-semibold text-foreground">{label}</span>
         </Link>
       ))}
     </div>
@@ -449,35 +332,21 @@ function SchemesTile() {
   return (
     <Link
       to="/schemes"
-      className="col-span-2 mt-2 flex items-center justify-between rounded-3xl p-5 transition active:scale-[0.98]"
-      style={{
-        ...SURFACE,
-        background:
-          "linear-gradient(90deg, rgba(36,36,36,0.95) 0%, rgba(50,42,26,0.95) 100%)",
-      }}
+      className="card-elegant col-span-2 mt-2 flex items-center justify-between p-5 transition active:scale-[0.98]"
     >
       <div className="min-w-0">
-        <div
-          className="mb-1 text-[10px] font-black uppercase tracking-widest"
-          style={{ color: "#F1C75B", fontFamily: DISPLAY_FONT }}
-        >
+        <div className="font-display mb-1 text-[10px] font-black uppercase tracking-widest text-accent">
           Govt Portal
         </div>
-        <div className="truncate text-sm font-bold" style={{ color: "#F5F5F5" }}>
+        <div className="truncate text-sm font-bold text-foreground">
           PM-Kisan New Scheme
         </div>
-        <div className="text-[10px]" style={{ color: "rgba(245,245,245,0.6)" }}>
+        <div className="text-[10px] text-muted-foreground">
           Eligibility check active
         </div>
       </div>
-      <div
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-full"
-        style={{
-          background: "rgba(241,199,91,0.10)",
-          border: "1px solid rgba(212,175,55,0.25)",
-        }}
-      >
-        <ChevronRight className="h-5 w-5" style={{ color: "#F1C75B" }} />
+      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full gold-border bg-accent/10">
+        <ChevronRight className="h-5 w-5 text-accent" />
       </div>
     </Link>
   );
@@ -492,22 +361,15 @@ function AnalyticsTile({ profileYield }: { profileYield: number }) {
   return (
     <Link
       to="/analytics"
-      className="col-span-2 mt-2 overflow-hidden rounded-3xl p-5 transition active:scale-[0.98]"
-      style={SURFACE}
+      className="card-elegant col-span-2 mt-2 overflow-hidden p-5 transition active:scale-[0.98]"
     >
       <div className="flex items-end justify-between">
         <div className="min-w-0">
-          <div
-            className="mb-1 text-[10px] font-bold uppercase tracking-widest"
-            style={{ color: "rgba(212,175,55,0.7)", fontFamily: DISPLAY_FONT }}
-          >
+          <div className="font-display mb-1 text-[10px] font-bold uppercase tracking-widest text-accent/70">
             Season Analytics
           </div>
-          <div
-            className="flex items-center gap-2 text-lg font-bold"
-            style={{ color: "#F5F5F5", fontFamily: DISPLAY_FONT }}
-          >
-            <TrendingUp className="h-4 w-4" style={{ color: "#F1C75B" }} />
+          <div className="font-display flex items-center gap-2 text-lg font-bold text-foreground">
+            <TrendingUp className="h-4 w-4 text-accent" />
             Efficiency: {pct}%
           </div>
         </div>
@@ -518,8 +380,7 @@ function AnalyticsTile({ profileYield }: { profileYield: number }) {
               className="w-1.5 rounded-full"
               style={{
                 height: `${h}%`,
-                background:
-                  "linear-gradient(180deg, #F1C75B 0%, #D4AF37 60%, #A97142 100%)",
+                background: "var(--gradient-gold)",
                 opacity: 0.35 + (i / bars.length) * 0.65,
               }}
             />
