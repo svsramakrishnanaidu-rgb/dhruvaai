@@ -180,7 +180,7 @@ function RootComponent() {
         <TranslationProvider>
           <a href="#main" className="skip-link">Skip to content</a>
           <CinematicLoader />
-          <MusicPlayer />
+          
           <AnimatedBackground />
           <div className="relative flex min-h-dvh flex-col ks-safe">
             <Navbar onSearchOpen={() => setSearchOpen(true)} />
