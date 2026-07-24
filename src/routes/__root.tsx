@@ -16,7 +16,7 @@ import { Navbar } from "@/components/Navbar";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Footer } from "@/components/Footer";
 import { CinematicLoader } from "@/components/CinematicLoader";
-import { MusicPlayer } from "@/components/MusicPlayer";
+
 import { SearchDialog } from "@/components/SearchDialog";
 import { AutoLocalize } from "@/components/AutoLocalize";
 
