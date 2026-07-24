@@ -264,10 +264,21 @@
 }
 
 #lovable-badge,
-#lovable-badge * {
+#lovable-badge *,
+a[href*="lovable.dev"][target="_blank"],
+[id*="lovable-badge" i],
+[class*="lovable-badge" i],
+[data-lovable-badge],
+iframe[src*="lovable.dev/badge" i] {
   display: none !important;
   visibility: hidden !important;
+  opacity: 0 !important;
   pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
 }
 
 @layer base {
