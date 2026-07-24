@@ -259,7 +259,51 @@ type TrendingItem = {
   regionClass: string;
 };
 
+function useCountUp(target: number, durationMs = 900) {
+  const [val, setVal] = useState(target);
+  useEffect(() => {
+    const start = val;
+    const delta = target - start;
+    if (Math.abs(delta) < 0.01) {
+      setVal(target);
+      return;
+    }
+    const t0 = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / durationMs);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(start + delta * eased);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target]);
+  return val;
+}
+
+function LiveMomentum({ value, positive }: { value: number; positive: boolean }) {
+  const v = useCountUp(value);
+  return (
+    <span className="tabular-nums">
+      {positive && v >= 0 ? "+" : ""}
+      {v.toFixed(1)}%
+    </span>
+  );
+}
+
+
 function TrendingRail({ items }: { items: TrendingItem[] }) {
+  const { data: live } = useAgmarknetLive({ refreshMs: 60 * 1000, limit: 1500 });
+  const liveMap = new Map<string, number>();
+  for (const row of live) {
+    if (Number.isFinite(row.deltaPct)) {
+      const key = row.commodity.toLowerCase().trim();
+      if (!liveMap.has(key)) liveMap.set(key, row.deltaPct);
+    }
+  }
+
   const fmt = (n: number) =>
     n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
   const waterTone: Record<TrendingItem["waterNeed"], { dot: string; label: string }> = {
@@ -267,6 +311,7 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
     Medium: { dot: "bg-yellow-400 shadow-[0_0_6px_rgba(250,204,21,0.8)]", label: "Moderate Water" },
     High: { dot: "bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.8)]", label: "High Water Needs" },
   };
+
 
   return (
     <div className="col-span-2 mt-2">
@@ -297,8 +342,11 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
       {/* Scrollable rail */}
       <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((c, idx) => {
-          const positive = c.momentum >= 0;
-          const stable = Math.abs(c.momentum) < 3;
+          const liveMomentum = liveMap.get(c.name.toLowerCase().trim());
+          const momentum = liveMomentum ?? c.momentum;
+          const isLive = liveMomentum !== undefined;
+          const positive = momentum >= 0;
+          const stable = Math.abs(momentum) < 3;
           const badgeBg = stable ? "bg-foreground text-background" : "bg-accent text-background";
           const arrowColor = stable
             ? "border-t-foreground"
@@ -337,15 +385,23 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
                 {/* Momentum badge */}
                 <div className="absolute left-3 top-3 flex items-center">
                   <div
-                    className={`font-display px-2 py-1 text-[10px] font-black uppercase tracking-tighter ${badgeBg}`}
+                    className={`font-display flex items-center gap-1.5 px-2 py-1 text-[10px] font-black uppercase tracking-tighter ${badgeBg}`}
                   >
-                    {positive ? "+" : ""}
-                    {c.momentum.toFixed(1)}% {stable ? "Stable" : "Momentum"}
+                    {isLive && (
+                      <span
+                        aria-hidden
+                        className="h-1.5 w-1.5 animate-pulse rounded-full bg-current"
+                        style={{ boxShadow: "0 0 6px currentColor" }}
+                      />
+                    )}
+                    <LiveMomentum value={momentum} positive={positive} />
+                    {stable ? "Stable" : isLive ? "Live" : "Momentum"}
                   </div>
                   <div
                     className={`h-0 w-0 border-r-[12px] border-t-[18px] border-r-transparent ${arrowColor}`}
                   />
                 </div>
+
 
                 {/* Water status */}
                 <div className="absolute bottom-3 right-3">
