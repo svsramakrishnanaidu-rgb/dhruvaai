@@ -9,6 +9,7 @@ import { useT } from "@/lib/i18n";
 
 const NAV = [
   { to: "/", key: "nav.home" },
+  { to: "/music", key: "nav.music" },
   { to: "/analytics", key: "nav.analytics" },
   { to: "/crops", key: "nav.crops" },
   { to: "/paddy-future", key: "nav.paddyFuture" },
