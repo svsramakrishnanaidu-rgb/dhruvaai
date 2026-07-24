@@ -51,6 +51,7 @@ export function CinematicLoader() {
 
   const finish = () => {
     if (fading) return;
+    try { localStorage.setItem(PLAYED_KEY, "1"); } catch {}
     setFading(true);
     setTimeout(() => {
       setDone(true);
