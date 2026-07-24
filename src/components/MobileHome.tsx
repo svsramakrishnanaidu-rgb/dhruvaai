@@ -259,7 +259,40 @@ type TrendingItem = {
   regionClass: string;
 };
 
+function useCountUp(target: number, durationMs = 900) {
+  const [val, setVal] = useState(target);
+  useEffect(() => {
+    const start = val;
+    const delta = target - start;
+    if (Math.abs(delta) < 0.01) {
+      setVal(target);
+      return;
+    }
+    const t0 = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / durationMs);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(start + delta * eased);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target]);
+  return val;
+}
+
 function TrendingRail({ items }: { items: TrendingItem[] }) {
+  const { data: live } = useAgmarknetLive({ refreshMs: 60 * 1000, limit: 1500 });
+  const liveMap = new Map<string, number>();
+  for (const row of live) {
+    if (Number.isFinite(row.deltaPct)) {
+      const key = row.commodity.toLowerCase().trim();
+      if (!liveMap.has(key)) liveMap.set(key, row.deltaPct);
+    }
+  }
+
   const fmt = (n: number) =>
     n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
   const waterTone: Record<TrendingItem["waterNeed"], { dot: string; label: string }> = {
@@ -267,6 +300,7 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
     Medium: { dot: "bg-yellow-400 shadow-[0_0_6px_rgba(250,204,21,0.8)]", label: "Moderate Water" },
     High: { dot: "bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.8)]", label: "High Water Needs" },
   };
+
 
   return (
     <div className="col-span-2 mt-2">
