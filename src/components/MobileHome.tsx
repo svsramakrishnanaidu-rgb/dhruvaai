@@ -283,6 +283,17 @@ function useCountUp(target: number, durationMs = 900) {
   return val;
 }
 
+function LiveMomentum({ value, positive }: { value: number; positive: boolean }) {
+  const v = useCountUp(value);
+  return (
+    <span className="tabular-nums">
+      {positive && v >= 0 ? "+" : ""}
+      {v.toFixed(1)}%
+    </span>
+  );
+}
+
+
 function TrendingRail({ items }: { items: TrendingItem[] }) {
   const { data: live } = useAgmarknetLive({ refreshMs: 60 * 1000, limit: 1500 });
   const liveMap = new Map<string, number>();
