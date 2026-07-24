@@ -16,32 +16,42 @@ import {
 import { useAgmarknetLive } from "@/lib/agmarknet-live";
 
 /* ============================================================
-   MOBILE HOME — "Cinematic Pro" bento dashboard.
-   Locked palette: bg #0B0B0F, surface #1A1A22, primary #DC2626,
-   accent #F59E0B, text #F5F5F7. Typography: Archivo Black / Hind.
-   Rendered on <lg screens; desktop keeps the existing Home layout.
+   MOBILE HOME — K.G.F. "Charcoal & Gold" luxury bento.
+   Palette: bg #111111, surface #1A1A1A/#222, gold #D4AF37,
+   bright gold #F1C75B, bronze #A97142, profit #16C784.
+   Typography: Orbitron display / Inter body.
+   Rendered on <lg screens; desktop keeps its own layout.
    ============================================================ */
 export function MobileHome() {
   const loc = useLocation();
   const trending = CROP_LIST.filter((c) => c.trending).slice(0, 8);
 
-
   return (
     <div
       className="ks-mobile-home relative min-h-screen w-full overflow-x-clip pb-24 lg:hidden"
       style={{
-        background: "#0B0B0F",
-        color: "#F5F5F7",
-        fontFamily: "'Hind', system-ui, sans-serif",
+        background:
+          "radial-gradient(1000px 600px at 50% -10%, rgba(212,175,55,0.18), transparent 60%), linear-gradient(180deg, #0d0d0d 0%, #161616 55%, #0f0f0f 100%)",
+        color: "#F5F5F5",
+        fontFamily: "'Inter', 'Manrope', system-ui, sans-serif",
       }}
     >
-      {/* Ambient glow behind hero */}
+      {/* Ambient gold aurora */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[360px] opacity-70"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[380px] opacity-80"
         style={{
           background:
-            "radial-gradient(60% 60% at 50% 0%, rgba(220,38,38,0.22), transparent 70%)",
+            "radial-gradient(60% 60% at 50% 0%, rgba(241,199,91,0.22), transparent 70%)",
+        }}
+      />
+      {/* Faint film grain */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.06] mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>\")",
         }}
       />
 
@@ -72,6 +82,19 @@ export function MobileHome() {
 }
 
 /* ============================================================
+   Shared luxury surface style
+   ============================================================ */
+const SURFACE: React.CSSProperties = {
+  background:
+    "linear-gradient(180deg, rgba(36,36,36,0.95) 0%, rgba(26,26,26,0.95) 100%)",
+  border: "1px solid rgba(212,175,55,0.14)",
+  boxShadow:
+    "0 20px 50px -30px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.04)",
+};
+
+const DISPLAY_FONT = "'Orbitron', 'Rajdhani', system-ui, sans-serif";
+
+/* ============================================================
    HEADER — live location + language + notifications
    ============================================================ */
 function Header({ loc }: { loc: { state: string; district: string } }) {
@@ -81,11 +104,11 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
         <div className="flex items-center gap-1.5">
           <span
             className="inline-block h-2 w-2 animate-pulse rounded-full"
-            style={{ background: "#DC2626" }}
+            style={{ background: "#D4AF37", boxShadow: "0 0 10px #D4AF37" }}
           />
           <span
             className="text-[10px] font-bold uppercase tracking-[0.24em]"
-            style={{ color: "rgba(245,245,247,0.55)" }}
+            style={{ color: "rgba(241,199,91,0.7)", fontFamily: DISPLAY_FONT }}
           >
             Live Location
           </span>
@@ -98,23 +121,28 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
         <Link
           to="/districts"
           aria-label="Change district"
-          className="grid h-9 w-9 place-items-center rounded-xl border border-white/10 bg-[#1A1A22] active:scale-95"
+          className="grid h-9 w-9 place-items-center rounded-xl active:scale-95"
+          style={SURFACE}
         >
-          <MapPin className="h-4 w-4" />
+          <MapPin className="h-4 w-4" style={{ color: "#F1C75B" }} />
         </Link>
-        <div className="rounded-md border border-white/10 bg-[#1A1A22] px-2 py-1 text-[10px] font-bold">
+        <div
+          className="rounded-md px-2 py-1 text-[10px] font-bold"
+          style={{ ...SURFACE, color: "#F1C75B", fontFamily: DISPLAY_FONT }}
+        >
           EN
         </div>
         <button
           type="button"
           aria-label="Notifications"
-          className="relative grid h-9 w-9 place-items-center rounded-xl border border-white/10 bg-[#1A1A22] active:scale-95"
+          className="relative grid h-9 w-9 place-items-center rounded-xl active:scale-95"
+          style={SURFACE}
         >
           <span
             className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full"
-            style={{ background: "#DC2626" }}
+            style={{ background: "#D4AF37", boxShadow: "0 0 6px #D4AF37" }}
           />
-          <Bell className="h-4 w-4 opacity-80" />
+          <Bell className="h-4 w-4" style={{ color: "#F1C75B" }} />
         </button>
       </div>
     </header>
@@ -127,33 +155,55 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
 function HeroTile() {
   return (
     <div
-      className="relative col-span-2 overflow-hidden rounded-3xl border border-white/5 p-6"
-      style={{ background: "#1A1A22" }}
+      className="relative col-span-2 overflow-hidden rounded-3xl p-6"
+      style={SURFACE}
     >
       <div
         aria-hidden
-        className="absolute -right-8 -top-8 h-40 w-40 rounded-full blur-3xl"
-        style={{ background: "rgba(220,38,38,0.22)" }}
+        className="absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
+        style={{ background: "rgba(241,199,91,0.28)" }}
       />
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, rgba(241,199,91,0.6), transparent)",
+        }}
+      />
+      <div
+        className="mb-2 text-[10px] font-bold uppercase tracking-[0.32em]"
+        style={{ color: "#A97142", fontFamily: DISPLAY_FONT }}
+      >
+        K · G · F  Edition
+      </div>
       <h1
         className="mb-3 text-[42px] uppercase leading-[0.9] tracking-tighter"
-        style={{ fontFamily: "'Archivo Black', system-ui, sans-serif" }}
+        style={{
+          fontFamily: DISPLAY_FONT,
+          backgroundImage:
+            "linear-gradient(135deg, #F1C75B 0%, #D4AF37 45%, #A97142 100%)",
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          color: "transparent",
+        }}
       >
-        KRISH<br />
-        <span style={{ color: "#DC2626" }}>SENSE</span>
+        KRISH<br />SENSE
       </h1>
       <p
-        className="mb-5 max-w-[210px] text-xs leading-relaxed"
-        style={{ color: "rgba(245,245,247,0.6)" }}
+        className="mb-5 max-w-[220px] text-xs leading-relaxed"
+        style={{ color: "rgba(245,245,245,0.65)" }}
       >
-        Precision agricultural intelligence for the modern Indian farmer.
+        Precision agricultural intelligence, forged for the modern Indian farmer.
       </p>
       <Link
         to="/crops"
-        className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest text-white shadow-lg active:scale-95"
+        className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest active:scale-95"
         style={{
-          background: "#DC2626",
-          boxShadow: "0 10px 30px -10px rgba(220,38,38,0.5)",
+          background: "linear-gradient(135deg, #F1C75B 0%, #D4AF37 55%, #C89B3C 100%)",
+          color: "#111111",
+          boxShadow: "0 12px 30px -10px rgba(212,175,55,0.55)",
+          fontFamily: DISPLAY_FONT,
         }}
       >
         Explore Crops
@@ -185,31 +235,32 @@ function WeatherTile({ district }: { district: string }) {
   const sky = wx ? codeToSky(wx.weatherCode) : "—";
 
   return (
-    <div
-      className="rounded-3xl border border-white/5 p-5"
-      style={{ background: "#1A1A22" }}
-    >
+    <div className="rounded-3xl p-5" style={SURFACE}>
       <div className="mb-4 flex items-start justify-between">
         <div
           className="grid h-10 w-10 place-items-center rounded-full"
           style={{
             background:
-              "linear-gradient(135deg, rgba(245,158,11,0.35), transparent)",
+              "linear-gradient(135deg, rgba(241,199,91,0.35), transparent)",
+            border: "1px solid rgba(212,175,55,0.25)",
           }}
         >
-          <Sun className="h-5 w-5" style={{ color: "#F59E0B" }} />
+          <Sun className="h-5 w-5" style={{ color: "#F1C75B" }} />
         </div>
         <span
-          className="text-[10px] font-bold uppercase"
-          style={{ color: "rgba(245,245,247,0.4)" }}
+          className="text-[10px] font-bold uppercase tracking-widest"
+          style={{ color: "rgba(212,175,55,0.7)", fontFamily: DISPLAY_FONT }}
         >
           Live
         </span>
       </div>
-      <div className="text-2xl font-bold tracking-tight">
+      <div
+        className="text-2xl font-bold tracking-tight"
+        style={{ fontFamily: DISPLAY_FONT, color: "#F5F5F5" }}
+      >
         {temp != null ? `${temp}°C` : "—"}
       </div>
-      <div className="mt-0.5 truncate text-[11px]" style={{ color: "rgba(245,245,247,0.6)" }}>
+      <div className="mt-0.5 truncate text-[11px]" style={{ color: "rgba(245,245,245,0.6)" }}>
         {sky} · {district}
       </div>
     </div>
@@ -227,27 +278,27 @@ function MarketPulseTile() {
 
   const pct = gainer?.deltaPct ?? 0;
   const positive = pct >= 0;
-  const color = positive ? "#10b981" : "#DC2626";
+  const color = positive ? "#16C784" : "#8B1E1E";
 
   return (
     <Link
       to="/market"
-      className="block rounded-3xl border border-white/5 p-5 transition active:scale-[0.98]"
-      style={{ background: "#1A1A22" }}
+      className="block rounded-3xl p-5 transition active:scale-[0.98]"
+      style={SURFACE}
     >
       <div
-        className="mb-4 text-[10px] font-bold uppercase"
-        style={{ color: "rgba(245,245,247,0.4)" }}
+        className="mb-4 text-[10px] font-bold uppercase tracking-widest"
+        style={{ color: "rgba(212,175,55,0.7)", fontFamily: DISPLAY_FONT }}
       >
         Market Pulse
       </div>
-      <div className="mb-1 truncate text-xs font-semibold">
+      <div className="mb-1 truncate text-xs font-semibold" style={{ color: "#F5F5F5" }}>
         {loading ? "Loading…" : gainer?.commodity ?? "No data"}
       </div>
       <div className="flex items-end gap-2">
         <div
           className="text-xl font-bold tracking-tight"
-          style={{ color }}
+          style={{ color, fontFamily: DISPLAY_FONT }}
         >
           {positive ? "+" : ""}
           {pct.toFixed(1)}%
@@ -296,15 +347,22 @@ function TrendingRail({
     <div className="col-span-2 mt-2">
       <div className="mb-3 flex items-center justify-between">
         <h3
-          className="text-sm tracking-tight"
-          style={{ fontFamily: "'Archivo Black', system-ui, sans-serif" }}
+          className="text-sm tracking-[0.2em]"
+          style={{
+            fontFamily: DISPLAY_FONT,
+            backgroundImage:
+              "linear-gradient(135deg, #F1C75B 0%, #D4AF37 60%, #A97142 100%)",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            color: "transparent",
+          }}
         >
           TRENDING CROPS
         </h3>
         <Link
           to="/crops"
-          className="text-[10px] font-bold"
-          style={{ color: "#DC2626" }}
+          className="text-[10px] font-bold tracking-widest"
+          style={{ color: "#F1C75B", fontFamily: DISPLAY_FONT }}
         >
           VIEW ALL
         </Link>
@@ -315,10 +373,13 @@ function TrendingRail({
             key={c.slug}
             to="/crops/$slug"
             params={{ slug: c.slug }}
-            className="min-w-[132px] shrink-0 snap-start rounded-2xl border border-white/5 p-3 transition active:scale-[0.97]"
-            style={{ background: "#1A1A22" }}
+            className="min-w-[132px] shrink-0 snap-start rounded-2xl p-3 transition active:scale-[0.97]"
+            style={SURFACE}
           >
-            <div className="mb-2 h-16 w-full overflow-hidden rounded-xl bg-black/40">
+            <div
+              className="mb-2 h-16 w-full overflow-hidden rounded-xl"
+              style={{ background: "#0d0d0d", border: "1px solid rgba(212,175,55,0.12)" }}
+            >
               <img
                 src={c.image}
                 alt={c.name}
@@ -326,10 +387,10 @@ function TrendingRail({
                 className="h-full w-full object-cover"
               />
             </div>
-            <span className="block truncate text-xs font-bold">{c.name}</span>
+            <span className="block truncate text-xs font-bold" style={{ color: "#F5F5F5" }}>{c.name}</span>
             <span
               className="block truncate text-[10px]"
-              style={{ color: "rgba(245,245,247,0.5)" }}
+              style={{ color: "rgba(241,199,91,0.65)" }}
             >
               {c.tag}
             </span>
@@ -350,10 +411,10 @@ function QuickActions() {
     Icon: typeof Calculator;
     color: string;
   }[] = [
-    { to: "/calculators", label: "Calculators", Icon: Calculator, color: "#DC2626" },
-    { to: "/fertilizers", label: "Fertilizers", Icon: FlaskConical, color: "#F59E0B" },
-    { to: "/diseases", label: "Diseases", Icon: ShieldAlert, color: "#10b981" },
-    { to: "/rotation", label: "Rotation", Icon: RefreshCw, color: "#3b82f6" },
+    { to: "/calculators", label: "Calculators", Icon: Calculator, color: "#F1C75B" },
+    { to: "/fertilizers", label: "Fertilizers", Icon: FlaskConical, color: "#D4AF37" },
+    { to: "/diseases", label: "Diseases", Icon: ShieldAlert, color: "#16C784" },
+    { to: "/rotation", label: "Rotation", Icon: RefreshCw, color: "#A97142" },
   ];
   return (
     <div className="col-span-2 mt-2 grid grid-cols-2 gap-3">
@@ -361,16 +422,20 @@ function QuickActions() {
         <Link
           key={to}
           to={to}
-          className="flex items-center gap-3 rounded-2xl border border-white/5 p-4 transition active:scale-[0.97]"
-          style={{ background: "#1A1A22" }}
+          className="flex items-center gap-3 rounded-2xl p-4 transition active:scale-[0.97]"
+          style={SURFACE}
         >
           <div
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg"
-            style={{ background: `${color}1A`, color }}
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
+            style={{
+              background: `${color}1F`,
+              color,
+              border: `1px solid ${color}33`,
+            }}
           >
             <Icon className="h-4 w-4" />
           </div>
-          <span className="truncate text-xs font-semibold">{label}</span>
+          <span className="truncate text-xs font-semibold" style={{ color: "#F5F5F5" }}>{label}</span>
         </Link>
       ))}
     </div>
@@ -384,28 +449,35 @@ function SchemesTile() {
   return (
     <Link
       to="/schemes"
-      className="col-span-2 mt-2 flex items-center justify-between rounded-3xl border border-white/10 p-5 transition active:scale-[0.98]"
+      className="col-span-2 mt-2 flex items-center justify-between rounded-3xl p-5 transition active:scale-[0.98]"
       style={{
-        background: "linear-gradient(90deg, #1A1A22 0%, #252530 100%)",
+        ...SURFACE,
+        background:
+          "linear-gradient(90deg, rgba(36,36,36,0.95) 0%, rgba(50,42,26,0.95) 100%)",
       }}
     >
       <div className="min-w-0">
         <div
           className="mb-1 text-[10px] font-black uppercase tracking-widest"
-          style={{ color: "#F59E0B" }}
+          style={{ color: "#F1C75B", fontFamily: DISPLAY_FONT }}
         >
           Govt Portal
         </div>
-        <div className="truncate text-sm font-bold">PM-Kisan New Scheme</div>
-        <div className="text-[10px]" style={{ color: "rgba(245,245,247,0.6)" }}>
+        <div className="truncate text-sm font-bold" style={{ color: "#F5F5F5" }}>
+          PM-Kisan New Scheme
+        </div>
+        <div className="text-[10px]" style={{ color: "rgba(245,245,245,0.6)" }}>
           Eligibility check active
         </div>
       </div>
       <div
         className="grid h-10 w-10 shrink-0 place-items-center rounded-full"
-        style={{ background: "rgba(255,255,255,0.06)" }}
+        style={{
+          background: "rgba(241,199,91,0.10)",
+          border: "1px solid rgba(212,175,55,0.25)",
+        }}
       >
-        <ChevronRight className="h-5 w-5 opacity-70" />
+        <ChevronRight className="h-5 w-5" style={{ color: "#F1C75B" }} />
       </div>
     </Link>
   );
@@ -420,19 +492,22 @@ function AnalyticsTile({ profileYield }: { profileYield: number }) {
   return (
     <Link
       to="/analytics"
-      className="col-span-2 mt-2 overflow-hidden rounded-3xl border border-white/5 p-5 transition active:scale-[0.98]"
-      style={{ background: "#1A1A22" }}
+      className="col-span-2 mt-2 overflow-hidden rounded-3xl p-5 transition active:scale-[0.98]"
+      style={SURFACE}
     >
       <div className="flex items-end justify-between">
         <div className="min-w-0">
           <div
-            className="mb-1 text-[10px] font-bold uppercase"
-            style={{ color: "rgba(245,245,247,0.4)" }}
+            className="mb-1 text-[10px] font-bold uppercase tracking-widest"
+            style={{ color: "rgba(212,175,55,0.7)", fontFamily: DISPLAY_FONT }}
           >
             Season Analytics
           </div>
-          <div className="flex items-center gap-2 text-lg font-bold">
-            <TrendingUp className="h-4 w-4" style={{ color: "#DC2626" }} />
+          <div
+            className="flex items-center gap-2 text-lg font-bold"
+            style={{ color: "#F5F5F5", fontFamily: DISPLAY_FONT }}
+          >
+            <TrendingUp className="h-4 w-4" style={{ color: "#F1C75B" }} />
             Efficiency: {pct}%
           </div>
         </div>
@@ -443,8 +518,9 @@ function AnalyticsTile({ profileYield }: { profileYield: number }) {
               className="w-1.5 rounded-full"
               style={{
                 height: `${h}%`,
-                background: "#DC2626",
-                opacity: 0.2 + (i / bars.length) * 0.8,
+                background:
+                  "linear-gradient(180deg, #F1C75B 0%, #D4AF37 60%, #A97142 100%)",
+                opacity: 0.35 + (i / bars.length) * 0.65,
               }}
             />
           ))}
