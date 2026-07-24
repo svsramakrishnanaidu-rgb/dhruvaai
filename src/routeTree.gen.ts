@@ -13,6 +13,7 @@ import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as RotationRouteImport } from './routes/rotation'
 import { Route as PaddyFutureRouteImport } from './routes/paddy-future'
+import { Route as MusicRouteImport } from './routes/music'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as FertilizerRouteImport } from './routes/fertilizer'
 import { Route as DiseasesRouteImport } from './routes/diseases'
@@ -47,6 +48,11 @@ const RotationRoute = RotationRouteImport.update({
 const PaddyFutureRoute = PaddyFutureRouteImport.update({
   id: '/paddy-future',
   path: '/paddy-future',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MusicRoute = MusicRouteImport.update({
+  id: '/music',
+  path: '/music',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketRoute = MarketRouteImport.update({
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/diseases': typeof DiseasesRoute
   '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
+  '/music': typeof MusicRoute
   '/paddy-future': typeof PaddyFutureRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/diseases': typeof DiseasesRoute
   '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
+  '/music': typeof MusicRoute
   '/paddy-future': typeof PaddyFutureRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/diseases': typeof DiseasesRoute
   '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
+  '/music': typeof MusicRoute
   '/paddy-future': typeof PaddyFutureRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/diseases'
     | '/fertilizer'
     | '/market'
+    | '/music'
     | '/paddy-future'
     | '/rotation'
     | '/schemes'
@@ -222,6 +232,7 @@ export interface FileRouteTypes {
     | '/diseases'
     | '/fertilizer'
     | '/market'
+    | '/music'
     | '/paddy-future'
     | '/rotation'
     | '/schemes'
@@ -243,6 +254,7 @@ export interface FileRouteTypes {
     | '/diseases'
     | '/fertilizer'
     | '/market'
+    | '/music'
     | '/paddy-future'
     | '/rotation'
     | '/schemes'
@@ -265,6 +277,7 @@ export interface RootRouteChildren {
   DiseasesRoute: typeof DiseasesRoute
   FertilizerRoute: typeof FertilizerRoute
   MarketRoute: typeof MarketRoute
+  MusicRoute: typeof MusicRoute
   PaddyFutureRoute: typeof PaddyFutureRoute
   RotationRoute: typeof RotationRoute
   SchemesRoute: typeof SchemesRoute
@@ -305,6 +318,13 @@ declare module '@tanstack/react-router' {
       path: '/paddy-future'
       fullPath: '/paddy-future'
       preLoaderRoute: typeof PaddyFutureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/music': {
+      id: '/music'
+      path: '/music'
+      fullPath: '/music'
+      preLoaderRoute: typeof MusicRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/market': {
@@ -425,6 +445,7 @@ const rootRouteChildren: RootRouteChildren = {
   DiseasesRoute: DiseasesRoute,
   FertilizerRoute: FertilizerRoute,
   MarketRoute: MarketRoute,
+  MusicRoute: MusicRoute,
   PaddyFutureRoute: PaddyFutureRoute,
   RotationRoute: RotationRoute,
   SchemesRoute: SchemesRoute,
