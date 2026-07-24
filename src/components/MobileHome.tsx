@@ -103,9 +103,6 @@ function HeroTile() {
         className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
         style={{ background: "color-mix(in oklab, var(--accent) 35%, transparent)" }}
       />
-      <div className="font-display mb-2 text-[10px] font-bold uppercase tracking-[0.32em] text-muted-foreground">
-        K · G · F · Edition
-      </div>
       <h1 className="font-display text-gradient mb-3 text-[42px] uppercase leading-[0.9] tracking-tighter">
         KRISH<br />SENSE
       </h1>
