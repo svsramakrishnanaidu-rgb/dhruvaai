@@ -16,7 +16,7 @@ import { Navbar } from "@/components/Navbar";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Footer } from "@/components/Footer";
 import { CinematicLoader } from "@/components/CinematicLoader";
-import { MusicPlayer } from "@/components/MusicPlayer";
+
 import { SearchDialog } from "@/components/SearchDialog";
 import { AutoLocalize } from "@/components/AutoLocalize";
 
@@ -180,7 +180,7 @@ function RootComponent() {
         <TranslationProvider>
           <a href="#main" className="skip-link">Skip to content</a>
           <CinematicLoader />
-          <MusicPlayer />
+          
           <AnimatedBackground />
           <div className="relative flex min-h-dvh flex-col ks-safe">
             <Navbar onSearchOpen={() => setSearchOpen(true)} />
