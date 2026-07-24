@@ -1,113 +1,93 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Sprout } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import mobileVideo from "@/assets/intro-mobile.mp4.asset.json";
+import desktopVideo from "@/assets/intro-desktop.mp4.asset.json";
 
-const NAMES = ["MR", "SRK"];
+const MOBILE_BP = 768;
 
 export function CinematicLoader() {
-  const [visible, setVisible] = useState(false);
-  const [phase, setPhase] = useState<0 | 1 | 2>(0);
+  const [done, setDone] = useState(false);
+  const [fading, setFading] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean>(() =>
+    typeof window !== "undefined" ? window.innerWidth < MOBILE_BP : false,
+  );
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    if (sessionStorage.getItem("agri.intro") === "done") return;
-    setVisible(true);
-    const t1 = setTimeout(() => setPhase(1), 900);
-    const t2 = setTimeout(() => setPhase(2), 1900);
-    const t3 = setTimeout(() => {
-      setVisible(false);
-      sessionStorage.setItem("agri.intro", "done");
-    }, 3400);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    const onResize = () => setIsMobile(window.innerWidth < MOBILE_BP);
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+    };
   }, []);
 
-  const skip = () => { setVisible(false); sessionStorage.setItem("agri.intro", "done"); };
+  useEffect(() => {
+    // Lock scroll while intro plays
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
 
-  if (!visible) return null;
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const play = v.play();
+    if (play && typeof play.catch === "function") {
+      play.catch(() => finish());
+    }
+    // Safety fallback in case of stall
+    const safety = setTimeout(() => finish(), 20000);
+    return () => clearTimeout(safety);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const finish = () => {
+    if (fading) return;
+    setFading(true);
+    setTimeout(() => {
+      setDone(true);
+      try {
+        const v = videoRef.current;
+        if (v) {
+          v.pause();
+          v.removeAttribute("src");
+          v.load();
+        }
+      } catch {}
+    }, 650);
+  };
+
+  if (done) return null;
+
+  const src = isMobile ? mobileVideo.url : desktopVideo.url;
 
   return (
     <div
-      className="fixed inset-0 z-[100] grid place-items-center"
+      className="fixed inset-0 z-[100] bg-black"
       style={{
-        background:
-          "radial-gradient(600px 400px at 50% 50%, oklch(0.22 0.03 150), oklch(0.08 0.02 150) 70%)",
+        opacity: fading ? 0 : 1,
+        transition: "opacity 600ms ease-out",
+        pointerEvents: fading ? "none" : "auto",
       }}
+      aria-hidden="true"
     >
-      {/* particles */}
-      {Array.from({ length: 40 }).map((_, i) => (
-        <span
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            width: 2 + Math.random() * 3,
-            height: 2 + Math.random() * 3,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            background: "radial-gradient(circle, rgba(180,255,150,0.9), transparent)",
-            animation: `float-y ${3 + Math.random() * 4}s ease-in-out ${Math.random() * 2}s infinite`,
-          }}
-        />
-      ))}
-      {/* light rays */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "conic-gradient(from 210deg at 50% 55%, transparent 0deg, rgba(220,255,180,0.10) 30deg, transparent 60deg, rgba(255,210,140,0.10) 90deg, transparent 130deg, transparent 360deg)",
-          animation: "gradient-shift 6s linear infinite",
-          mixBlendMode: "screen",
-        }}
+      <video
+        ref={videoRef}
+        key={src}
+        src={src}
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        onEnded={finish}
+        onError={finish}
+        className="h-full w-full"
+        style={{ objectFit: "cover", width: "100vw", height: "100vh" }}
       />
-
-      <div className="relative flex flex-col items-center gap-6 text-center">
-        {phase < 2 && (
-          <>
-            <div
-              className="grid h-28 w-28 place-items-center rounded-full"
-              style={{
-                background: "var(--gradient-primary)",
-                boxShadow: "0 0 80px 10px color-mix(in oklab, var(--primary) 45%, transparent)",
-                animation: "scale-in 0.9s var(--ease-spring)",
-              }}
-            >
-              <Sprout className="h-14 w-14 text-primary-foreground" style={{ animation: "float-y 3s ease-in-out infinite" }} />
-            </div>
-            <div style={{ animation: "fade-up 0.9s var(--ease-out-expo) 0.3s both" }}>
-              <div className="font-display text-3xl font-black tracking-tight md:text-5xl">
-                Krish <span className="text-gradient">Sense</span>
-              </div>
-              <div className="mt-2 text-xs uppercase tracking-[0.4em] text-muted-foreground">
-                Smart Agricultural Advisory
-              </div>
-            </div>
-          </>
-        )}
-        {phase === 2 && (
-          <div className="text-center" style={{ animation: "fade-up 0.6s var(--ease-out-expo) both" }}>
-            <div className="text-xs uppercase tracking-[0.4em] text-muted-foreground">Crafted by</div>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-display text-2xl font-black md:text-4xl">
-              {NAMES.map((n, i) => (
-                <span
-                  key={n}
-                  className="text-gradient"
-                  style={{
-                    animation: `fade-up 0.6s var(--ease-out-expo) ${i * 0.12}s both, float-y ${3 + i * 0.3}s ease-in-out ${i * 0.15}s infinite`,
-                    textShadow: "0 0 30px color-mix(in oklab, var(--primary) 60%, transparent)",
-                  }}
-                >
-                  {n}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <button
-        onClick={skip}
-        className="absolute bottom-6 right-6 rounded-full border border-border/50 bg-background/40 px-4 py-1.5 text-xs text-muted-foreground backdrop-blur transition hover:text-foreground"
-      >
-        Skip intro →
-      </button>
     </div>
   );
 }
