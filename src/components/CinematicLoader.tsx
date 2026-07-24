@@ -4,9 +4,13 @@ import mobileVideo from "@/assets/intro-mobile.mp4.asset.json";
 import desktopVideo from "@/assets/intro-desktop.mp4.asset.json";
 
 const MOBILE_BP = 768;
+const PLAYED_KEY = "krishsense_intro_played_v1";
 
 export function CinematicLoader() {
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try { return localStorage.getItem(PLAYED_KEY) === "1"; } catch { return false; }
+  });
   const [fading, setFading] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean>(() =>
     typeof window !== "undefined" ? window.innerWidth < MOBILE_BP : false,
@@ -47,6 +51,7 @@ export function CinematicLoader() {
 
   const finish = () => {
     if (fading) return;
+    try { localStorage.setItem(PLAYED_KEY, "1"); } catch {}
     setFading(true);
     setTimeout(() => {
       setDone(true);
