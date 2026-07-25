@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Bell, Sun, ArrowRight, ChevronRight, Calculator, FlaskConical,
-  ShieldAlert, RefreshCw, TrendingUp, MapPin,
+  ShieldAlert, RefreshCw, TrendingUp, MapPin, Music2, Languages,
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { useLocation } from "@/lib/location-store";
