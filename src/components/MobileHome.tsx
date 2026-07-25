@@ -190,57 +190,117 @@ function MarketPulseTile() {
 
   const pct = gainer?.deltaPct ?? 0;
   const positive = pct >= 0;
-  const colorVar = positive ? "var(--leaf)" : "var(--destructive)";
+  const price =
+    (gainer as { modalPrice?: number } | undefined)?.modalPrice ??
+    gainer?.weekly?.[gainer.weekly.length - 1]?.avg ??
+    0;
+  const points =
+    gainer?.weekly?.map((p) => p.avg) ?? [1, 1.2, 1.1, 1.5, 1.4, 1.8, 2];
+  const path = buildSparkPath(points);
+  const changeColor = positive ? "var(--leaf)" : "var(--destructive)";
 
   return (
-    <Link to="/market" className="card-elegant block p-5 transition active:scale-[0.98]">
-      <div className="font-display mb-4 text-[10px] font-bold uppercase tracking-widest text-accent/70">
-        Market Pulse
-      </div>
-      <div className="mb-1 truncate text-xs font-semibold text-foreground">
-        {loading ? "Loading…" : gainer?.commodity ?? "No data"}
-      </div>
-      <div className="flex items-end gap-2">
-        <div
-          className="font-display text-xl font-bold tracking-tight"
-          style={{ color: colorVar }}
-        >
-          {positive ? "+" : ""}
-          {pct.toFixed(1)}%
+    <Link
+      to="/market"
+      className="group relative block aspect-square overflow-hidden border border-accent/30 bg-card shadow-[0_0_20px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-accent active:scale-[0.98]"
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-60"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--accent) 6%, transparent), transparent 60%, #000)",
+        }}
+      />
+
+      <div className="relative z-10 flex h-full flex-col justify-between p-3">
+        <div className="flex items-start justify-between">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent/80">
+            Market Pulse
+          </span>
+          <span
+            className="h-1.5 w-1.5 animate-pulse rounded-full"
+            style={{ background: changeColor, boxShadow: `0 0 8px ${changeColor}` }}
+          />
         </div>
-        <Sparkline
-          colorVar={colorVar}
-          points={gainer?.weekly?.map((p) => p.avg) ?? [1, 1.2, 1.1, 1.5, 1.4, 1.8, 2]}
-        />
+
+        <div>
+          <h3
+            className="font-display truncate text-[18px] font-bold uppercase leading-none tracking-wider text-foreground"
+            title={gainer?.commodity ?? ""}
+          >
+            {loading ? "Loading" : gainer?.commodity ?? "No data"}
+          </h3>
+          <div className="mt-1 flex items-baseline gap-1.5">
+            <span className="font-display text-[13px] font-medium tabular-nums text-foreground/90">
+              {price ? `₹${Math.round(price).toLocaleString("en-IN")}` : "—"}
+            </span>
+            <span
+              className="text-[11px] font-bold tabular-nums"
+              style={{ color: changeColor }}
+            >
+              {positive ? "+" : ""}
+              {pct.toFixed(2)}%
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-auto">
+          <svg className="h-12 w-full" viewBox="0 0 100 40" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="mpLine" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="var(--accent)" />
+              </linearGradient>
+              <linearGradient id="mpFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d={`${path} L100,40 L0,40 Z`} fill="url(#mpFill)" />
+            <path
+              d={path}
+              fill="none"
+              stroke="url(#mpLine)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="drop-shadow-[0_0_4px_color-mix(in_oklab,var(--accent)_50%,transparent)]"
+            />
+          </svg>
+        </div>
       </div>
+
+      <div className="absolute right-0 top-0 h-3 w-3 border-r border-t border-accent/60" />
+      <div className="absolute bottom-0 left-0 h-3 w-3 border-b border-l border-accent/60" />
+
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-1/4 opacity-0 group-hover:opacity-100"
+        style={{
+          background:
+            "linear-gradient(to bottom, transparent, color-mix(in oklab, var(--accent) 14%, transparent), transparent)",
+          animation: "mp-scan 2.2s linear infinite",
+        }}
+      />
+      <style>{`@keyframes mp-scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(500%); } }`}</style>
     </Link>
   );
 }
 
-function Sparkline({ points, colorVar }: { points: number[]; colorVar: string }) {
-  if (!points.length) return null;
+function buildSparkPath(points: number[]): string {
+  if (!points.length) return "M0,20 L100,20";
   const max = Math.max(...points);
   const min = Math.min(...points);
   const span = max - min || 1;
-  return (
-    <div className="flex h-6 w-14 items-end gap-[2px] pb-1">
-      {points.slice(-5).map((v, i, arr) => {
-        const h = ((v - min) / span) * 100;
-        const isLast = i === arr.length - 1;
-        return (
-          <span
-            key={i}
-            className="w-1 rounded-sm"
-            style={{
-              height: `${Math.max(15, h)}%`,
-              background: colorVar,
-              opacity: isLast ? 1 : 0.25 + (i / arr.length) * 0.5,
-            }}
-          />
-        );
-      })}
-    </div>
-  );
+  const step = 100 / Math.max(1, points.length - 1);
+  return points
+    .map((v, i) => {
+      const x = i * step;
+      const y = 38 - ((v - min) / span) * 34;
+      return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
 }
 
 /* ============================================================
