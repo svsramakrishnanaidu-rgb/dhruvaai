@@ -20,10 +20,12 @@ import { CinematicLoader } from "@/components/CinematicLoader";
 import { SearchDialog } from "@/components/SearchDialog";
 import { AutoLocalize } from "@/components/AutoLocalize";
 import { AutoLocate } from "@/components/AutoLocate";
+import { MiniPlayer } from "@/components/MiniPlayer";
 
 
 import { I18nProvider } from "@/lib/i18n";
 import { TranslationProvider } from "@/lib/translate-cache";
+import { MusicProvider } from "@/lib/music-store";
 import { useLocation as useUserLocation } from "@/lib/location-store";
 import { fetchLiveWeather } from "@/lib/live-weather";
 
@@ -179,21 +181,24 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <TranslationProvider>
-          <a href="#main" className="skip-link">Skip to content</a>
-          <CinematicLoader />
-          
-          <AnimatedBackground />
-          <div className="relative flex min-h-dvh flex-col ks-safe">
-            <Navbar onSearchOpen={() => setSearchOpen(true)} />
-            <main id="main" tabIndex={-1} className="flex-1 pb-20 focus:outline-none lg:pb-0">
-              <Outlet />
-            </main>
-            <Footer />
-          </div>
-          <MobileBottomNav />
-          <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
-          <AutoLocalize />
-          <AutoLocate />
+          <MusicProvider>
+            <a href="#main" className="skip-link">Skip to content</a>
+            <CinematicLoader />
+
+            <AnimatedBackground />
+            <div className="relative flex min-h-dvh flex-col ks-safe">
+              <Navbar onSearchOpen={() => setSearchOpen(true)} />
+              <main id="main" tabIndex={-1} className="flex-1 pb-20 focus:outline-none lg:pb-0">
+                <Outlet />
+              </main>
+              <Footer />
+            </div>
+            <MobileBottomNav />
+            <MiniPlayer />
+            <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
+            <AutoLocalize />
+            <AutoLocate />
+          </MusicProvider>
         </TranslationProvider>
 
       </I18nProvider>
