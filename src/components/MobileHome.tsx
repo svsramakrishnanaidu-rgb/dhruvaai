@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Bell, Sun, ArrowRight, ChevronRight, Calculator, FlaskConical,
-  ShieldAlert, RefreshCw, TrendingUp, MapPin,
+  ShieldAlert, RefreshCw, TrendingUp, MapPin, Music2, Languages,
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { useLocation } from "@/lib/location-store";
@@ -83,27 +83,59 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
           {loc.state} · {loc.district}
         </span>
       </div>
-      <div className="flex shrink-0 items-center gap-2">
-        <Link
-          to="/districts"
-          aria-label="Change district"
-          className="card-elegant grid h-9 w-9 place-items-center rounded-xl active:scale-95"
-        >
-          <MapPin className="h-4 w-4 text-accent" />
-        </Link>
-        <div className="card-elegant font-display px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-accent">
-          EN
-        </div>
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="card-elegant relative grid h-9 w-9 place-items-center rounded-xl active:scale-95"
-        >
-          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_6px_var(--primary)]" />
-          <Bell className="h-4 w-4 text-accent" />
-        </button>
+      <div className="card-elegant flex shrink-0 items-center gap-0.5 rounded-2xl p-1">
+        <HeaderIcon to="/districts" label="Change district" icon={<MapPin className="h-[15px] w-[15px]" />} />
+        <HeaderDivider />
+        <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[15px] w-[15px]" />} />
+        <HeaderDivider />
+        <HeaderIcon label="Language" icon={<Languages className="h-[15px] w-[15px]" />} badge="EN" />
+        <HeaderDivider />
+        <HeaderIcon label="Notifications" icon={<Bell className="h-[15px] w-[15px]" />} dot />
       </div>
     </header>
+  );
+}
+
+function HeaderDivider() {
+  return (
+    <span
+      aria-hidden
+      className="h-5 w-px"
+      style={{ background: "linear-gradient(to bottom, transparent, color-mix(in oklab, var(--accent) 45%, transparent), transparent)" }}
+    />
+  );
+}
+
+function HeaderIcon({
+  to, label, icon, dot, badge,
+}: {
+  to?: string; label: string; icon: React.ReactNode; dot?: boolean; badge?: string;
+}) {
+  const content = (
+    <>
+      <span className="relative grid h-8 w-8 place-items-center rounded-xl text-accent transition-colors group-active:text-primary">
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-xl opacity-0 transition-opacity group-hover:opacity-100 group-active:opacity-100"
+          style={{ background: "radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%)" }}
+        />
+        {icon}
+        {dot && (
+          <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_6px_var(--primary)]" />
+        )}
+        {badge && (
+          <span className="font-display absolute -bottom-0.5 right-0.5 rounded-[4px] bg-background/80 px-1 text-[7px] font-bold leading-none tracking-widest text-accent">
+            {badge}
+          </span>
+        )}
+      </span>
+    </>
+  );
+  const cls = "group relative grid place-items-center rounded-xl active:scale-90 transition-transform";
+  return to ? (
+    <Link to={to} aria-label={label} className={cls}>{content}</Link>
+  ) : (
+    <button type="button" aria-label={label} className={cls}>{content}</button>
   );
 }
 
