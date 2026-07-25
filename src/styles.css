@@ -322,13 +322,18 @@
   50%     { box-shadow: 0 0 0 18px color-mix(in oklab, var(--primary) 0%, transparent); }
 }
 
+/* Completely hide the Lovable "Made with Lovable" badge and any wrapper/iframe/link variant. */
 #lovable-badge,
 #lovable-badge *,
+a[href*="lovable.dev"],
 a[href*="lovable.dev"][target="_blank"],
 [id*="lovable-badge" i],
 [class*="lovable-badge" i],
 [data-lovable-badge],
-iframe[src*="lovable.dev/badge" i] {
+iframe[src*="lovable.dev"],
+iframe[src*="lovable.dev/badge" i],
+div:has(> a[href*="lovable.dev"]),
+div:has(> iframe[src*="lovable.dev"]) {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
@@ -338,6 +343,9 @@ iframe[src*="lovable.dev/badge" i] {
   position: absolute !important;
   left: -9999px !important;
   top: -9999px !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  overflow: hidden !important;
 }
 
 @layer base {
