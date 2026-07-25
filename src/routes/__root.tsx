@@ -19,6 +19,7 @@ import { CinematicLoader } from "@/components/CinematicLoader";
 
 import { SearchDialog } from "@/components/SearchDialog";
 import { AutoLocalize } from "@/components/AutoLocalize";
+import { AutoLocate } from "@/components/AutoLocate";
 
 
 import { I18nProvider } from "@/lib/i18n";
@@ -192,6 +193,7 @@ function RootComponent() {
           <MobileBottomNav />
           <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
           <AutoLocalize />
+          <AutoLocate />
         </TranslationProvider>
 
       </I18nProvider>
