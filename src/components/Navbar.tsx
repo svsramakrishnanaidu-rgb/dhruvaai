@@ -172,30 +172,67 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
 
       {open && (
         <div id="mobile-nav" className="mx-auto mt-2 max-w-7xl px-3 sm:px-4 xl:hidden">
-          <div className="glass rounded-3xl p-3">
-            <div className="mb-2 sm:hidden">
+          <div className="card-elegant rounded-3xl p-4">
+            <div className="mb-3 sm:hidden">
               <DistrictPicker />
             </div>
-            <nav aria-label="Mobile" className="grid grid-cols-2 gap-1">
-              {NAV.map((item) => {
-                const active =
-                  item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
-                return (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    aria-current={active ? "page" : undefined}
-                    className={`rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                      active
-                        ? "bg-primary/15 text-foreground"
-                        : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
-                    }`}
-                  >
-                    {t(item.key)}
-                  </Link>
-                );
-              })}
-            </nav>
+            <div className="space-y-4">
+              {NAV_GROUPS.map((group) => (
+                <section key={group.label}>
+                  <div className="mb-2 flex items-center gap-2 px-1">
+                    <span
+                      aria-hidden
+                      className="h-px flex-1"
+                      style={{ background: "linear-gradient(90deg, color-mix(in oklab, var(--accent) 40%, transparent), transparent)" }}
+                    />
+                    <h3 className="font-display text-[10px] font-bold uppercase tracking-[0.28em] text-accent/80">
+                      {group.label}
+                    </h3>
+                    <span
+                      aria-hidden
+                      className="h-px flex-1"
+                      style={{ background: "linear-gradient(270deg, color-mix(in oklab, var(--accent) 40%, transparent), transparent)" }}
+                    />
+                  </div>
+                  <nav aria-label={group.label} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {group.items.map(({ to, key, Icon }) => {
+                      const active =
+                        to === "/" ? pathname === "/" : pathname.startsWith(to);
+                      return (
+                        <Link
+                          key={to}
+                          to={to}
+                          aria-current={active ? "page" : undefined}
+                          className={`group relative flex items-center gap-2.5 overflow-hidden rounded-xl border px-3 py-2.5 text-sm font-medium transition active:scale-[.98] ${
+                            active
+                              ? "border-accent/50 bg-accent/10 text-foreground"
+                              : "border-border/40 bg-background/40 text-muted-foreground hover:border-accent/30 hover:text-foreground"
+                          }`}
+                        >
+                          <span
+                            className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg transition ${
+                              active ? "bg-accent/20 text-accent" : "bg-secondary/50 text-muted-foreground group-hover:text-accent"
+                            }`}
+                          >
+                            <Icon className="h-4 w-4" aria-hidden />
+                          </span>
+                          <span className="font-display truncate text-[12px] uppercase tracking-wide">
+                            {t(key)}
+                          </span>
+                          {active && (
+                            <span
+                              aria-hidden
+                              className="absolute inset-y-1 right-1 w-[3px] rounded-full"
+                              style={{ background: "linear-gradient(180deg, transparent, var(--accent), transparent)" }}
+                            />
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                </section>
+              ))}
+            </div>
           </div>
         </div>
       )}
