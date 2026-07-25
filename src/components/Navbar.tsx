@@ -1,7 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X, Search, Moon, Sun, Sprout } from "lucide-react";
+import {
+  Menu, X, Search, Moon, Sun, Sprout,
+  Home, LineChart, MapPin, Leaf, TrendingUp, RefreshCw, ShieldAlert,
+  Calculator, FlaskConical, Layers, Store, CloudSun, Landmark, Music2,
+} from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { DistrictPicker } from "@/components/DistrictPicker";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -23,6 +27,43 @@ const NAV = [
   { to: "/schemes", key: "nav.schemes" },
   { to: "/districts", key: "nav.districts" },
   { to: "/atlas", key: "nav.atlas" },
+] as const;
+
+const NAV_GROUPS = [
+  {
+    label: "Overview",
+    items: [
+      { to: "/", key: "nav.home", Icon: Home },
+      { to: "/analytics", key: "nav.analytics", Icon: LineChart },
+      { to: "/districts", key: "nav.districts", Icon: MapPin },
+    ],
+  },
+  {
+    label: "Crops & Advisory",
+    items: [
+      { to: "/crops", key: "nav.crops", Icon: Leaf },
+      { to: "/paddy-future", key: "nav.paddyFuture", Icon: TrendingUp },
+      { to: "/rotation", key: "nav.rotation", Icon: RefreshCw },
+      { to: "/diseases", key: "nav.diseases", Icon: ShieldAlert },
+    ],
+  },
+  {
+    label: "Inputs & Soil",
+    items: [
+      { to: "/calculators", key: "nav.fertilizer", Icon: Calculator },
+      { to: "/fertilizers", key: "nav.fertilizers", Icon: FlaskConical },
+      { to: "/atlas", key: "nav.atlas", Icon: Layers },
+    ],
+  },
+  {
+    label: "Market, Climate & Studio",
+    items: [
+      { to: "/market", key: "nav.market", Icon: Store },
+      { to: "/weather", key: "nav.weather", Icon: CloudSun },
+      { to: "/schemes", key: "nav.schemes", Icon: Landmark },
+      { to: "/music", key: "nav.music", Icon: Music2 },
+    ],
+  },
 ] as const;
 
 export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
