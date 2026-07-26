@@ -24,9 +24,15 @@ export function AnimatedBackground() {
     const low = isLowPowerDevice();
     setLite(low);
 
+    // Phones/tablets: no canvas loop at all. A full-viewport clear + redraw
+    // every frame is pure GPU/battery cost for an effect nobody notices on a
+    // 6" screen; the static gradient sheet below carries the look instead.
+    if (low) return;
+
     const canvas = ref.current;
     if (!canvas) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
 
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
