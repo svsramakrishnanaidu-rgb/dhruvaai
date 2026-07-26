@@ -145,11 +145,12 @@ function HeaderIcon({
   );
   const cls = "group relative grid place-items-center rounded-xl active:scale-90 transition-transform";
   return to ? (
-    <Link to={to} aria-label={label} className={cls}>{content}</Link>
+    <Link to={to} aria-label={label} className={cls} onPointerDown={() => haptic("tap")}>{content}</Link>
   ) : (
-    <button type="button" aria-label={label} className={cls}>{content}</button>
+    <button type="button" aria-label={label} className={cls} onPointerDown={() => haptic("tap")}>{content}</button>
   );
 }
+
 
 /* ============================================================
    HERO TILE
