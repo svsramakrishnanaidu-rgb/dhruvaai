@@ -743,3 +743,36 @@ html.is-touch .snap-x { -webkit-overflow-scrolling: touch; }
   border-radius: 9999px;
   background: color-mix(in oklab, var(--accent) 55%, transparent);
 }
+
+/* =========================================================================
+   MOBILE / ANDROID PERFORMANCE HARDENING (presentation only)
+   ========================================================================= */
+
+/* Blur filters are the most expensive thing a mid-range Android GPU can be
+   asked to composite. Cut the radius hard on touch devices — the visual
+   difference at phone DPI is negligible, the frame-time difference is not. */
+html.is-touch .blur-3xl { filter: blur(28px); }
+html.is-touch .blur-2xl { filter: blur(20px); }
+
+/* Large soft shadows force an extra offscreen pass per painted layer. */
+html.is-touch .shadow-2xl,
+html.is-touch .shadow-xl { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+
+/* Never leave `will-change` armed on a phone: each hint pins a permanent
+   GPU layer and eats VRAM on devices that have very little of it. */
+html.is-touch [style*="will-change"] { will-change: auto !important; }
+
+/* Media never causes reflow mid-scroll. */
+html.is-touch img,
+html.is-touch video { content-visibility: auto; }
+
+/* Edge-to-edge: honour display cutouts and gesture bars in both orientations. */
+html.is-touch .ks-safe {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Scroll containment so a rail/sheet never chains its scroll into the page. */
+html.is-touch .snap-x,
+html.is-touch .menu-scroll { overscroll-behavior: contain; }

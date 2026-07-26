@@ -7,6 +7,8 @@ import {
 import { CROP_LIST } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
 import { MobileHome } from "@/components/MobileHome";
+import { useIsDesktop } from "@/hooks/use-viewport";
+
 
 import { CountUp } from "@/components/CountUp";
 import { useLocation } from "@/lib/location-store";
@@ -35,25 +37,36 @@ function Home() {
   const trending = CROP_LIST.filter((c) => c.trending).slice(0, 8);
   const featured = trending[0] ?? CROP_LIST[0];
 
+  // `null` during SSR + first paint → both trees render exactly as the server
+  // sent them (CSS decides what's visible, no hydration mismatch). Once the
+  // viewport is known we unmount the tree that isn't in use, so phones stop
+  // paying layout/decode/memory costs for the desktop dashboard.
+  const isDesktop = useIsDesktop();
+  const showMobile = isDesktop !== true;
+  const showDesktop = isDesktop !== false;
+
   return (
     <>
       {/* Mobile — completely reimagined bento dashboard */}
-      <MobileHome />
+      {showMobile && <MobileHome />}
 
       {/* Desktop / tablet — original cinematic home */}
-      <div className="relative hidden lg:block">
-        <HeroSection loc={loc} p={p} featured={featured} heroImg={heroImg} />
-        <MarqueeStrip />
-        <FeatureGrid />
-        <TrendingSection trending={trending} />
-        <CategoriesSection />
-        <StatsSection cropsCount={CROP_LIST.length} />
-        <TestimonialsSection />
-        <CTASection />
-      </div>
+      {showDesktop && (
+        <div className="relative hidden lg:block">
+          <HeroSection loc={loc} p={p} featured={featured} heroImg={heroImg} />
+          <MarqueeStrip />
+          <FeatureGrid />
+          <TrendingSection trending={trending} />
+          <CategoriesSection />
+          <StatsSection cropsCount={CROP_LIST.length} />
+          <TestimonialsSection />
+          <CTASection />
+        </div>
+      )}
     </>
   );
 }
+
 
 
 /* ============================================================

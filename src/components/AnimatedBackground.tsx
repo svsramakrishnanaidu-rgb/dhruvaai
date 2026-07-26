@@ -24,9 +24,15 @@ export function AnimatedBackground() {
     const low = isLowPowerDevice();
     setLite(low);
 
+    // Phones/tablets: no canvas loop at all. A full-viewport clear + redraw
+    // every frame is pure GPU/battery cost for an effect nobody notices on a
+    // 6" screen; the static gradient sheet below carries the look instead.
+    if (low) return;
+
     const canvas = ref.current;
     if (!canvas) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
 
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
@@ -151,18 +157,19 @@ export function AnimatedBackground() {
           backgroundSize: "200% 200%",
         }}
       />
-      <canvas ref={ref} className="absolute inset-0 h-full w-full" aria-hidden />
+      {!lite && <canvas ref={ref} className="absolute inset-0 h-full w-full" aria-hidden />}
 
-      {/* aurora blobs — heavy blur, so only one static blob on phones */}
+      {/* aurora blob — one cheap, static, small-radius blur on phones */}
       <div
         aria-hidden
-        className={`absolute -left-24 top-1/3 rounded-full opacity-40 ${lite ? "h-[320px] w-[320px] blur-2xl" : "h-[520px] w-[520px] blur-3xl"}`}
+        className={`absolute -left-24 top-1/3 rounded-full ${lite ? "h-[260px] w-[260px] opacity-25 blur-xl" : "h-[520px] w-[520px] opacity-40 blur-3xl"}`}
         style={{
           background: "radial-gradient(circle, color-mix(in oklab, var(--primary) 60%, transparent), transparent 65%)",
           animation: lite ? undefined : "float-y 12s ease-in-out infinite",
           willChange: lite ? undefined : "transform",
         }}
       />
+
       {!lite && (
         <>
           <div

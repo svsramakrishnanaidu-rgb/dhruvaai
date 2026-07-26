@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { useLocation } from "@/lib/location-store";
+import { haptic } from "@/lib/haptics";
+
 
 import {
   cachedLiveWeather,
@@ -145,11 +147,12 @@ function HeaderIcon({
   );
   const cls = "group relative grid place-items-center rounded-xl active:scale-90 transition-transform";
   return to ? (
-    <Link to={to} aria-label={label} className={cls}>{content}</Link>
+    <Link to={to} aria-label={label} className={cls} onPointerDown={() => haptic("tap")}>{content}</Link>
   ) : (
-    <button type="button" aria-label={label} className={cls}>{content}</button>
+    <button type="button" aria-label={label} className={cls} onPointerDown={() => haptic("tap")}>{content}</button>
   );
 }
+
 
 /* ============================================================
    HERO TILE
@@ -636,6 +639,8 @@ function QuickActions() {
           key={to}
           to={to}
           className="card-elegant flex items-center gap-3 p-4 transition active:scale-[0.97]"
+          onPointerDown={() => haptic("select")}
+
         >
           <div
             className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
