@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as RotationRouteImport } from './routes/rotation'
+import { Route as PermissionsRouteImport } from './routes/permissions'
 import { Route as PaddyFutureRouteImport } from './routes/paddy-future'
 import { Route as MusicRouteImport } from './routes/music'
 import { Route as MarketRouteImport } from './routes/market'
@@ -43,6 +44,11 @@ const SchemesRoute = SchemesRouteImport.update({
 const RotationRoute = RotationRouteImport.update({
   id: '/rotation',
   path: '/rotation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PermissionsRoute = PermissionsRouteImport.update({
+  id: '/permissions',
+  path: '/permissions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PaddyFutureRoute = PaddyFutureRouteImport.update({
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/market': typeof MarketRoute
   '/music': typeof MusicRoute
   '/paddy-future': typeof PaddyFutureRoute
+  '/permissions': typeof PermissionsRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
   '/weather': typeof WeatherRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/market': typeof MarketRoute
   '/music': typeof MusicRoute
   '/paddy-future': typeof PaddyFutureRoute
+  '/permissions': typeof PermissionsRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
   '/weather': typeof WeatherRoute
@@ -188,6 +196,7 @@ export interface FileRoutesById {
   '/market': typeof MarketRoute
   '/music': typeof MusicRoute
   '/paddy-future': typeof PaddyFutureRoute
+  '/permissions': typeof PermissionsRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
   '/weather': typeof WeatherRoute
@@ -212,6 +221,7 @@ export interface FileRouteTypes {
     | '/market'
     | '/music'
     | '/paddy-future'
+    | '/permissions'
     | '/rotation'
     | '/schemes'
     | '/weather'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
     | '/market'
     | '/music'
     | '/paddy-future'
+    | '/permissions'
     | '/rotation'
     | '/schemes'
     | '/weather'
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
     | '/market'
     | '/music'
     | '/paddy-future'
+    | '/permissions'
     | '/rotation'
     | '/schemes'
     | '/weather'
@@ -279,6 +291,7 @@ export interface RootRouteChildren {
   MarketRoute: typeof MarketRoute
   MusicRoute: typeof MusicRoute
   PaddyFutureRoute: typeof PaddyFutureRoute
+  PermissionsRoute: typeof PermissionsRoute
   RotationRoute: typeof RotationRoute
   SchemesRoute: typeof SchemesRoute
   WeatherRoute: typeof WeatherRoute
@@ -311,6 +324,13 @@ declare module '@tanstack/react-router' {
       path: '/rotation'
       fullPath: '/rotation'
       preLoaderRoute: typeof RotationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/permissions': {
+      id: '/permissions'
+      path: '/permissions'
+      fullPath: '/permissions'
+      preLoaderRoute: typeof PermissionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/paddy-future': {
@@ -447,6 +467,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketRoute: MarketRoute,
   MusicRoute: MusicRoute,
   PaddyFutureRoute: PaddyFutureRoute,
+  PermissionsRoute: PermissionsRoute,
   RotationRoute: RotationRoute,
   SchemesRoute: SchemesRoute,
   WeatherRoute: WeatherRoute,
