@@ -3,21 +3,38 @@ import { locationStore, STATES } from "@/lib/location-store";
 /**
  * Shared, hardened geolocation pipeline.
  *
- * Design goals:
- *  - Works the same on Android Chrome, iOS Safari and desktop.
- *  - Never throws (all failures resolve to a status string).
- *  - Two-stage GPS: a fast coarse fix first, then a high-accuracy refine pass
- *    so the UI updates quickly but converges on a precise district.
- *  - IP fallback when GPS is denied/unavailable so the app is never location-less.
+ * Android reliability notes (why this file looks the way it does):
+ *  - Android Chrome/WebView only exposes `navigator.geolocation` on a secure
+ *    origin. On http:// the object exists but every call silently errors, so
+ *    we detect that up front instead of hanging.
+ *  - Installed PWAs on Android start with a *fresh* permission state: the grant
+ *    given to the browser tab does not carry over. That is the "GPS stops
+ *    working after install" bug — it must be re-requested from a user gesture.
+ *  - Some OEM WebViews (Xiaomi, Vivo, older Samsung) never invoke either
+ *    callback when the OS location toggle is off, so every call is wrapped in
+ *    a hard watchdog timer.
+ *  - Two-stage fix: a fast cached/coarse position paints the UI immediately,
+ *    then a high-accuracy pass refines it in the background.
+ *  - IP fallback guarantees the app is never location-less.
  */
 
-export type GeoStatus = "granted" | "denied" | "unavailable" | "failed";
+export type GeoStatus =
+  | "granted"
+  | "denied"
+  | "unavailable"      // OS location services off / no provider
+  | "insecure"         // not a secure origin — API unusable
+  | "timeout"
+  | "failed";
 
 export type GeoResult = {
   status: GeoStatus;
   state?: string;
   district?: string;
   accuracy?: number;
+  /** Human-readable reason, safe to surface in the UI. */
+  reason?: string;
+  /** True when the fix came from IP lookup rather than the GPS/network provider. */
+  approximate?: boolean;
 };
 
 const SESSION_KEY = "ks_autolocated";
@@ -26,29 +43,55 @@ const ASKED_KEY = "ks_geo_asked";
 export const geoFlags = {
   hasAutoLocated: () => safeSession("get", SESSION_KEY) === "1",
   markAutoLocated: () => safeSession("set", SESSION_KEY, "1"),
+  clearAutoLocated: () => safeSession("del", SESSION_KEY),
   hasAsked: () => safeLocal("get", ASKED_KEY) === "1",
   markAsked: () => safeLocal("set", ASKED_KEY, "1"),
+  clearAsked: () => safeLocal("del", ASKED_KEY),
 };
 
-function safeSession(op: "get" | "set", k: string, v?: string) {
+function safeSession(op: "get" | "set" | "del", k: string, v?: string) {
   try {
     if (typeof window === "undefined") return null;
     if (op === "set") { window.sessionStorage.setItem(k, v!); return v!; }
+    if (op === "del") { window.sessionStorage.removeItem(k); return null; }
     return window.sessionStorage.getItem(k);
   } catch { return null; }
 }
 
-function safeLocal(op: "get" | "set", k: string, v?: string) {
+function safeLocal(op: "get" | "set" | "del", k: string, v?: string) {
   try {
     if (typeof window === "undefined") return null;
     if (op === "set") { window.localStorage.setItem(k, v!); return v!; }
+    if (op === "del") { window.localStorage.removeItem(k); return null; }
     return window.localStorage.getItem(k);
   } catch { return null; }
 }
 
+/** Structured, non-noisy diagnostics — invaluable for remote Android bug reports. */
+function log(stage: string, detail?: unknown) {
+  if (typeof console === "undefined") return;
+  try { console.debug(`[geo] ${stage}`, detail ?? ""); } catch { /* noop */ }
+}
+
+/** Secure-origin check. Android blocks geolocation entirely outside https/localhost. */
+export function isGeoUsable(): boolean {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
+  if (!("geolocation" in navigator)) return false;
+  if (window.isSecureContext) return true;
+  const h = window.location.hostname;
+  return h === "localhost" || h === "127.0.0.1";
+}
+
+/** True when the app is running as an installed PWA (fresh permission scope). */
+export function isStandalone(): boolean {
+  if (typeof window === "undefined") return false;
+  const nav = navigator as Navigator & { standalone?: boolean };
+  return window.matchMedia("(display-mode: standalone)").matches || nav.standalone === true;
+}
+
 /** Reads the Permissions API without throwing on browsers that lack it (iOS < 16). */
 export async function readGeoPermission(): Promise<PermissionState | "unsupported"> {
-  if (typeof navigator === "undefined" || !("geolocation" in navigator)) return "unsupported";
+  if (!isGeoUsable()) return "unsupported";
   try {
     const perms = (navigator as Navigator & { permissions?: Permissions }).permissions;
     if (!perms?.query) return "unsupported";
@@ -59,21 +102,56 @@ export async function readGeoPermission(): Promise<PermissionState | "unsupporte
   }
 }
 
-function getPosition(opts: PositionOptions): Promise<GeolocationPosition | null> {
+/**
+ * Subscribes to permission changes so the UI can react when the user flips the
+ * OS/browser toggle while the app is open. Returns an unsubscribe function.
+ */
+export function onPermissionChange(cb: (s: PermissionState) => void): () => void {
+  let status: PermissionStatus | null = null;
+  let cancelled = false;
+  const handler = () => { if (status) cb(status.state); };
+  (async () => {
+    try {
+      const perms = (navigator as Navigator & { permissions?: Permissions }).permissions;
+      if (!perms?.query) return;
+      const s = await perms.query({ name: "geolocation" as PermissionName });
+      if (cancelled) return;
+      status = s;
+      s.addEventListener("change", handler);
+    } catch { /* unsupported */ }
+  })();
+  return () => {
+    cancelled = true;
+    status?.removeEventListener("change", handler);
+  };
+}
+
+type PosOutcome =
+  | { ok: true; pos: GeolocationPosition }
+  | { ok: false; code: 0 | 1 | 2 | 3; message: string };
+
+/** getCurrentPosition with a watchdog — never hangs, never throws. */
+function getPosition(opts: PositionOptions): Promise<PosOutcome> {
   return new Promise((resolve) => {
     let settled = false;
-    const done = (p: GeolocationPosition | null) => { if (!settled) { settled = true; resolve(p); } };
+    const done = (r: PosOutcome) => { if (!settled) { settled = true; resolve(r); } };
     // Hard guard: some Android WebViews never fire either callback.
-    const guard = setTimeout(() => done(null), (opts.timeout ?? 10000) + 2000);
+    const guard = setTimeout(
+      () => done({ ok: false, code: 3, message: "watchdog timeout" }),
+      (opts.timeout ?? 10000) + 2000,
+    );
     try {
       navigator.geolocation.getCurrentPosition(
-        (p) => { clearTimeout(guard); done(p); },
-        () => { clearTimeout(guard); done(null); },
+        (pos) => { clearTimeout(guard); done({ ok: true, pos }); },
+        (err) => {
+          clearTimeout(guard);
+          done({ ok: false, code: (err?.code ?? 0) as 0 | 1 | 2 | 3, message: err?.message ?? "unknown" });
+        },
         opts,
       );
-    } catch {
+    } catch (e) {
       clearTimeout(guard);
-      done(null);
+      done({ ok: false, code: 0, message: String(e) });
     }
   });
 }
@@ -103,10 +181,12 @@ export async function applyCoords(lat: number, lon: number, accuracy?: number): 
   const j = await fetchJson<ReverseGeo>(
     `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`,
   );
-  if (!j) return { status: "failed" };
+  if (!j) return { status: "failed", reason: "Reverse geocoding service unreachable." };
 
   const state = pickState(j.principalSubdivision);
-  if (!state) return { status: "failed" };
+  if (!state) {
+    return { status: "failed", reason: "Your region isn't covered by the crop database yet." };
+  }
 
   const candidates = [
     j.city,
@@ -117,54 +197,137 @@ export async function applyCoords(lat: number, lon: number, accuracy?: number): 
   const district = pickDistrict(state, candidates);
   locationStore.set(district ? { state, district } : { state });
   geoFlags.markAutoLocated();
+  log("resolved", { state, district, accuracy });
   return { status: "granted", state, district: district ?? undefined, accuracy };
 }
 
-async function ipFallback(): Promise<GeoResult> {
+async function ipFallback(reason: string): Promise<GeoResult> {
   const j = await fetchJson<{ latitude?: number; longitude?: number }>("https://ipapi.co/json/");
   if (typeof j?.latitude === "number" && typeof j?.longitude === "number") {
     const res = await applyCoords(j.latitude, j.longitude);
-    return { ...res, status: res.status === "granted" ? "granted" : res.status };
+    if (res.status === "granted") return { ...res, approximate: true, reason };
+    return res;
   }
-  return { status: "failed" };
+  return { status: "failed", reason };
 }
 
 /**
  * Resolve the user's district.
  * `prompt: false` keeps things silent — it only uses GPS when permission was
- * already granted, otherwise it goes straight to the IP fallback.
+ * already granted, otherwise it goes straight to the IP fallback so we never
+ * burn the one-shot Android permission dialog outside a user gesture.
  */
 export async function detectLocation(opts: { prompt?: boolean } = {}): Promise<GeoResult> {
   if (typeof navigator === "undefined") return { status: "unavailable" };
-  if (!("geolocation" in navigator)) return ipFallback();
+
+  if (!isGeoUsable()) {
+    log("insecure-or-unsupported");
+    const res = await ipFallback("Precise location needs a secure (https) connection.");
+    return res.status === "granted" ? res : { status: "insecure", reason: res.reason };
+  }
 
   const perm = await readGeoPermission();
-  if (perm === "denied") return ipFallback();
-  if (perm === "prompt" && opts.prompt === false) return ipFallback();
+  log("permission", perm);
+  if (perm === "denied") {
+    const res = await ipFallback("Location permission is blocked in your browser settings.");
+    return res.status === "granted" ? res : { status: "denied", reason: res.reason };
+  }
+  if (perm === "prompt" && opts.prompt === false) {
+    return ipFallback("Using an approximate location until you allow GPS access.");
+  }
 
-  // Stage 1 — fast, cache-friendly coarse fix.
+  // Stage 1 — fast, cache-friendly coarse fix (paints the UI within ~1s).
   const coarse = await getPosition({ enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 });
-  if (coarse) {
-    const res = await applyCoords(coarse.coords.latitude, coarse.coords.longitude, coarse.coords.accuracy);
+  if (coarse.ok) {
+    const c = coarse.pos.coords;
+    const res = await applyCoords(c.latitude, c.longitude, c.accuracy);
     // Stage 2 — refine in the background when the coarse fix is fuzzy (>1km).
-    if ((coarse.coords.accuracy ?? 9999) > 1000) {
+    if ((c.accuracy ?? 9999) > 1000) {
       void (async () => {
         const fine = await getPosition({ enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
-        if (fine) await applyCoords(fine.coords.latitude, fine.coords.longitude, fine.coords.accuracy);
+        if (fine.ok) {
+          await applyCoords(fine.pos.coords.latitude, fine.pos.coords.longitude, fine.pos.coords.accuracy);
+        }
       })();
     }
     return res;
   }
+  log("coarse-failed", coarse);
 
-  // No coarse fix — try once with high accuracy before falling back to IP.
+  // PERMISSION_DENIED — don't retry, it will only fail again.
+  if (coarse.code === 1) {
+    const res = await ipFallback("Location permission was denied.");
+    return res.status === "granted" ? res : { status: "denied", reason: res.reason };
+  }
+
+  // POSITION_UNAVAILABLE (2) or TIMEOUT (3): the OS toggle may be off or the
+  // GPS provider hasn't warmed up. One high-accuracy retry, then IP.
   const fine = await getPosition({ enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
-  if (fine) return applyCoords(fine.coords.latitude, fine.coords.longitude, fine.coords.accuracy);
+  if (fine.ok) {
+    const c = fine.pos.coords;
+    return applyCoords(c.latitude, c.longitude, c.accuracy);
+  }
+  log("fine-failed", fine);
 
-  const viaIp = await ipFallback();
+  const servicesOff = fine.code === 2;
+  const viaIp = await ipFallback(
+    servicesOff
+      ? "Location services appear to be turned off on your device."
+      : "GPS didn't respond in time — showing an approximate location.",
+  );
   if (viaIp.status === "granted") return viaIp;
-  return { status: "failed" };
+  return {
+    status: servicesOff ? "unavailable" : "timeout",
+    reason: viaIp.reason,
+  };
 }
 
+/**
+ * Lifecycle-aware position watch.
+ * Only runs while the tab is visible — Android throttles background tabs but a
+ * live `watchPosition` still keeps the GPS radio warm and drains the battery,
+ * so we tear it down on hide and re-arm on show.
+ */
+export function startLocationWatch(): () => void {
+  if (!isGeoUsable()) return () => {};
+  let id: number | null = null;
+  let lastApplied = 0;
+
+  const stop = () => {
+    if (id !== null) {
+      try { navigator.geolocation.clearWatch(id); } catch { /* noop */ }
+      id = null;
+    }
+  };
+
+  const start = () => {
+    if (id !== null) return;
+    try {
+      id = navigator.geolocation.watchPosition(
+        (pos) => {
+          // Throttle: at most one reverse-geocode per 2 minutes, and only for
+          // reasonably precise fixes. Avoids hammering the network on the move.
+          const now = Date.now();
+          if (now - lastApplied < 120_000) return;
+          if ((pos.coords.accuracy ?? 9999) > 3000) return;
+          lastApplied = now;
+          void applyCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+        },
+        (err) => log("watch-error", err?.message),
+        { enableHighAccuracy: false, maximumAge: 60_000, timeout: 20_000 },
+      );
+    } catch (e) { log("watch-start-failed", e); }
+  };
+
+  const onVisibility = () => (document.hidden ? stop() : start());
+  document.addEventListener("visibilitychange", onVisibility);
+  if (!document.hidden) start();
+
+  return () => {
+    document.removeEventListener("visibilitychange", onVisibility);
+    stop();
+  };
+}
 
 export function pickState(raw: string | undefined): string | null {
   if (!raw) return null;
