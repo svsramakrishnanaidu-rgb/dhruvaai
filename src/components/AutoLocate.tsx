@@ -18,16 +18,19 @@ export function AutoLocate() {
       void detectLocation({ prompt: false });
     };
 
-    const ric = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number })
-      .requestIdleCallback;
-    const id = ric ? ric(run, { timeout: 2500 }) : window.setTimeout(run, 1200);
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const useIdle = typeof w.requestIdleCallback === "function";
+    const id = useIdle ? w.requestIdleCallback!(run, { timeout: 2500 }) : window.setTimeout(run, 1200);
 
     return () => {
       cancelled = true;
-      const cic = (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
-      if (ric && cic) cic(id as number);
-      else window.clearTimeout(id as number);
+      if (useIdle && typeof w.cancelIdleCallback === "function") w.cancelIdleCallback(id);
+      else window.clearTimeout(id);
     };
+
   }, []);
 
   return null;
