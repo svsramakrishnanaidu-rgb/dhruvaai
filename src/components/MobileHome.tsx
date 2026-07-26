@@ -408,13 +408,18 @@ function LiveMomentum({ value, positive, durationMs = 900 }: { value: number; po
 
 function TrendingRail({ items }: { items: TrendingItem[] }) {
   const { data: live } = useAgmarknetLive({ refreshMs: 60 * 1000, limit: 1500 });
-  const liveMap = new Map<string, number>();
-  for (const row of live) {
-    if (Number.isFinite(row.deltaPct)) {
-      const key = row.commodity.toLowerCase().trim();
-      if (!liveMap.has(key)) liveMap.set(key, row.deltaPct);
+  // Memoised: rebuilding a 1500-entry Map on every render (including every
+  // scroll-triggered re-render) was pure wasted CPU on mid-range Androids.
+  const liveMap = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const row of live) {
+      if (Number.isFinite(row.deltaPct)) {
+        const key = row.commodity.toLowerCase().trim();
+        if (!m.has(key)) m.set(key, row.deltaPct);
+      }
     }
-  }
+    return m;
+  }, [live]);
 
   const fmt = (n: number) =>
     n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
