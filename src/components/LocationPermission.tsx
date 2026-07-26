@@ -144,6 +144,15 @@ export function LocationPermission() {
             Not now
           </button>
         </div>
+
+        <Link
+          to="/permissions"
+          onClick={dismiss}
+          className="mt-3 block text-center text-[11px] font-medium text-muted-foreground underline underline-offset-2"
+        >
+          Manage app permissions
+        </Link>
+
       </div>
     </div>
   );
