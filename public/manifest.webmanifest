@@ -1,0 +1,25 @@
+{
+  "name": "Krish Sense — Smart Agricultural Advisory Platform",
+  "short_name": "Krish Sense",
+  "description": "Live crop advisory, GPS weather, soil atlas and market intelligence for Indian farmers.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b0b0d",
+  "theme_color": "#111111",
+  "lang": "en",
+  "categories": ["agriculture", "productivity", "weather"],
+  "permissions": ["geolocation"],
+  "permissions_policy": {
+    "geolocation": ["self"]
+  },
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ]
+}
