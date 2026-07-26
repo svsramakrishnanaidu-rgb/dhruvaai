@@ -1,19 +1,31 @@
 import { useEffect, useState } from "react";
-import { MapPin, Crosshair, X, Loader2 } from "lucide-react";
-import { detectLocation, geoFlags, readGeoPermission } from "@/lib/geolocate";
+import { MapPin, Crosshair, X, Loader2, AlertTriangle } from "lucide-react";
+import {
+  detectLocation,
+  geoFlags,
+  isStandalone,
+  onPermissionChange,
+  readGeoPermission,
+  type GeoStatus,
+} from "@/lib/geolocate";
 import { useLocation } from "@/lib/location-store";
 
 /**
  * Mobile-only location access sheet.
- * Shown once (until dismissed or granted) when the browser reports the
- * geolocation permission is still in the "prompt" state. Tapping "Enable"
- * triggers the native OS prompt from a real user gesture — required on iOS
- * Safari and Android Chrome, where programmatic prompts are throttled.
+ *
+ * Why this exists on Android specifically:
+ *  - An installed PWA gets a *fresh* geolocation permission scope. The grant the
+ *    user gave the browser tab does not transfer, which is why "GPS stops working
+ *    after install" — it must be re-requested inside a real user gesture.
+ *  - Android Chrome ignores/throttles permission prompts that aren't triggered by
+ *    a tap, so the OS dialog is fired from the button handler, never on mount.
+ *  - When the OS location toggle is off the API returns POSITION_UNAVAILABLE; we
+ *    surface that as actionable copy instead of failing silently.
  */
 export function LocationPermission() {
   const [visible, setVisible] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ status: GeoStatus; reason?: string } | null>(null);
   const loc = useLocation();
 
   useEffect(() => {
@@ -24,28 +36,38 @@ export function LocationPermission() {
       window.matchMedia("(max-width: 1023px)").matches ||
       (navigator.maxTouchPoints ?? 0) > 0;
     if (!isMobile) return;
-    if (geoFlags.hasAsked()) return;
+
+    // Installed apps get one extra ask even if the browser tab was dismissed
+    // before — their permission scope is genuinely new.
+    const installed = isStandalone();
+    if (geoFlags.hasAsked() && !installed) return;
 
     const t = window.setTimeout(async () => {
       const perm = await readGeoPermission();
       if (!alive) return;
-      if (perm === "prompt" || perm === "unsupported") setVisible(true);
+      if (perm === "granted") return;
+      if (perm === "prompt" || perm === "denied" || perm === "unsupported") setVisible(true);
     }, 1500);
 
-    return () => { alive = false; window.clearTimeout(t); };
+    // Auto-dismiss if permission is granted from browser settings meanwhile.
+    const off = onPermissionChange((state) => {
+      if (alive && state === "granted") setVisible(false);
+    });
+
+    return () => { alive = false; window.clearTimeout(t); off(); };
   }, []);
 
   const enable = async () => {
     setBusy(true);
-    setError(null);
+    setResult(null);
     const res = await detectLocation({ prompt: true });
     setBusy(false);
     geoFlags.markAsked();
-    if (res.status === "granted") {
-      setVisible(false);
+    setResult({ status: res.status, reason: res.reason });
+    if (res.status === "granted" && !res.approximate) {
+      window.setTimeout(() => setVisible(false), 900);
     } else {
-      setError("Couldn't get a precise fix. We'll use an approximate location instead.");
-      window.setTimeout(() => setVisible(false), 2200);
+      window.setTimeout(() => setVisible(false), 4000);
     }
   };
 
@@ -55,6 +77,8 @@ export function LocationPermission() {
   };
 
   if (!visible) return null;
+
+  const blocked = result?.status === "denied" || result?.status === "insecure";
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-[70] px-3 pb-4 lg:hidden" role="dialog" aria-label="Location access">
@@ -80,7 +104,17 @@ export function LocationPermission() {
           </div>
         </div>
 
-        {error && <p className="mt-3 text-[11px] text-muted-foreground">{error}</p>}
+        {result?.reason && (
+          <p className="mt-3 flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+            <AlertTriangle className="mt-px h-3.5 w-3.5 flex-none text-accent" />
+            <span>
+              {result.reason}
+              {blocked && " Open your browser's site settings → Permissions → Location to allow it."}
+              {result.status === "unavailable" &&
+                " Turn on Location in your device's quick settings, then tap Try again."}
+            </span>
+          </p>
+        )}
 
         <div className="mt-4 flex gap-2">
           <button
@@ -89,7 +123,7 @@ export function LocationPermission() {
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
-            {busy ? "Locating…" : "Enable location"}
+            {busy ? "Locating…" : result ? "Try again" : "Enable location"}
           </button>
           <button
             onClick={dismiss}
