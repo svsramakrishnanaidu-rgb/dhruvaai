@@ -20,6 +20,8 @@ import { CinematicLoader } from "@/components/CinematicLoader";
 import { SearchDialog } from "@/components/SearchDialog";
 import { AutoLocalize } from "@/components/AutoLocalize";
 import { AutoLocate } from "@/components/AutoLocate";
+import { LocationPermission } from "@/components/LocationPermission";
+
 import { MiniPlayer } from "@/components/MiniPlayer";
 
 
