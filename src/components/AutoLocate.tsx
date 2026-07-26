@@ -1,96 +1,37 @@
 import { useEffect } from "react";
-import { locationStore, STATES } from "@/lib/location-store";
+import { detectLocation, geoFlags } from "@/lib/geolocate";
 
 /**
- * Silently attempts to auto-detect the user's location on mount.
- * Uses browser geolocation (falls back to IP-based lookup if denied),
- * reverse-geocodes with BigDataCloud (no API key), and snaps the result
- * to the nearest known state + district in our registry.
- * Runs at most once per session; never shows UI.
+ * Silent location resolver.
+ * Runs once per session and never prompts — if permission hasn't been granted
+ * yet, the mobile LocationPermission sheet handles the ask. Deferred to idle
+ * time so it never competes with first paint on low-end phones.
  */
 export function AutoLocate() {
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (sessionStorage.getItem("ks_autolocated") === "1") return;
+    if (geoFlags.hasAutoLocated()) return;
 
     let cancelled = false;
-
-    const applyCoords = async (lat: number, lon: number) => {
-      try {
-        const r = await fetch(
-          `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`,
-        );
-        if (!r.ok) return;
-        const j = (await r.json()) as {
-          principalSubdivision?: string;
-          city?: string;
-          locality?: string;
-          localityInfo?: { administrative?: { name?: string; order?: number }[] };
-        };
-        const state = pickState(j.principalSubdivision);
-        if (!state) return;
-        const candidates = [
-          j.city,
-          j.locality,
-          ...(j.localityInfo?.administrative?.map((a) => a.name) ?? []),
-        ].filter(Boolean) as string[];
-        const district = pickDistrict(state, candidates);
-        if (cancelled) return;
-        if (district) locationStore.set({ state, district });
-        else locationStore.set({ state });
-        sessionStorage.setItem("ks_autolocated", "1");
-      } catch {}
+    const run = () => {
+      if (cancelled) return;
+      void detectLocation({ prompt: false });
     };
 
-    const ipFallback = async () => {
-      try {
-        const r = await fetch("https://ipapi.co/json/");
-        if (!r.ok) return;
-        const j = (await r.json()) as { latitude?: number; longitude?: number };
-        if (typeof j.latitude === "number" && typeof j.longitude === "number") {
-          await applyCoords(j.latitude, j.longitude);
-        }
-      } catch {}
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
     };
-
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => applyCoords(pos.coords.latitude, pos.coords.longitude),
-        () => ipFallback(),
-        { enableHighAccuracy: false, timeout: 8000, maximumAge: 10 * 60 * 1000 },
-      );
-    } else {
-      ipFallback();
-    }
+    const useIdle = typeof w.requestIdleCallback === "function";
+    const id = useIdle ? w.requestIdleCallback!(run, { timeout: 2500 }) : window.setTimeout(run, 1200);
 
     return () => {
       cancelled = true;
+      if (useIdle && typeof w.cancelIdleCallback === "function") w.cancelIdleCallback(id);
+      else window.clearTimeout(id);
     };
+
   }, []);
 
-  return null;
-}
-
-function pickState(raw: string | undefined): string | null {
-  if (!raw) return null;
-  const norm = raw.toLowerCase().replace(/state$/i, "").trim();
-  for (const s of Object.keys(STATES)) {
-    if (s.toLowerCase() === norm || s.toLowerCase().startsWith(norm) || norm.startsWith(s.toLowerCase())) {
-      return s;
-    }
-  }
-  return null;
-}
-
-function pickDistrict(state: string, candidates: string[]): string | null {
-  const list = STATES[state] ?? [];
-  const lowered = list.map((d) => d.toLowerCase());
-  for (const c of candidates) {
-    const cn = c.toLowerCase().replace(/\s+district$/, "").trim();
-    const exact = lowered.indexOf(cn);
-    if (exact >= 0) return list[exact];
-    const partial = lowered.findIndex((d) => d.includes(cn) || cn.includes(d));
-    if (partial >= 0) return list[partial];
-  }
   return null;
 }
