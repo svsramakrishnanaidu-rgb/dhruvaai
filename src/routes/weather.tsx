@@ -885,9 +885,10 @@ function WeatherPage() {
       {/* LIVE SOURCE FOOTER */}
       <section className="mx-auto mt-12 max-w-7xl px-6 pb-16">
         <p className="text-center text-xs text-muted-foreground">
-          Weather © Open-Meteo · Air quality © CAMS · Streamed live for your exact GPS
-          coordinates{bundle ? ` (${bundle.lat.toFixed(4)}, ${bundle.lon.toFixed(4)})` : ""} ·
+          Weather © Open-Meteo · Air quality © CAMS · Streamed live for your current
+          location{placeLabel && place ? ` — ${placeLabel}` : ""} ·
           Auto-refresh every 60s · No cached or estimated values.
+
         </p>
       </section>
 
