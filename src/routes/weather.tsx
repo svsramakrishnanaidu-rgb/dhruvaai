@@ -239,113 +239,71 @@ function AqiPanel({ air }: { air: NonNullable<WeatherBundle["air"]> }) {
   );
 }
 
-/* -------------------------- Location switcher --------------------------- */
+/* --------------------------- Live GPS status bar ------------------------- */
 
-function LocationBar({
+/** Great-circle distance in metres — used to ignore GPS jitter. */
+function distanceM(aLat: number, aLon: number, bLat: number, bLon: number) {
+  const R = 6371000;
+  const dLat = ((bLat - aLat) * Math.PI) / 180;
+  const dLon = ((bLon - aLon) * Math.PI) / 180;
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((aLat * Math.PI) / 180) * Math.cos((bLat * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
+function GpsBar({
   place,
-  onGps,
-  gpsBusy,
+  accuracy,
+  fixedAt,
+  fetchedAt,
+  busy,
+  onRefresh,
 }: {
   place: string;
-  onGps: () => void;
-  gpsBusy: boolean;
+  accuracy: number;
+  fixedAt: number;
+  fetchedAt: number | null;
+  busy: boolean;
+  onRefresh: () => void;
 }) {
-  const loc = useLocation();
-  const states = Object.keys(STATES);
-  const [village, setVillage] = useState<string>(loc.mandal ?? "");
+  const [, force] = useState(0);
+  useEffect(() => {
+    const id = window.setInterval(() => force((n) => n + 1), 15000);
+    return () => window.clearInterval(id);
+  }, []);
+  const ago = (t: number) => {
+    const s = Math.max(0, Math.round((Date.now() - t) / 1000));
+    return s < 60 ? `${s}s ago` : `${Math.round(s / 60)}m ago`;
+  };
   return (
     <div className="glass mx-auto mt-6 flex max-w-5xl flex-wrap items-center gap-3 rounded-3xl p-4">
+      <span className="relative flex h-2.5 w-2.5">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+      </span>
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <MapPin className="h-5 w-5 text-primary" />
+        <MapPin className="h-5 w-5 shrink-0 text-primary" />
         <div className="min-w-0">
           <div className="truncate font-display text-lg font-bold leading-tight">{place}</div>
-          <div className="text-xs text-muted-foreground">Current forecast location</div>
+          <div className="text-xs text-muted-foreground">
+            Live GPS · ±{Math.round(accuracy)}m · fix {ago(fixedAt)}
+            {fetchedAt ? ` · data ${ago(fetchedAt)}` : ""}
+          </div>
         </div>
       </div>
-      <div className="grid flex-1 grid-cols-3 gap-2 md:grid-cols-4">
-        <Select label="State" value={loc.state} options={states} onChange={(v) => locationStore.set({ state: v, district: STATES[v]?.[0] ?? "" })} />
-        <Select label="District" value={loc.district} options={STATES[loc.state] ?? []} onChange={(v) => locationStore.set({ district: v })} />
-        <label className="relative col-span-1 flex flex-col text-xs text-muted-foreground">
-          Village / Farm
-          <input
-            value={village}
-            onChange={(e) => setVillage(e.target.value)}
-            onBlur={() => locationStore.set({ mandal: village || undefined })}
-            placeholder="optional"
-            className="mt-1 rounded-xl border border-border/60 bg-background/50 px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/40"
-          />
-        </label>
-        <button
-          onClick={onGps}
-          disabled={gpsBusy}
-          className="tap inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-60"
-        >
-          <LocateFixed className="h-4 w-4" />
-          {gpsBusy ? "Locating…" : "Use my GPS"}
-        </button>
-      </div>
+      <button
+        onClick={onRefresh}
+        disabled={busy}
+        className="tap inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-60"
+      >
+        <RefreshCw className={`h-4 w-4 ${busy ? "animate-spin" : ""}`} />
+        {busy ? "Updating…" : "Refresh"}
+      </button>
     </div>
   );
 }
 
-function Select({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
-  return (
-    <label className="relative flex flex-col text-xs text-muted-foreground">
-      {label}
-      <div className="relative mt-1">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full appearance-none rounded-xl border border-border/60 bg-background px-3 py-2 pr-8 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/40"
-        >
-          {options.map((o) => (
-            <option key={o} value={o} className="bg-background text-foreground">{o}</option>
-          ))}
-        </select>
-        <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-      </div>
-    </label>
-  );
-}
-
-/* -------------------------- Regional overview --------------------------- */
-
-function useLiveWeather(districts: string[], tick: number) {
-  const [map, setMap] = useState<Record<string, LiveWeather | null>>({});
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const entries = await Promise.all(districts.map(async (d) => [d, await fetchLiveWeather(d)] as const));
-      if (!cancelled) {
-        const next: Record<string, LiveWeather | null> = {};
-        for (const [d, w] of entries) next[d] = w;
-        setMap(next);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [districts.join("|"), tick]);
-  return map;
-}
-
-function RegionCard({ w }: { w: LiveWeather }) {
-  return (
-    <div className="glass hover-lift rounded-2xl p-4">
-      <div className="flex items-start justify-between">
-        <div className="text-sm font-medium">{w.district}</div>
-        <WeatherIcon code={w.weatherCode} className="h-6 w-6" />
-      </div>
-      <div className="mt-1 flex items-end gap-1">
-        <div className="font-display text-3xl font-black">{w.tempC}°</div>
-        <div className="mb-1 text-xs text-muted-foreground">{w.sky}</div>
-      </div>
-      <div className="mt-2 flex justify-between text-[11px] text-muted-foreground">
-        <span>💧 {w.humidity}%</span>
-        <span>🌬 {w.windKph} km/h</span>
-        <span>🌧 {w.precipMm} mm</span>
-      </div>
-    </div>
-  );
-}
 
 /* --------------------------- Advisory badge ----------------------------- */
 
