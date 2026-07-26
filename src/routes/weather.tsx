@@ -782,32 +782,15 @@ function WeatherPage() {
         </section>
       )}
 
-      {/* REGIONAL OVERVIEW */}
+      {/* LIVE SOURCE FOOTER */}
       <section className="mx-auto mt-12 max-w-7xl px-6 pb-16">
-        <Reveal>
-          <h2 className="mb-4 font-display text-2xl font-bold">
-            <span className="text-gradient">Regional overview</span>
-            <span className="ml-2 text-sm font-normal text-muted-foreground">India-wide live snapshot</span>
-          </h2>
-        </Reveal>
-        {REGIONS.map((r) => (
-          <div key={r.label} className="mt-6">
-            <div className="mb-2 text-sm font-semibold text-muted-foreground">{r.label}</div>
-            <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8">
-              {r.districts.map((d) =>
-                regionCards[d] ? (
-                  <RegionCard key={d} w={regionCards[d]!} />
-                ) : (
-                  <div key={d} className="glass h-28 animate-pulse rounded-2xl" />
-                ),
-              )}
-            </div>
-          </div>
-        ))}
-        <p className="mt-8 text-center text-xs text-muted-foreground">
-          Weather © Open-Meteo · Air quality © CAMS · Auto-refresh every 5 min · Cached 10 min per location.
+        <p className="text-center text-xs text-muted-foreground">
+          Weather © Open-Meteo · Air quality © CAMS · Streamed live for your exact GPS
+          coordinates{bundle ? ` (${bundle.lat.toFixed(4)}, ${bundle.lon.toFixed(4)})` : ""} ·
+          Auto-refresh every 60s · No cached or estimated values.
         </p>
       </section>
+
 
       {loading && !bundle && (
         <div className="fixed inset-x-0 bottom-6 mx-auto w-max rounded-full bg-primary/90 px-4 py-2 text-xs font-medium text-primary-foreground shadow-lg">
