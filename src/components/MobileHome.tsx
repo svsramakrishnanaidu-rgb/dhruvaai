@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { useLocation } from "@/lib/location-store";
+import { haptic } from "@/lib/haptics";
+
 
 import {
   cachedLiveWeather,
