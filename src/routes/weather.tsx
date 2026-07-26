@@ -397,17 +397,16 @@ function WeatherPage() {
       : null;
   const coordKey = coords ? `${coords.lat.toFixed(3)},${coords.lon.toFixed(3)}` : "";
 
-  /* Reverse-geocode the live coordinates for a display name */
+  /* Reverse-geocode the live coordinates → city / district name (never coords) */
   useEffect(() => {
     if (manual || !coords) return;
     let cancelled = false;
-    reverseGeocode(coords.lat, coords.lon).then((n) => !cancelled && setPlace(n));
+    reverseGeocode(coords.lat, coords.lon).then((n) => !cancelled && n && setPlace(n));
     return () => { cancelled = true; };
   }, [manual, coordKey]);
 
-  const placeLabel = manual
-    ? manual.name
-    : (place ?? (coords ? `${coords.lat.toFixed(3)}, ${coords.lon.toFixed(3)}` : "Locating…"));
+  const placeLabel = manual ? manual.name : (place ?? "Locating your area…");
+
 
   /* ---- 4. Fetch weather for the active coordinates — cache bypassed ---- */
   useEffect(() => {
