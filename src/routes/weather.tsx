@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -38,16 +38,13 @@ import {
 import { HeroBanner } from "@/components/HeroBanner";
 import { Reveal } from "@/components/Reveal";
 import { WeatherBackground } from "@/components/WeatherBackground";
-import { useLocation, locationStore, STATES } from "@/lib/location-store";
 import {
   codeToSky,
-  fetchLiveWeather,
   fetchWeatherBundle,
   nowContext,
   reverseGeocode,
   weatherKind,
   windDirLabel,
-  type LiveWeather,
   type WeatherBundle,
 } from "@/lib/live-weather";
 import {
@@ -70,13 +67,6 @@ export const Route = createFileRoute("/weather")({
   }),
   component: WeatherPage,
 });
-
-const REGIONS: { label: string; districts: string[] }[] = [
-  { label: "Andhra & Telangana", districts: ["Guntur", "Krishna", "Visakhapatnam", "Anantapur", "Kurnool", "Hyderabad", "Warangal", "Nizamabad"] },
-  { label: "North India", districts: ["Ludhiana", "Amritsar", "Karnal", "Hisar", "Meerut", "Lucknow", "Varanasi", "Jaipur"] },
-  { label: "West India", districts: ["Pune", "Nashik", "Nagpur", "Ahmedabad", "Rajkot", "Bhopal", "Indore", "Jodhpur"] },
-  { label: "South & East", districts: ["Bengaluru", "Mysuru", "Coimbatore", "Madurai", "Chennai", "Kochi", "Kolkata", "Patna"] },
-];
 
 function fmtHour(iso: string) {
   const d = new Date(iso);
