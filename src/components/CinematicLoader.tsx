@@ -7,68 +7,71 @@ const MOBILE_BP = 768;
 const PLAYED_KEY = "krishsense_intro_played_v1";
 
 export function CinematicLoader() {
-  const [done, setDone] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    try { return localStorage.getItem(PLAYED_KEY) === "1"; } catch { return false; }
-  });
+  // Mount-gated: nothing renders during SSR / first hydration pass, so the
+  // server and client markup always match (no hydration mismatch on mobile).
+  const [mounted, setMounted] = useState(false);
+  const [done, setDone] = useState(false);
   const [fading, setFading] = useState(false);
-  const [isMobile, setIsMobile] = useState<boolean>(() =>
-    typeof window !== "undefined" ? window.innerWidth < MOBILE_BP : false,
-  );
+  const [isMobile, setIsMobile] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const fadingRef = useRef(false);
+
+  useEffect(() => {
+    let played = false;
+    try { played = localStorage.getItem(PLAYED_KEY) === "1"; } catch {}
+    setIsMobile(window.innerWidth < MOBILE_BP);
+    setDone(played);
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < MOBILE_BP);
-    window.addEventListener("resize", onResize);
-    window.addEventListener("orientationchange", onResize);
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("orientationchange", onResize, { passive: true });
     return () => {
       window.removeEventListener("resize", onResize);
       window.removeEventListener("orientationchange", onResize);
     };
   }, []);
 
-  useEffect(() => {
-    // Lock scroll while intro plays
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, []);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    const play = v.play();
-    if (play && typeof play.catch === "function") {
-      play.catch(() => finish());
-    }
-    // Safety fallback in case of stall
-    const safety = setTimeout(() => finish(), 20000);
-    return () => clearTimeout(safety);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const finish = () => {
-    if (fading) return;
+  const finish = useCallback(() => {
+    if (fadingRef.current) return;
+    fadingRef.current = true;
     try { localStorage.setItem(PLAYED_KEY, "1"); } catch {}
     setFading(true);
     setTimeout(() => {
       setDone(true);
       try {
         const v = videoRef.current;
-        if (v) {
-          v.pause();
-          v.removeAttribute("src");
-          v.load();
-        }
+        if (v) { v.pause(); v.removeAttribute("src"); v.load(); }
       } catch {}
     }, 650);
-  };
+  }, []);
 
-  if (done) return null;
+  // Lock scroll ONLY while the intro is actually on screen — otherwise a
+  // skipped intro would leave the page permanently unscrollable on mobile.
+  useEffect(() => {
+    if (!mounted || done) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [mounted, done]);
+
+  useEffect(() => {
+    if (!mounted || done) return;
+    const v = videoRef.current;
+    if (!v) return;
+    const play = v.play();
+    if (play && typeof play.catch === "function") play.catch(() => finish());
+    // Safety fallback in case of a stall (common on throttled mobile networks).
+    const safety = setTimeout(finish, 12000);
+    return () => clearTimeout(safety);
+  }, [mounted, done, finish]);
+
+  if (!mounted || done) return null;
 
   const src = isMobile ? mobileVideo.url : desktopVideo.url;
+
 
   return (
     <div
