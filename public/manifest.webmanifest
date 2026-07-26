@@ -1,15 +1,20 @@
 {
+  "id": "/",
   "name": "Krish Sense — Smart Agricultural Advisory Platform",
   "short_name": "Krish Sense",
   "description": "Live crop advisory, GPS weather, soil atlas and market intelligence for Indian farmers.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "launch_handler": { "client_mode": "navigate-existing" },
   "orientation": "portrait-primary",
   "background_color": "#0b0b0d",
   "theme_color": "#111111",
   "lang": "en",
+  "dir": "ltr",
   "categories": ["agriculture", "productivity", "weather"],
+
   "permissions": [
     {
       "name": "geolocation",
@@ -17,7 +22,8 @@
       "access": "allow/denied",
       "required": false,
       "default": "prompt",
-      "reason": "Used to detect your district for live weather, soil and market rates. You can allow or deny it."
+      "manage_url": "/permissions",
+      "reason": "Used to detect your city or district for live weather, soil and market rates. You can allow or deny it at any time."
     }
   ],
   "features": ["geolocation"],
@@ -25,6 +31,21 @@
   "permissions_policy": {
     "geolocation": ["self"]
   },
+
+  "shortcuts": [
+    {
+      "name": "Live Weather",
+      "short_name": "Weather",
+      "description": "Live GPS weather for your current location",
+      "url": "/weather"
+    },
+    {
+      "name": "Permissions",
+      "short_name": "Permissions",
+      "description": "Allow or deny device location access",
+      "url": "/permissions"
+    }
+  ],
 
   "icons": [
     {

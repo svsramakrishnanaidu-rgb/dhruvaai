@@ -397,17 +397,16 @@ function WeatherPage() {
       : null;
   const coordKey = coords ? `${coords.lat.toFixed(3)},${coords.lon.toFixed(3)}` : "";
 
-  /* Reverse-geocode the live coordinates for a display name */
+  /* Reverse-geocode the live coordinates → city / district name (never coords) */
   useEffect(() => {
     if (manual || !coords) return;
     let cancelled = false;
-    reverseGeocode(coords.lat, coords.lon).then((n) => !cancelled && setPlace(n));
+    reverseGeocode(coords.lat, coords.lon).then((n) => !cancelled && n && setPlace(n));
     return () => { cancelled = true; };
   }, [manual, coordKey]);
 
-  const placeLabel = manual
-    ? manual.name
-    : (place ?? (coords ? `${coords.lat.toFixed(3)}, ${coords.lon.toFixed(3)}` : "Locating…"));
+  const placeLabel = manual ? manual.name : (place ?? "Locating your area…");
+
 
   /* ---- 4. Fetch weather for the active coordinates — cache bypassed ---- */
   useEffect(() => {
@@ -529,8 +528,9 @@ function WeatherPage() {
           <div className="min-w-0 flex-1">
             <div className="truncate font-display text-lg font-bold leading-tight">{placeLabel}</div>
             <div className="text-xs text-muted-foreground">
-              Manual location · live weather for {manual.lat.toFixed(3)}, {manual.lon.toFixed(3)}
+              Manual location · live weather for this place
             </div>
+
           </div>
           <button
             onClick={() => setTick((t) => t + 1)}
@@ -885,9 +885,10 @@ function WeatherPage() {
       {/* LIVE SOURCE FOOTER */}
       <section className="mx-auto mt-12 max-w-7xl px-6 pb-16">
         <p className="text-center text-xs text-muted-foreground">
-          Weather © Open-Meteo · Air quality © CAMS · Streamed live for your exact GPS
-          coordinates{bundle ? ` (${bundle.lat.toFixed(4)}, ${bundle.lon.toFixed(4)})` : ""} ·
+          Weather © Open-Meteo · Air quality © CAMS · Streamed live for your current
+          location{placeLabel && place ? ` — ${placeLabel}` : ""} ·
           Auto-refresh every 60s · No cached or estimated values.
+
         </p>
       </section>
 
