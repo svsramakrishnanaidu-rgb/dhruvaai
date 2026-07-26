@@ -10,10 +10,22 @@
   "theme_color": "#111111",
   "lang": "en",
   "categories": ["agriculture", "productivity", "weather"],
-  "permissions": ["geolocation"],
+  "permissions": [
+    {
+      "name": "geolocation",
+      "feature": "location",
+      "access": "allow/denied",
+      "required": false,
+      "default": "prompt",
+      "reason": "Used to detect your district for live weather, soil and market rates. You can allow or deny it."
+    }
+  ],
+  "features": ["geolocation"],
+  "optional_permissions": ["geolocation"],
   "permissions_policy": {
     "geolocation": ["self"]
   },
+
   "icons": [
     {
       "src": "/favicon.ico",
