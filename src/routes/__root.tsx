@@ -13,7 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { Navbar } from "@/components/Navbar";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
+
 import { Footer } from "@/components/Footer";
 import { CinematicLoader } from "@/components/CinematicLoader";
 
@@ -188,12 +188,12 @@ function RootComponent() {
             <AnimatedBackground />
             <div className="relative flex min-h-dvh flex-col ks-safe">
               <Navbar onSearchOpen={() => setSearchOpen(true)} />
-              <main id="main" tabIndex={-1} className="flex-1 pb-20 focus:outline-none lg:pb-0">
+              <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
                 <Outlet />
               </main>
               <Footer />
             </div>
-            <MobileBottomNav />
+
             <MiniPlayer />
             <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
             <AutoLocalize />
