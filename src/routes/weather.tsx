@@ -35,6 +35,7 @@ import {
   Zap,
 } from "lucide-react";
 import { HeroBanner } from "@/components/HeroBanner";
+import { ManualLocationPicker, type ManualPlace } from "@/components/ManualLocationPicker";
 import { Reveal } from "@/components/Reveal";
 import { WeatherBackground } from "@/components/WeatherBackground";
 import {
