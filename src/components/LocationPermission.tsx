@@ -46,8 +46,20 @@ export function LocationPermission() {
       const perm = await readGeoPermission();
       if (!alive) return;
       if (perm === "granted") return;
+
+      // Installed app launch: the OS treats the app window as a first-party
+      // surface, so we can request the live fix straight away and only fall
+      // back to the sheet if the request is refused or unavailable.
+      if (installed && perm !== "denied") {
+        const res = await detectLocation({ prompt: true });
+        if (!alive) return;
+        geoFlags.markAsked();
+        if (res.status === "granted" && !res.approximate) return;
+      }
+
       if (perm === "prompt" || perm === "denied" || perm === "unsupported") setVisible(true);
     }, 1500);
+
 
     // Auto-dismiss if permission is granted from browser settings meanwhile.
     const off = onPermissionChange((state) => {
