@@ -390,26 +390,38 @@ function WeatherPage() {
 
   /* ---- 3. Reverse-geocode the live coordinates for a display name ---- */
   useEffect(() => {
-    if (gps.phase !== "ready") return;
-    let cancelled = false;
-    reverseGeocode(gps.lat, gps.lon).then((n) => !cancelled && setPlace(n));
-    return () => { cancelled = true; };
-  }, [gps.phase, gps.phase === "ready" ? `${gps.lat.toFixed(3)},${gps.lon.toFixed(3)}` : ""]);
+  /* ---- 3. Coordinates in use: manual override wins, else the live fix ---- */
+  const coords: { lat: number; lon: number } | null = manual
+    ? { lat: manual.lat, lon: manual.lon }
+    : gps.phase === "ready"
+      ? { lat: gps.lat, lon: gps.lon }
+      : null;
+  const coordKey = coords ? `${coords.lat.toFixed(3)},${coords.lon.toFixed(3)}` : "";
 
-  const placeLabel =
-    place ?? (gps.phase === "ready" ? `${gps.lat.toFixed(3)}, ${gps.lon.toFixed(3)}` : "Locating…");
-
-  /* ---- 4. Fetch weather for the live coordinates — cache bypassed ---- */
+  /* Reverse-geocode the live coordinates for a display name */
   useEffect(() => {
-    if (gps.phase !== "ready") { setBundle(null); return; }
+    if (manual || !coords) return;
+    let cancelled = false;
+    reverseGeocode(coords.lat, coords.lon).then((n) => !cancelled && setPlace(n));
+    return () => { cancelled = true; };
+  }, [manual, coordKey]);
+
+  const placeLabel = manual
+    ? manual.name
+    : (place ?? (coords ? `${coords.lat.toFixed(3)}, ${coords.lon.toFixed(3)}` : "Locating…"));
+
+  /* ---- 4. Fetch weather for the active coordinates — cache bypassed ---- */
+  useEffect(() => {
+    if (!coords) { setBundle(null); return; }
     let cancelled = false;
     setLoading(true);
     (async () => {
-      const b = await fetchWeatherBundle(placeLabel, [gps.lat, gps.lon], { fresh: true });
+      const b = await fetchWeatherBundle(placeLabel, [coords.lat, coords.lon], { fresh: true });
       if (!cancelled) { setBundle(b); setLoading(false); }
     })();
     return () => { cancelled = true; };
-  }, [gps.phase, gps.phase === "ready" ? `${gps.lat.toFixed(3)},${gps.lon.toFixed(3)}` : "", tick]);
+  }, [coordKey, placeLabel, tick]);
+
 
   /* ---- 5. Auto-refresh every 60s while visible; re-acquire GPS too ---- */
   useEffect(() => {
