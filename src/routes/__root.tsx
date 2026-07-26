@@ -200,6 +200,8 @@ function RootComponent() {
             <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
             <AutoLocalize />
             <AutoLocate />
+            <LocationPermission />
+
           </MusicProvider>
         </TranslationProvider>
 
