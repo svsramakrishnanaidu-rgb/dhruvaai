@@ -33,7 +33,6 @@ import {
   Sprout,
   AlertTriangle,
   Zap,
-  ChevronDown,
 } from "lucide-react";
 import { HeroBanner } from "@/components/HeroBanner";
 import { Reveal } from "@/components/Reveal";
