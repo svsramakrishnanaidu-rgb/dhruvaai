@@ -162,8 +162,9 @@ export async function detectLocation(opts: { prompt?: boolean } = {}): Promise<G
 
   const viaIp = await ipFallback();
   if (viaIp.status === "granted") return viaIp;
-  return { status: perm === "denied" ? "denied" : "failed" };
+  return { status: "failed" };
 }
+
 
 export function pickState(raw: string | undefined): string | null {
   if (!raw) return null;
