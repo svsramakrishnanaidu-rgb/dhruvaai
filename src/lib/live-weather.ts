@@ -261,9 +261,11 @@ export async function fetchWeatherBundle(
       `&current=european_aqi,pm2_5,pm10,carbon_monoxide,nitrogen_dioxide,ozone,sulphur_dioxide` +
       `&timezone=auto`;
 
+    const bust = opts.fresh ? `&_t=${Date.now()}` : "";
+    const init: RequestInit | undefined = opts.fresh ? { cache: "no-store" } : undefined;
     const [fRes, aRes] = await Promise.all([
-      fetch(forecastUrl),
-      fetch(airUrl).catch(() => null),
+      fetch(forecastUrl + bust, init),
+      fetch(airUrl + bust, init).catch(() => null),
     ]);
     if (!fRes.ok) return null;
     const f = await fRes.json();
