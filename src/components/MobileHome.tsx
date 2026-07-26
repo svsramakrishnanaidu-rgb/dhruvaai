@@ -23,7 +23,36 @@ import { useAgmarknetLive } from "@/lib/agmarknet-live";
    ============================================================ */
 export function MobileHome() {
   const loc = useLocation();
-  const trending = CROP_LIST.filter((c) => c.trending).slice(0, 8);
+
+  // Hoisted + memoised: this filter/map over the whole crop list previously ran
+  // on every parent render and re-created 8 fresh object identities, forcing the
+  // entire trending rail (images included) to reconcile each time.
+  const trendingItems = useMemo<TrendingItem[]>(
+    () =>
+      CROP_LIST.filter((c) => c.trending)
+        .slice(0, 8)
+        .map((c) => {
+          const trend = c.marketPrice?.trend ?? [];
+          const first = trend[0]?.price ?? c.marketPrice?.price ?? 0;
+          const last = trend[trend.length - 1]?.price ?? c.marketPrice?.price ?? 0;
+          const momentum = first > 0 ? ((last - first) / first) * 100 : 0;
+          const regionCount = c.suitableDistricts?.length ?? 0;
+          return {
+            slug: c.slug,
+            name: c.name,
+            image: c.image,
+            season: c.season,
+            price: c.marketPrice?.price ?? 0,
+            unit: c.marketPrice?.unit ?? "qtl",
+            yieldText: c.yield,
+            waterNeed: c.waterNeed,
+            momentum,
+            regionClass:
+              regionCount >= 8 ? "Core Zone" : regionCount >= 4 ? "Tier-1" : "Niche",
+          };
+        }),
+    [],
+  );
 
   return (
     <div className="relative min-h-screen w-full overflow-x-clip bg-background pb-24 text-foreground lg:hidden">
@@ -34,28 +63,7 @@ export function MobileHome() {
           <HeroTile />
           <WeatherTile district={loc.district} />
           <MarketPulseTile />
-          <TrendingRail
-            items={trending.map((c) => {
-              const trend = c.marketPrice?.trend ?? [];
-              const first = trend[0]?.price ?? c.marketPrice?.price ?? 0;
-              const last = trend[trend.length - 1]?.price ?? c.marketPrice?.price ?? 0;
-              const momentum = first > 0 ? ((last - first) / first) * 100 : 0;
-              const regionCount = c.suitableDistricts?.length ?? 0;
-              return {
-                slug: c.slug,
-                name: c.name,
-                image: c.image,
-                season: c.season,
-                price: c.marketPrice?.price ?? 0,
-                unit: c.marketPrice?.unit ?? "qtl",
-                yieldText: c.yield,
-                waterNeed: c.waterNeed,
-                momentum,
-                regionClass:
-                  regionCount >= 8 ? "Core Zone" : regionCount >= 4 ? "Tier-1" : "Niche",
-              };
-            })}
-          />
+          <TrendingRail items={trendingItems} />
 
           <QuickActions />
           <SchemesTile />
