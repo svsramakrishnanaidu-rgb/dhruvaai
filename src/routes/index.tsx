@@ -7,6 +7,8 @@ import {
 import { CROP_LIST } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
 import { MobileHome } from "@/components/MobileHome";
+import { useIsDesktop } from "@/hooks/use-viewport";
+
 
 import { CountUp } from "@/components/CountUp";
 import { useLocation } from "@/lib/location-store";
