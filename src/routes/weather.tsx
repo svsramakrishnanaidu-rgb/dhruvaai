@@ -388,8 +388,6 @@ function WeatherPage() {
     return () => { document.removeEventListener("visibilitychange", onVis); stop(); };
   }, [gps.phase]);
 
-  /* ---- 3. Reverse-geocode the live coordinates for a display name ---- */
-  useEffect(() => {
   /* ---- 3. Coordinates in use: manual override wins, else the live fix ---- */
   const coords: { lat: number; lon: number } | null = manual
     ? { lat: manual.lat, lon: manual.lon }
