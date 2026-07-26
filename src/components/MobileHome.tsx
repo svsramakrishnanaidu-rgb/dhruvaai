@@ -65,9 +65,13 @@ export function MobileHome() {
           <MarketPulseTile />
           <TrendingRail items={trendingItems} />
 
-          <QuickActions />
-          <SchemesTile />
-          <AnalyticsTile profileYield={0.92} />
+          {/* `perf-section` = content-visibility:auto — the browser skips layout
+              and paint for these tiles until they approach the viewport. */}
+          <div className="perf-section col-span-2 grid grid-cols-2 gap-3">
+            <QuickActions />
+            <SchemesTile />
+            <AnalyticsTile profileYield={0.92} />
+          </div>
         </div>
       </div>
     </div>
