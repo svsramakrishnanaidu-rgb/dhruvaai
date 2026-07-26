@@ -176,7 +176,11 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
             <div className="mb-3 sm:hidden">
               <DistrictPicker />
             </div>
-            <div className="space-y-4">
+            {/* Scrollable menu body — keeps the drawer inside the viewport on phones */}
+            <div
+              className="menu-scroll -mr-1 space-y-4 overflow-y-auto pr-1"
+              style={{ maxHeight: "min(62vh, 30rem)", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}
+            >
               {NAV_GROUPS.map((group) => (
                 <section key={group.label}>
                   <div className="mb-2 flex items-center gap-2 px-1">
