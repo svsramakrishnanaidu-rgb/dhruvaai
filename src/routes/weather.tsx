@@ -528,8 +528,9 @@ function WeatherPage() {
           <div className="min-w-0 flex-1">
             <div className="truncate font-display text-lg font-bold leading-tight">{placeLabel}</div>
             <div className="text-xs text-muted-foreground">
-              Manual location · live weather for {manual.lat.toFixed(3)}, {manual.lon.toFixed(3)}
+              Manual location · live weather for this place
             </div>
+
           </div>
           <button
             onClick={() => setTick((t) => t + 1)}
