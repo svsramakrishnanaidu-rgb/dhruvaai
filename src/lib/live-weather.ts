@@ -379,6 +379,21 @@ export async function fetchWeatherBundle(
 
 /** Reverse geocode a lat/lon into a friendly place name via Open-Meteo. */
 export async function reverseGeocode(lat: number, lon: number): Promise<string> {
+  // BigDataCloud is CORS-enabled and keyless; Open-Meteo reverse is not.
+  try {
+    const r0 = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`,
+    );
+    if (r0.ok) {
+      const j0 = await r0.json();
+      const name = [j0.locality || j0.city, j0.principalSubdivision]
+        .filter(Boolean)
+        .join(", ");
+      if (name) return name;
+    }
+  } catch {
+    /* fall through */
+  }
   try {
     const r = await fetch(
       `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=en&format=json`,
