@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Bell, Sun, ArrowRight, ChevronRight, Calculator, FlaskConical,
@@ -23,7 +23,36 @@ import { useAgmarknetLive } from "@/lib/agmarknet-live";
    ============================================================ */
 export function MobileHome() {
   const loc = useLocation();
-  const trending = CROP_LIST.filter((c) => c.trending).slice(0, 8);
+
+  // Hoisted + memoised: this filter/map over the whole crop list previously ran
+  // on every parent render and re-created 8 fresh object identities, forcing the
+  // entire trending rail (images included) to reconcile each time.
+  const trendingItems = useMemo<TrendingItem[]>(
+    () =>
+      CROP_LIST.filter((c) => c.trending)
+        .slice(0, 8)
+        .map((c) => {
+          const trend = c.marketPrice?.trend ?? [];
+          const first = trend[0]?.price ?? c.marketPrice?.price ?? 0;
+          const last = trend[trend.length - 1]?.price ?? c.marketPrice?.price ?? 0;
+          const momentum = first > 0 ? ((last - first) / first) * 100 : 0;
+          const regionCount = c.suitableDistricts?.length ?? 0;
+          return {
+            slug: c.slug,
+            name: c.name,
+            image: c.image,
+            season: c.season,
+            price: c.marketPrice?.price ?? 0,
+            unit: c.marketPrice?.unit ?? "qtl",
+            yieldText: c.yield,
+            waterNeed: c.waterNeed,
+            momentum,
+            regionClass:
+              regionCount >= 8 ? "Core Zone" : regionCount >= 4 ? "Tier-1" : "Niche",
+          };
+        }),
+    [],
+  );
 
   return (
     <div className="relative min-h-screen w-full overflow-x-clip bg-background pb-24 text-foreground lg:hidden">
@@ -34,32 +63,15 @@ export function MobileHome() {
           <HeroTile />
           <WeatherTile district={loc.district} />
           <MarketPulseTile />
-          <TrendingRail
-            items={trending.map((c) => {
-              const trend = c.marketPrice?.trend ?? [];
-              const first = trend[0]?.price ?? c.marketPrice?.price ?? 0;
-              const last = trend[trend.length - 1]?.price ?? c.marketPrice?.price ?? 0;
-              const momentum = first > 0 ? ((last - first) / first) * 100 : 0;
-              const regionCount = c.suitableDistricts?.length ?? 0;
-              return {
-                slug: c.slug,
-                name: c.name,
-                image: c.image,
-                season: c.season,
-                price: c.marketPrice?.price ?? 0,
-                unit: c.marketPrice?.unit ?? "qtl",
-                yieldText: c.yield,
-                waterNeed: c.waterNeed,
-                momentum,
-                regionClass:
-                  regionCount >= 8 ? "Core Zone" : regionCount >= 4 ? "Tier-1" : "Niche",
-              };
-            })}
-          />
+          <TrendingRail items={trendingItems} />
 
-          <QuickActions />
-          <SchemesTile />
-          <AnalyticsTile profileYield={0.92} />
+          {/* `perf-section` = content-visibility:auto — the browser skips layout
+              and paint for these tiles until they approach the viewport. */}
+          <div className="perf-section col-span-2 grid grid-cols-2 gap-3">
+            <QuickActions />
+            <SchemesTile />
+            <AnalyticsTile profileYield={0.92} />
+          </div>
         </div>
       </div>
     </div>
@@ -351,36 +363,56 @@ type TrendingItem = {
   regionClass: string;
 };
 
-function useCountUp(target: number, durationMs = 900) {
-  const [val, setVal] = useState(target);
+/**
+ * Animated percentage counter.
+ *
+ * Perf note: the previous version called setState on every animation frame, so
+ * eight visible cards produced ~480 React renders per second — the main cause
+ * of jank while the trending rail was on screen. This version writes straight
+ * to the DOM node via a ref, so the animation costs zero reconciliation, and it
+ * short-circuits entirely under `prefers-reduced-motion`.
+ */
+function LiveMomentum({ value, positive, durationMs = 900 }: { value: number; positive: boolean; durationMs?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const prev = useRef(value);
+
+  const format = (v: number) => `${positive && v >= 0 ? "+" : ""}${v.toFixed(1)}%`;
+
   useEffect(() => {
-    const start = val;
-    const delta = target - start;
-    if (Math.abs(delta) < 0.01) {
-      setVal(target);
+    const el = ref.current;
+    if (!el) return;
+
+    const start = prev.current;
+    const delta = value - start;
+    prev.current = value;
+
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduced || Math.abs(delta) < 0.05) {
+      el.textContent = format(value);
       return;
     }
+
     const t0 = performance.now();
     let raf = 0;
+    let lastText = "";
     const tick = (now: number) => {
       const p = Math.min(1, (now - t0) / durationMs);
       const eased = 1 - Math.pow(1 - p, 3);
-      setVal(start + delta * eased);
+      const text = format(start + delta * eased);
+      // Only touch the DOM when the rendered string actually changes.
+      if (text !== lastText) { lastText = text; el.textContent = text; }
       if (p < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target]);
-  return val;
-}
+  }, [value, positive, durationMs]);
 
-function LiveMomentum({ value, positive }: { value: number; positive: boolean }) {
-  const v = useCountUp(value);
   return (
-    <span className="tabular-nums">
-      {positive && v >= 0 ? "+" : ""}
-      {v.toFixed(1)}%
+    <span ref={ref} className="tabular-nums">
+      {format(value)}
     </span>
   );
 }
@@ -388,13 +420,18 @@ function LiveMomentum({ value, positive }: { value: number; positive: boolean })
 
 function TrendingRail({ items }: { items: TrendingItem[] }) {
   const { data: live } = useAgmarknetLive({ refreshMs: 60 * 1000, limit: 1500 });
-  const liveMap = new Map<string, number>();
-  for (const row of live) {
-    if (Number.isFinite(row.deltaPct)) {
-      const key = row.commodity.toLowerCase().trim();
-      if (!liveMap.has(key)) liveMap.set(key, row.deltaPct);
+  // Memoised: rebuilding a 1500-entry Map on every render (including every
+  // scroll-triggered re-render) was pure wasted CPU on mid-range Androids.
+  const liveMap = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const row of live) {
+      if (Number.isFinite(row.deltaPct)) {
+        const key = row.commodity.toLowerCase().trim();
+        if (!m.has(key)) m.set(key, row.deltaPct);
+      }
     }
-  }
+    return m;
+  }, [live]);
 
   const fmt = (n: number) =>
     n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
@@ -470,6 +507,7 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
                   src={c.image}
                   alt={c.name}
                   loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover grayscale brightness-[0.55] transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
