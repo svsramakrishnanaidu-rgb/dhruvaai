@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import mobileVideo from "@/assets/intro-mobile.mp4.asset.json";
 import desktopVideo from "@/assets/intro-desktop.mp4.asset.json";
 
