@@ -227,14 +227,20 @@ export function cachedLiveWeather(district: string): LiveWeather | null {
   return CACHE.get(district)?.data ?? null;
 }
 
-/** Rich bundle — current + 24h hourly + 15d daily + air + soil + 7d history. */
+/**
+ * Rich bundle — current + 24h hourly + 15d daily + air + soil + 7d history.
+ * Pass `{ fresh: true }` to bypass the cache entirely (live-only surfaces).
+ */
 export async function fetchWeatherBundle(
   place: string,
   coords?: [number, number],
+  opts: { fresh?: boolean } = {},
 ): Promise<WeatherBundle | null> {
   const key = coords ? `${coords[0].toFixed(3)},${coords[1].toFixed(3)}` : place;
-  const cached = BUNDLE_CACHE.get(key);
-  if (cached && Date.now() - cached.at < TTL_MS) return cached.data;
+  if (!opts.fresh) {
+    const cached = BUNDLE_CACHE.get(key);
+    if (cached && Date.now() - cached.at < TTL_MS) return cached.data;
+  }
   const [lat, lon] = coords ?? coordsFor(place);
   try {
     const forecastUrl =
