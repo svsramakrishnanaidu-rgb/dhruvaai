@@ -326,6 +326,8 @@ function WeatherPage() {
   const [gps, setGps] = useState<GpsState>({ phase: "locating" });
   const [place, setPlace] = useState<string | null>(null);
   const watchId = useRef<number | null>(null);
+  // Optional manual override (State / District / Village). Null = live GPS.
+  const [manual, setManual] = useState<ManualPlace | null>(null);
 
   /* ---- 1. Live GPS acquisition (no static fallback, ever) ---- */
   const acquire = useCallback(() => {
