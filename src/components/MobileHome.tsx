@@ -639,6 +639,8 @@ function QuickActions() {
           key={to}
           to={to}
           className="card-elegant flex items-center gap-3 p-4 transition active:scale-[0.97]"
+          onPointerDown={() => haptic("select")}
+
         >
           <div
             className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
