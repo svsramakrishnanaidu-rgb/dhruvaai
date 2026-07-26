@@ -377,36 +377,79 @@ export async function fetchWeatherBundle(
   }
 }
 
-/** Reverse geocode a lat/lon into a friendly place name via Open-Meteo. */
-export async function reverseGeocode(lat: number, lon: number): Promise<string> {
-  // BigDataCloud is CORS-enabled and keyless; Open-Meteo reverse is not.
+export type PlaceName = {
+  /** Village / town / city */
+  city?: string;
+  /** District (admin level 2) */
+  district?: string;
+  /** State */
+  state?: string;
+  /** Best human label — never coordinates. */
+  label: string;
+};
+
+/**
+ * Reverse geocode a live GPS fix into a human place name.
+ * Never returns raw coordinates — if every provider fails the label is empty
+ * and the UI keeps showing "Locating your area…".
+ */
+export async function reverseGeocodePlace(lat: number, lon: number): Promise<PlaceName> {
+  const build = (city?: string, district?: string, state?: string): PlaceName => {
+    // Prefer "City, District" and fall back to "District, State" / "City, State".
+    const primary = city || district || state;
+    const secondary =
+      city && district && district !== city ? district : city && state ? state : district ? state : undefined;
+    return {
+      city,
+      district,
+      state,
+      label: [primary, secondary].filter(Boolean).join(", "),
+    };
+  };
+
+  // BigDataCloud is CORS-enabled and keyless; it resolves Indian districts well.
   try {
     const r0 = await fetch(
       `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`,
     );
     if (r0.ok) {
       const j0 = await r0.json();
-      const name = [j0.locality || j0.city, j0.principalSubdivision]
-        .filter(Boolean)
-        .join(", ");
-      if (name) return name;
+      const admins: { name?: string; adminLevel?: number }[] =
+        j0?.localityInfo?.administrative ?? [];
+      const district =
+        admins.find((a) => a.adminLevel === 5)?.name ||
+        admins.find((a) => a.adminLevel === 6)?.name ||
+        j0.city ||
+        undefined;
+      const city = j0.locality || j0.city || undefined;
+      const p = build(city, district, j0.principalSubdivision || undefined);
+      if (p.label) return p;
     }
   } catch {
     /* fall through */
   }
+
   try {
     const r = await fetch(
       `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=en&format=json`,
     );
-    if (!r.ok) return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
-    const j = await r.json();
-    const first = j?.results?.[0];
-    if (!first) return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
-    return [first.name, first.admin2, first.admin1].filter(Boolean).join(", ");
+    if (r.ok) {
+      const j = await r.json();
+      const first = j?.results?.[0];
+      if (first) return build(first.name, first.admin2, first.admin1);
+    }
   } catch {
-    return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+    /* fall through */
   }
+
+  return { label: "" };
 }
+
+/** Back-compat string helper. Returns "" when the place can't be named. */
+export async function reverseGeocode(lat: number, lon: number): Promise<string> {
+  return (await reverseGeocodePlace(lat, lon)).label;
+}
+
 
 /** Small helper: current season + time-of-day, computed client-side. */
 export function nowContext(): {
