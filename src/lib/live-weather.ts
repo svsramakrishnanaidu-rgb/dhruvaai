@@ -227,14 +227,20 @@ export function cachedLiveWeather(district: string): LiveWeather | null {
   return CACHE.get(district)?.data ?? null;
 }
 
-/** Rich bundle — current + 24h hourly + 15d daily + air + soil + 7d history. */
+/**
+ * Rich bundle — current + 24h hourly + 15d daily + air + soil + 7d history.
+ * Pass `{ fresh: true }` to bypass the cache entirely (live-only surfaces).
+ */
 export async function fetchWeatherBundle(
   place: string,
   coords?: [number, number],
+  opts: { fresh?: boolean } = {},
 ): Promise<WeatherBundle | null> {
   const key = coords ? `${coords[0].toFixed(3)},${coords[1].toFixed(3)}` : place;
-  const cached = BUNDLE_CACHE.get(key);
-  if (cached && Date.now() - cached.at < TTL_MS) return cached.data;
+  if (!opts.fresh) {
+    const cached = BUNDLE_CACHE.get(key);
+    if (cached && Date.now() - cached.at < TTL_MS) return cached.data;
+  }
   const [lat, lon] = coords ?? coordsFor(place);
   try {
     const forecastUrl =
@@ -255,9 +261,11 @@ export async function fetchWeatherBundle(
       `&current=european_aqi,pm2_5,pm10,carbon_monoxide,nitrogen_dioxide,ozone,sulphur_dioxide` +
       `&timezone=auto`;
 
+    const bust = opts.fresh ? `&_t=${Date.now()}` : "";
+    const init: RequestInit | undefined = opts.fresh ? { cache: "no-store" } : undefined;
     const [fRes, aRes] = await Promise.all([
-      fetch(forecastUrl),
-      fetch(airUrl).catch(() => null),
+      fetch(forecastUrl + bust, init),
+      fetch(airUrl + bust, init).catch(() => null),
     ]);
     if (!fRes.ok) return null;
     const f = await fRes.json();
@@ -371,6 +379,21 @@ export async function fetchWeatherBundle(
 
 /** Reverse geocode a lat/lon into a friendly place name via Open-Meteo. */
 export async function reverseGeocode(lat: number, lon: number): Promise<string> {
+  // BigDataCloud is CORS-enabled and keyless; Open-Meteo reverse is not.
+  try {
+    const r0 = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`,
+    );
+    if (r0.ok) {
+      const j0 = await r0.json();
+      const name = [j0.locality || j0.city, j0.principalSubdivision]
+        .filter(Boolean)
+        .join(", ");
+      if (name) return name;
+    }
+  } catch {
+    /* fall through */
+  }
   try {
     const r = await fetch(
       `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=en&format=json`,

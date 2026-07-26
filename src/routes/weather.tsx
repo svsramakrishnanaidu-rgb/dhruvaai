@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -33,21 +33,17 @@ import {
   Sprout,
   AlertTriangle,
   Zap,
-  ChevronDown,
 } from "lucide-react";
 import { HeroBanner } from "@/components/HeroBanner";
 import { Reveal } from "@/components/Reveal";
 import { WeatherBackground } from "@/components/WeatherBackground";
-import { useLocation, locationStore, STATES } from "@/lib/location-store";
 import {
   codeToSky,
-  fetchLiveWeather,
   fetchWeatherBundle,
   nowContext,
   reverseGeocode,
   weatherKind,
   windDirLabel,
-  type LiveWeather,
   type WeatherBundle,
 } from "@/lib/live-weather";
 import {
@@ -70,13 +66,6 @@ export const Route = createFileRoute("/weather")({
   }),
   component: WeatherPage,
 });
-
-const REGIONS: { label: string; districts: string[] }[] = [
-  { label: "Andhra & Telangana", districts: ["Guntur", "Krishna", "Visakhapatnam", "Anantapur", "Kurnool", "Hyderabad", "Warangal", "Nizamabad"] },
-  { label: "North India", districts: ["Ludhiana", "Amritsar", "Karnal", "Hisar", "Meerut", "Lucknow", "Varanasi", "Jaipur"] },
-  { label: "West India", districts: ["Pune", "Nashik", "Nagpur", "Ahmedabad", "Rajkot", "Bhopal", "Indore", "Jodhpur"] },
-  { label: "South & East", districts: ["Bengaluru", "Mysuru", "Coimbatore", "Madurai", "Chennai", "Kochi", "Kolkata", "Patna"] },
-];
 
 function fmtHour(iso: string) {
   const d = new Date(iso);
@@ -239,113 +228,71 @@ function AqiPanel({ air }: { air: NonNullable<WeatherBundle["air"]> }) {
   );
 }
 
-/* -------------------------- Location switcher --------------------------- */
+/* --------------------------- Live GPS status bar ------------------------- */
 
-function LocationBar({
+/** Great-circle distance in metres — used to ignore GPS jitter. */
+function distanceM(aLat: number, aLon: number, bLat: number, bLon: number) {
+  const R = 6371000;
+  const dLat = ((bLat - aLat) * Math.PI) / 180;
+  const dLon = ((bLon - aLon) * Math.PI) / 180;
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((aLat * Math.PI) / 180) * Math.cos((bLat * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
+function GpsBar({
   place,
-  onGps,
-  gpsBusy,
+  accuracy,
+  fixedAt,
+  fetchedAt,
+  busy,
+  onRefresh,
 }: {
   place: string;
-  onGps: () => void;
-  gpsBusy: boolean;
+  accuracy: number;
+  fixedAt: number;
+  fetchedAt: number | null;
+  busy: boolean;
+  onRefresh: () => void;
 }) {
-  const loc = useLocation();
-  const states = Object.keys(STATES);
-  const [village, setVillage] = useState<string>(loc.mandal ?? "");
+  const [, force] = useState(0);
+  useEffect(() => {
+    const id = window.setInterval(() => force((n) => n + 1), 15000);
+    return () => window.clearInterval(id);
+  }, []);
+  const ago = (t: number) => {
+    const s = Math.max(0, Math.round((Date.now() - t) / 1000));
+    return s < 60 ? `${s}s ago` : `${Math.round(s / 60)}m ago`;
+  };
   return (
     <div className="glass mx-auto mt-6 flex max-w-5xl flex-wrap items-center gap-3 rounded-3xl p-4">
+      <span className="relative flex h-2.5 w-2.5">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+      </span>
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <MapPin className="h-5 w-5 text-primary" />
+        <MapPin className="h-5 w-5 shrink-0 text-primary" />
         <div className="min-w-0">
           <div className="truncate font-display text-lg font-bold leading-tight">{place}</div>
-          <div className="text-xs text-muted-foreground">Current forecast location</div>
+          <div className="text-xs text-muted-foreground">
+            Live GPS · ±{Math.round(accuracy)}m · fix {ago(fixedAt)}
+            {fetchedAt ? ` · data ${ago(fetchedAt)}` : ""}
+          </div>
         </div>
       </div>
-      <div className="grid flex-1 grid-cols-3 gap-2 md:grid-cols-4">
-        <Select label="State" value={loc.state} options={states} onChange={(v) => locationStore.set({ state: v, district: STATES[v]?.[0] ?? "" })} />
-        <Select label="District" value={loc.district} options={STATES[loc.state] ?? []} onChange={(v) => locationStore.set({ district: v })} />
-        <label className="relative col-span-1 flex flex-col text-xs text-muted-foreground">
-          Village / Farm
-          <input
-            value={village}
-            onChange={(e) => setVillage(e.target.value)}
-            onBlur={() => locationStore.set({ mandal: village || undefined })}
-            placeholder="optional"
-            className="mt-1 rounded-xl border border-border/60 bg-background/50 px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/40"
-          />
-        </label>
-        <button
-          onClick={onGps}
-          disabled={gpsBusy}
-          className="tap inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-60"
-        >
-          <LocateFixed className="h-4 w-4" />
-          {gpsBusy ? "Locating…" : "Use my GPS"}
-        </button>
-      </div>
+      <button
+        onClick={onRefresh}
+        disabled={busy}
+        className="tap inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-60"
+      >
+        <RefreshCw className={`h-4 w-4 ${busy ? "animate-spin" : ""}`} />
+        {busy ? "Updating…" : "Refresh"}
+      </button>
     </div>
   );
 }
 
-function Select({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
-  return (
-    <label className="relative flex flex-col text-xs text-muted-foreground">
-      {label}
-      <div className="relative mt-1">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full appearance-none rounded-xl border border-border/60 bg-background px-3 py-2 pr-8 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/40"
-        >
-          {options.map((o) => (
-            <option key={o} value={o} className="bg-background text-foreground">{o}</option>
-          ))}
-        </select>
-        <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-      </div>
-    </label>
-  );
-}
-
-/* -------------------------- Regional overview --------------------------- */
-
-function useLiveWeather(districts: string[], tick: number) {
-  const [map, setMap] = useState<Record<string, LiveWeather | null>>({});
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const entries = await Promise.all(districts.map(async (d) => [d, await fetchLiveWeather(d)] as const));
-      if (!cancelled) {
-        const next: Record<string, LiveWeather | null> = {};
-        for (const [d, w] of entries) next[d] = w;
-        setMap(next);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [districts.join("|"), tick]);
-  return map;
-}
-
-function RegionCard({ w }: { w: LiveWeather }) {
-  return (
-    <div className="glass hover-lift rounded-2xl p-4">
-      <div className="flex items-start justify-between">
-        <div className="text-sm font-medium">{w.district}</div>
-        <WeatherIcon code={w.weatherCode} className="h-6 w-6" />
-      </div>
-      <div className="mt-1 flex items-end gap-1">
-        <div className="font-display text-3xl font-black">{w.tempC}°</div>
-        <div className="mb-1 text-xs text-muted-foreground">{w.sky}</div>
-      </div>
-      <div className="mt-2 flex justify-between text-[11px] text-muted-foreground">
-        <span>💧 {w.humidity}%</span>
-        <span>🌬 {w.windKph} km/h</span>
-        <span>🌧 {w.precipMm} mm</span>
-      </div>
-    </div>
-  );
-}
 
 /* --------------------------- Advisory badge ----------------------------- */
 
@@ -359,57 +306,123 @@ const LEVEL_STYLE: Record<string, string> = {
 
 /* --------------------------------- Page --------------------------------- */
 
+type GpsState =
+  | { phase: "locating" }
+  | { phase: "ready"; lat: number; lon: number; accuracy: number; at: number }
+  | { phase: "blocked"; kind: "denied" | "unavailable" | "insecure" | "timeout"; message: string };
+
+const GPS_MESSAGES: Record<string, string> = {
+  denied: "Location permission is blocked. Allow location for this site in your browser settings, then tap Retry.",
+  unavailable: "Location services appear to be turned off on your device. Turn on GPS / Location, then tap Retry.",
+  insecure: "Live location needs a secure (https) connection.",
+  timeout: "GPS didn't respond in time. Move to an open area and tap Retry.",
+};
+
 function WeatherPage() {
-  const loc = useLocation();
   const ctx = useMemo(() => nowContext(), []);
   const [tick, setTick] = useState(0);
   const [bundle, setBundle] = useState<WeatherBundle | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [gpsBusy, setGpsBusy] = useState(false);
-  const [gpsPlace, setGpsPlace] = useState<string | null>(null);
-  const gpsCoords = useRef<[number, number] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [gps, setGps] = useState<GpsState>({ phase: "locating" });
+  const [place, setPlace] = useState<string | null>(null);
+  const watchId = useRef<number | null>(null);
 
-  const placeLabel = gpsPlace
-    ? gpsPlace
-    : [loc.mandal, loc.district, loc.state].filter(Boolean).join(", ");
+  /* ---- 1. Live GPS acquisition (no static fallback, ever) ---- */
+  const acquire = useCallback(() => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setGps({ phase: "blocked", kind: "unavailable", message: GPS_MESSAGES.unavailable });
+      return;
+    }
+    if (typeof window !== "undefined" && !window.isSecureContext) {
+      setGps({ phase: "blocked", kind: "insecure", message: GPS_MESSAGES.insecure });
+      return;
+    }
+    setGps({ phase: "locating" });
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude, accuracy } = pos.coords;
+        setGps({ phase: "ready", lat: latitude, lon: longitude, accuracy: accuracy ?? 0, at: Date.now() });
+      },
+      (err) => {
+        const kind = err.code === 1 ? "denied" : err.code === 2 ? "unavailable" : "timeout";
+        setGps({ phase: "blocked", kind, message: GPS_MESSAGES[kind] });
+      },
+      // maximumAge: 0 — never accept a cached fix, the position must be live.
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
+    );
+  }, []);
 
-  // Fetch bundle whenever location or GPS changes
+  useEffect(() => { acquire(); }, [acquire]);
+
+  /* ---- 2. Keep the fix live: watch the device while the tab is visible ---- */
   useEffect(() => {
+    if (gps.phase !== "ready" || typeof navigator === "undefined" || !navigator.geolocation) return;
+    const start = () => {
+      if (watchId.current !== null) return;
+      watchId.current = navigator.geolocation.watchPosition(
+        (pos) => {
+          const { latitude, longitude, accuracy } = pos.coords;
+          setGps((prev) => {
+            if (prev.phase === "ready") {
+              const moved = distanceM(prev.lat, prev.lon, latitude, longitude);
+              if (moved < 250) return prev; // ignore GPS jitter
+            }
+            return { phase: "ready", lat: latitude, lon: longitude, accuracy: accuracy ?? 0, at: Date.now() };
+          });
+        },
+        () => { /* keep the last live fix; the interval refresh will retry */ },
+        { enableHighAccuracy: true, timeout: 25000, maximumAge: 0 },
+      );
+    };
+    const stop = () => {
+      if (watchId.current !== null) {
+        try { navigator.geolocation.clearWatch(watchId.current); } catch { /* noop */ }
+        watchId.current = null;
+      }
+    };
+    const onVis = () => (document.visibilityState === "visible" ? start() : stop());
+    start();
+    document.addEventListener("visibilitychange", onVis);
+    return () => { document.removeEventListener("visibilitychange", onVis); stop(); };
+  }, [gps.phase]);
+
+  /* ---- 3. Reverse-geocode the live coordinates for a display name ---- */
+  useEffect(() => {
+    if (gps.phase !== "ready") return;
+    let cancelled = false;
+    reverseGeocode(gps.lat, gps.lon).then((n) => !cancelled && setPlace(n));
+    return () => { cancelled = true; };
+  }, [gps.phase, gps.phase === "ready" ? `${gps.lat.toFixed(3)},${gps.lon.toFixed(3)}` : ""]);
+
+  const placeLabel =
+    place ?? (gps.phase === "ready" ? `${gps.lat.toFixed(3)}, ${gps.lon.toFixed(3)}` : "Locating…");
+
+  /* ---- 4. Fetch weather for the live coordinates — cache bypassed ---- */
+  useEffect(() => {
+    if (gps.phase !== "ready") { setBundle(null); return; }
     let cancelled = false;
     setLoading(true);
     (async () => {
-      const b = await fetchWeatherBundle(
-        gpsPlace ?? loc.district,
-        gpsCoords.current ?? undefined,
-      );
-      if (!cancelled) {
-        setBundle(b);
-        setLoading(false);
-      }
+      const b = await fetchWeatherBundle(placeLabel, [gps.lat, gps.lon], { fresh: true });
+      if (!cancelled) { setBundle(b); setLoading(false); }
     })();
     return () => { cancelled = true; };
-  }, [loc.district, loc.state, gpsPlace, tick]);
+  }, [gps.phase, gps.phase === "ready" ? `${gps.lat.toFixed(3)},${gps.lon.toFixed(3)}` : "", tick]);
 
-  // Auto refresh every 5 min
+  /* ---- 5. Auto-refresh every 60s while visible; re-acquire GPS too ---- */
   useEffect(() => {
-    const id = window.setInterval(() => setTick((t) => t + 1), 5 * 60 * 1000);
-    return () => window.clearInterval(id);
+    const id = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      setTick((t) => t + 1);
+    }, 60 * 1000);
+    const onVis = () => { if (document.visibilityState === "visible") setTick((t) => t + 1); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => { window.clearInterval(id); document.removeEventListener("visibilitychange", onVis); };
   }, []);
 
-  const useGps = () => {
-    if (!navigator.geolocation) return;
-    setGpsBusy(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        gpsCoords.current = [pos.coords.latitude, pos.coords.longitude];
-        const name = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
-        setGpsPlace(name);
-        setGpsBusy(false);
-        setTick((t) => t + 1);
-      },
-      () => setGpsBusy(false),
-      { enableHighTimeout: true, timeout: 10000, maximumAge: 60000 } as PositionOptions,
-    );
+  const refreshNow = () => {
+    if (gps.phase === "ready") setTick((t) => t + 1);
+    else acquire();
   };
 
   const kind = bundle
@@ -442,10 +455,42 @@ function WeatherPage() {
     rain: d.precipMm,
   }));
 
-  const regionCards = useLiveWeather(
-    Array.from(new Set(REGIONS.flatMap((r) => r.districts))),
-    tick,
-  );
+  /* ---- GPS gate: no live fix → no weather at all ---- */
+  if (gps.phase !== "ready") {
+    return (
+      <div>
+        <HeroBanner
+          image={heroImg}
+          eyebrow={`Live · ${ctx.season} · ${ctx.weekday}`}
+          title="Weather Intelligence Dashboard"
+          description="This dashboard streams only live conditions for your exact GPS position — nothing cached, nothing estimated."
+        />
+        <section className="mx-auto mt-8 max-w-xl px-6 pb-24">
+          <div className="glass rounded-3xl p-8 text-center">
+            <LocateFixed
+              className={`mx-auto h-10 w-10 text-primary ${gps.phase === "locating" ? "animate-pulse" : ""}`}
+            />
+            <h2 className="mt-4 font-display text-2xl font-bold">
+              {gps.phase === "locating" ? "Acquiring live GPS fix…" : "Location access required"}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {gps.phase === "locating"
+                ? "Allow location access when your device asks. Weather is fetched only for your real-time position."
+                : gps.message}
+            </p>
+            {gps.phase === "blocked" && (
+              <button
+                onClick={acquire}
+                className="tap mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:brightness-110"
+              >
+                <RefreshCw className="h-4 w-4" /> Retry live location
+              </button>
+            )}
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -456,7 +501,15 @@ function WeatherPage() {
         description="Real-time conditions, hourly & 15-day forecast, air quality, soil metrics and AI-powered agricultural advisories — hyperlocal to your farm."
       />
 
-      <LocationBar place={placeLabel} onGps={useGps} gpsBusy={gpsBusy} />
+      <GpsBar
+        place={placeLabel}
+        accuracy={gps.accuracy}
+        fixedAt={gps.at}
+        fetchedAt={bundle?.fetchedAt ?? null}
+        busy={loading}
+        onRefresh={refreshNow}
+      />
+
 
       {/* HERO CONDITION CARD */}
       <section className="mx-auto mt-6 max-w-7xl px-6">
@@ -782,32 +835,15 @@ function WeatherPage() {
         </section>
       )}
 
-      {/* REGIONAL OVERVIEW */}
+      {/* LIVE SOURCE FOOTER */}
       <section className="mx-auto mt-12 max-w-7xl px-6 pb-16">
-        <Reveal>
-          <h2 className="mb-4 font-display text-2xl font-bold">
-            <span className="text-gradient">Regional overview</span>
-            <span className="ml-2 text-sm font-normal text-muted-foreground">India-wide live snapshot</span>
-          </h2>
-        </Reveal>
-        {REGIONS.map((r) => (
-          <div key={r.label} className="mt-6">
-            <div className="mb-2 text-sm font-semibold text-muted-foreground">{r.label}</div>
-            <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8">
-              {r.districts.map((d) =>
-                regionCards[d] ? (
-                  <RegionCard key={d} w={regionCards[d]!} />
-                ) : (
-                  <div key={d} className="glass h-28 animate-pulse rounded-2xl" />
-                ),
-              )}
-            </div>
-          </div>
-        ))}
-        <p className="mt-8 text-center text-xs text-muted-foreground">
-          Weather © Open-Meteo · Air quality © CAMS · Auto-refresh every 5 min · Cached 10 min per location.
+        <p className="text-center text-xs text-muted-foreground">
+          Weather © Open-Meteo · Air quality © CAMS · Streamed live for your exact GPS
+          coordinates{bundle ? ` (${bundle.lat.toFixed(4)}, ${bundle.lon.toFixed(4)})` : ""} ·
+          Auto-refresh every 60s · No cached or estimated values.
         </p>
       </section>
+
 
       {loading && !bundle && (
         <div className="fixed inset-x-0 bottom-6 mx-auto w-max rounded-full bg-primary/90 px-4 py-2 text-xs font-medium text-primary-foreground shadow-lg">
