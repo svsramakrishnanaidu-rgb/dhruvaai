@@ -731,3 +731,15 @@ html.is-touch .snap-x { -webkit-overflow-scrolling: touch; }
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Slim, themed scrollbar for the mobile nav drawer */
+.menu-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--accent) 55%, transparent) transparent;
+}
+.menu-scroll::-webkit-scrollbar { width: 4px; }
+.menu-scroll::-webkit-scrollbar-track { background: transparent; }
+.menu-scroll::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--accent) 55%, transparent);
+}
