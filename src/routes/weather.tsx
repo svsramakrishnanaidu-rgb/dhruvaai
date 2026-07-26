@@ -467,8 +467,8 @@ function WeatherPage() {
     rain: d.precipMm,
   }));
 
-  /* ---- GPS gate: no live fix → no weather at all ---- */
-  if (gps.phase !== "ready") {
+  /* ---- GPS gate: no live fix and no manual pick → no weather at all ---- */
+  if (!manual && gps.phase !== "ready") {
     return (
       <div>
         <HeroBanner
@@ -477,7 +477,7 @@ function WeatherPage() {
           title="Weather Intelligence Dashboard"
           description="This dashboard streams only live conditions for your exact GPS position — nothing cached, nothing estimated."
         />
-        <section className="mx-auto mt-8 max-w-xl px-6 pb-24">
+        <section className="mx-auto mt-8 max-w-5xl px-6 pb-24">
           <div className="glass rounded-3xl p-8 text-center">
             <LocateFixed
               className={`mx-auto h-10 w-10 text-primary ${gps.phase === "locating" ? "animate-pulse" : ""}`}
@@ -498,7 +498,16 @@ function WeatherPage() {
                 <RefreshCw className="h-4 w-4" /> Retry live location
               </button>
             )}
+            <p className="mt-6 text-xs text-muted-foreground">
+              Or pick your place manually below — live weather is then fetched for that exact village / district.
+            </p>
           </div>
+          <ManualLocationPicker
+            active={manual}
+            onSelect={setManual}
+            onClear={() => setManual(null)}
+            defaultOpen
+          />
         </section>
       </div>
     );
@@ -513,14 +522,39 @@ function WeatherPage() {
         description="Real-time conditions, hourly & 15-day forecast, air quality, soil metrics and AI-powered agricultural advisories — hyperlocal to your farm."
       />
 
-      <GpsBar
-        place={placeLabel}
-        accuracy={gps.accuracy}
-        fixedAt={gps.at}
-        fetchedAt={bundle?.fetchedAt ?? null}
-        busy={loading}
-        onRefresh={refreshNow}
-      />
+      {manual ? (
+        <div className="glass mx-auto mt-6 flex max-w-5xl flex-wrap items-center gap-3 rounded-3xl p-4">
+          <MapPin className="h-5 w-5 shrink-0 text-primary" />
+          <div className="min-w-0 flex-1">
+            <div className="truncate font-display text-lg font-bold leading-tight">{placeLabel}</div>
+            <div className="text-xs text-muted-foreground">
+              Manual location · live weather for {manual.lat.toFixed(3)}, {manual.lon.toFixed(3)}
+            </div>
+          </div>
+          <button
+            onClick={() => setTick((t) => t + 1)}
+            disabled={loading}
+            className="tap inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-60"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            {loading ? "Updating…" : "Refresh"}
+          </button>
+        </div>
+      ) : (
+        <GpsBar
+          place={placeLabel}
+          accuracy={gps.phase === "ready" ? gps.accuracy : 0}
+          fixedAt={gps.phase === "ready" ? gps.at : Date.now()}
+          fetchedAt={bundle?.fetchedAt ?? null}
+          busy={loading}
+          onRefresh={refreshNow}
+        />
+      )}
+
+      <div className="px-6">
+        <ManualLocationPicker active={manual} onSelect={setManual} onClear={() => setManual(null)} />
+      </div>
+
 
 
       {/* HERO CONDITION CARD */}
