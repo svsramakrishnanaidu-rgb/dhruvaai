@@ -507,6 +507,7 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
                   src={c.image}
                   alt={c.name}
                   loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover grayscale brightness-[0.55] transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
