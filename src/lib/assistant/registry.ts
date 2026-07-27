@@ -60,8 +60,13 @@ export type AssistantAction =
   | { type: "click"; label: string }
   | { type: "none" };
 
-/** Actions that change data/settings meaningfully → ask before running. */
-export const CONFIRM_REQUIRED: AssistantAction["type"][] = ["set_theme", "set_language", "set_contrast"];
+/**
+ * Actions that mutate data or spend money must be confirmed before running.
+ * Every action in this build is a reversible, user-level UI preference, so the
+ * list is intentionally empty — extend it as write-capable tools are added.
+ */
+export const CONFIRM_REQUIRED: AssistantAction["type"][] = [];
+
 
 export function routeCatalogText(): string {
   return APP_ROUTES.map((r) => `${r.path} — ${r.name}: ${r.purpose}`).join("\n");
