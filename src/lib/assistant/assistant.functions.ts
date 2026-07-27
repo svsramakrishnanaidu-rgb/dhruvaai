@@ -98,7 +98,7 @@ export const askAssistant = createServerFn({ method: "POST" })
         headers: endpoint.headers,
         body: JSON.stringify({
           model: endpoint.model,
-          ...(endpoint.provider === "lovable" ? { reasoning_effort: "none" } : {}),
+          
           ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
           messages: [
             { role: "system", content: systemPrompt(data.lang, data.favourites) },
