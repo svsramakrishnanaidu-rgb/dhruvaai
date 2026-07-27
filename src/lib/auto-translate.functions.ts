@@ -2,6 +2,8 @@
 // Batched calls to Lovable AI Gateway with aggressive client-side caching.
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { resolveAiEndpoint } from "@/lib/ai-endpoint.server";
+
 
 const In = z.object({
   lang: z.enum(["te", "hi"]),
