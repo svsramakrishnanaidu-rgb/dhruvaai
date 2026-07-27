@@ -20,7 +20,8 @@ export const translateBatch = createServerFn({ method: "POST" })
       return { translations: data.items };
     }
     const key = process.env.LOVABLE_API_KEY;
-    if (!key) throw new Error("LOVABLE_API_KEY missing");
+    const endpoint = resolveAiEndpoint("fast");
+    if (!endpoint) throw new Error("No AI provider key configured");
 
     const langName = data.lang === "te" ? "Telugu (తెలుగు)" : "Hindi (हिन्दी)";
     const prompt = `Translate every string in the input JSON array into natural, farmer-friendly ${langName}.
@@ -28,18 +29,19 @@ export const translateBatch = createServerFn({ method: "POST" })
 - Keep the same order and same array length.
 - Do NOT add explanations. Return STRICT JSON: {"translations": ["...", "..."]}`;
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch(endpoint.url, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      headers: endpoint.headers,
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: endpoint.model,
         messages: [
           { role: "system", content: prompt },
           { role: "user", content: JSON.stringify({ items: data.items }) },
         ],
-        response_format: { type: "json_object" },
+        ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
       }),
     });
+
 
     if (!res.ok) {
       if (res.status === 429 || res.status === 402) return { translations: data.items };
