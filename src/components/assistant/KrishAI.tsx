@@ -162,7 +162,7 @@ export function KrishAI() {
     setInput("");
     setSuggestions([]);
     noteQuery(text);
-    haptic("light");
+    haptic("tap");
     const now = Date.now();
     const history = msgs.slice(-8).map(({ role, content }) => ({ role, content: content.slice(0, 2000) }));
     setMsgs((m) => [...m, { id: `u${now}`, role: "user", content: text, at: now }]);
@@ -224,7 +224,7 @@ export function KrishAI() {
       const t = finalText.trim();
       if (t) void send(t);
     };
-    try { rec.start(); setListening(true); haptic("medium"); } catch { setListening(false); }
+    try { rec.start(); setListening(true); haptic("select"); } catch { setListening(false); }
   }, [lang, listening, send, stopSpeaking]);
 
   useEffect(() => () => { try { recRef.current?.stop(); } catch { /* noop */ } }, []);
@@ -253,7 +253,7 @@ export function KrishAI() {
     <>
       {/* ------------------------------------------------------------- orb */}
       <button
-        onClick={() => { setOpen((o) => !o); haptic("light"); }}
+        onClick={() => { setOpen((o) => !o); haptic("tap"); }}
         aria-label="Open Krish AI assistant"
         className="ks-orb"
         data-active={open || listening || speaking}
