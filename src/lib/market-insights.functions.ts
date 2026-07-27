@@ -72,15 +72,13 @@ export const generateMarketInsights = createServerFn({ method: "POST" })
     const top = [...data.snapshot].sort((a, b) => b.arrivals - a.arrivals).slice(0, 40);
 
     try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const res = await fetch(endpoint.url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Lovable-API-Key": key,
-        },
+        headers: endpoint.headers,
         body: JSON.stringify({
-          model: "google/gemini-3.5-flash",
-          response_format: { type: "json_object" },
+          model: endpoint.model,
+          ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
+
           messages: [
             { role: "system", content: SYSTEM },
             {
