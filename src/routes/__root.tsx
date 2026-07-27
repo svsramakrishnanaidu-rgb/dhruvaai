@@ -23,7 +23,7 @@ import { AutoLocate } from "@/components/AutoLocate";
 import { LocationPermission } from "@/components/LocationPermission";
 
 import { MiniPlayer } from "@/components/MiniPlayer";
-import { KrishAI } from "@/components/assistant/KrishAI";
+
 
 
 import { I18nProvider } from "@/lib/i18n";
@@ -203,7 +203,7 @@ function RootComponent() {
             <AutoLocalize />
             <AutoLocate />
             <LocationPermission />
-            <KrishAI />
+
 
           </MusicProvider>
         </TranslationProvider>

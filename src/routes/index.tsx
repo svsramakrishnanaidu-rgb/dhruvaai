@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight, ArrowUpRight, MapPin, Sprout, Sun, TrendingUp, Leaf, Droplets,
   BarChart3, Compass, LineChart, ShieldCheck, CloudRain, Wind,
-  Sparkles, Bot, Languages, Star, Quote, PlayCircle,
+  Sparkles, Languages, Star, Quote, PlayCircle,
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
@@ -194,16 +194,6 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
                 </div>
               </Link>
 
-              {/* Floating LEO badge */}
-              <div className="glass absolute -bottom-6 -left-6 hidden items-center gap-3 rounded-2xl px-4 py-3 sm:flex" style={{ boxShadow: "var(--shadow-elegant)" }}>
-                <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground">
-                  <Bot className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Voice assistant</div>
-                  <div className="text-sm font-semibold">Say “Hey LEO” anywhere</div>
-                </div>
-              </div>
             </div>
           </Reveal>
         </div>
