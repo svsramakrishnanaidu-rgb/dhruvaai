@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { routeCatalogText, ACTION_CATALOG } from "./registry";
+import { resolveAiEndpoint } from "@/lib/ai-endpoint.server";
+
 
 /**
  * Conversation Engine — server-side brain of the Krish Sense AI OS.
