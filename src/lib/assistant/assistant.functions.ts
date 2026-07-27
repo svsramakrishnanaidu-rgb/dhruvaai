@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { routeCatalogText, ACTION_CATALOG } from "./registry";
 import { resolveAiEndpoint } from "@/lib/ai-endpoint.server";
+import { offlineAnswer } from "./offline-brain";
+
 
 
 /**
