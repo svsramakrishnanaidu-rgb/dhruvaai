@@ -15,6 +15,7 @@ import { Route as RotationRouteImport } from './routes/rotation'
 import { Route as PermissionsRouteImport } from './routes/permissions'
 import { Route as PaddyFutureRouteImport } from './routes/paddy-future'
 import { Route as MusicRouteImport } from './routes/music'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as FertilizerRouteImport } from './routes/fertilizer'
 import { Route as DiseasesRouteImport } from './routes/diseases'
@@ -30,6 +31,9 @@ import { Route as CropsIndexRouteImport } from './routes/crops.index'
 import { Route as FertilizersSlugRouteImport } from './routes/fertilizers.$slug'
 import { Route as DistrictsSlugRouteImport } from './routes/districts.$slug'
 import { Route as CropsSlugRouteImport } from './routes/crops.$slug'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
 const WeatherRoute = WeatherRouteImport.update({
   id: '/weather',
@@ -59,6 +63,11 @@ const PaddyFutureRoute = PaddyFutureRouteImport.update({
 const MusicRoute = MusicRouteImport.update({
   id: '/music',
   path: '/music',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketRoute = MarketRouteImport.update({
@@ -136,6 +145,24 @@ const CropsSlugRoute = CropsSlugRouteImport.update({
   path: '/crops/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -147,18 +174,22 @@ export interface FileRoutesByFullPath {
   '/diseases': typeof DiseasesRoute
   '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
+  '/mcp': typeof McpRoute
   '/music': typeof MusicRoute
   '/paddy-future': typeof PaddyFutureRoute
   '/permissions': typeof PermissionsRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
   '/weather': typeof WeatherRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
   '/fertilizers/$slug': typeof FertilizersSlugRoute
   '/crops/': typeof CropsIndexRoute
   '/districts/': typeof DistrictsIndexRoute
   '/fertilizers/': typeof FertilizersIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -170,18 +201,22 @@ export interface FileRoutesByTo {
   '/diseases': typeof DiseasesRoute
   '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
+  '/mcp': typeof McpRoute
   '/music': typeof MusicRoute
   '/paddy-future': typeof PaddyFutureRoute
   '/permissions': typeof PermissionsRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
   '/weather': typeof WeatherRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
   '/fertilizers/$slug': typeof FertilizersSlugRoute
   '/crops': typeof CropsIndexRoute
   '/districts': typeof DistrictsIndexRoute
   '/fertilizers': typeof FertilizersIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -194,18 +229,22 @@ export interface FileRoutesById {
   '/diseases': typeof DiseasesRoute
   '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
+  '/mcp': typeof McpRoute
   '/music': typeof MusicRoute
   '/paddy-future': typeof PaddyFutureRoute
   '/permissions': typeof PermissionsRoute
   '/rotation': typeof RotationRoute
   '/schemes': typeof SchemesRoute
   '/weather': typeof WeatherRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
   '/fertilizers/$slug': typeof FertilizersSlugRoute
   '/crops/': typeof CropsIndexRoute
   '/districts/': typeof DistrictsIndexRoute
   '/fertilizers/': typeof FertilizersIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -219,18 +258,22 @@ export interface FileRouteTypes {
     | '/diseases'
     | '/fertilizer'
     | '/market'
+    | '/mcp'
     | '/music'
     | '/paddy-future'
     | '/permissions'
     | '/rotation'
     | '/schemes'
     | '/weather'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/crops/$slug'
     | '/districts/$slug'
     | '/fertilizers/$slug'
     | '/crops/'
     | '/districts/'
     | '/fertilizers/'
+    | '/.mcp/invoke-tool/$tool'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -242,18 +285,22 @@ export interface FileRouteTypes {
     | '/diseases'
     | '/fertilizer'
     | '/market'
+    | '/mcp'
     | '/music'
     | '/paddy-future'
     | '/permissions'
     | '/rotation'
     | '/schemes'
     | '/weather'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/crops/$slug'
     | '/districts/$slug'
     | '/fertilizers/$slug'
     | '/crops'
     | '/districts'
     | '/fertilizers'
+    | '/.mcp/invoke-tool/$tool'
   id:
     | '__root__'
     | '/'
@@ -265,18 +312,22 @@ export interface FileRouteTypes {
     | '/diseases'
     | '/fertilizer'
     | '/market'
+    | '/mcp'
     | '/music'
     | '/paddy-future'
     | '/permissions'
     | '/rotation'
     | '/schemes'
     | '/weather'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/crops/$slug'
     | '/districts/$slug'
     | '/fertilizers/$slug'
     | '/crops/'
     | '/districts/'
     | '/fertilizers/'
+    | '/.mcp/invoke-tool/$tool'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -289,18 +340,22 @@ export interface RootRouteChildren {
   DiseasesRoute: typeof DiseasesRoute
   FertilizerRoute: typeof FertilizerRoute
   MarketRoute: typeof MarketRoute
+  McpRoute: typeof McpRoute
   MusicRoute: typeof MusicRoute
   PaddyFutureRoute: typeof PaddyFutureRoute
   PermissionsRoute: typeof PermissionsRoute
   RotationRoute: typeof RotationRoute
   SchemesRoute: typeof SchemesRoute
   WeatherRoute: typeof WeatherRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   CropsSlugRoute: typeof CropsSlugRoute
   DistrictsSlugRoute: typeof DistrictsSlugRoute
   FertilizersSlugRoute: typeof FertilizersSlugRoute
   CropsIndexRoute: typeof CropsIndexRoute
   DistrictsIndexRoute: typeof DistrictsIndexRoute
   FertilizersIndexRoute: typeof FertilizersIndexRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -345,6 +400,13 @@ declare module '@tanstack/react-router' {
       path: '/music'
       fullPath: '/music'
       preLoaderRoute: typeof MusicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/market': {
@@ -452,6 +514,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CropsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -465,18 +548,23 @@ const rootRouteChildren: RootRouteChildren = {
   DiseasesRoute: DiseasesRoute,
   FertilizerRoute: FertilizerRoute,
   MarketRoute: MarketRoute,
+  McpRoute: McpRoute,
   MusicRoute: MusicRoute,
   PaddyFutureRoute: PaddyFutureRoute,
   PermissionsRoute: PermissionsRoute,
   RotationRoute: RotationRoute,
   SchemesRoute: SchemesRoute,
   WeatherRoute: WeatherRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   CropsSlugRoute: CropsSlugRoute,
   DistrictsSlugRoute: DistrictsSlugRoute,
   FertilizersSlugRoute: FertilizersSlugRoute,
   CropsIndexRoute: CropsIndexRoute,
   DistrictsIndexRoute: DistrictsIndexRoute,
   FertilizersIndexRoute: FertilizersIndexRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
