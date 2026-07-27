@@ -18,8 +18,9 @@ const LANG_NAME: Record<"te" | "hi", string> = {
 export const translateBatch = createServerFn({ method: "POST" })
   .validator((i: unknown) => In.parse(i))
   .handler(async ({ data }): Promise<{ translations: string[] }> => {
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) return { translations: data.texts.map((t) => t) };
+    const endpoint = resolveAiEndpoint("fast");
+    if (!endpoint) return { translations: data.texts.map((t) => t) };
+
 
     const system = `You are a professional agricultural-domain translator into ${LANG_NAME[data.lang]}.
 Rules:
