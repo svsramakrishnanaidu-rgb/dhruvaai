@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { resolveAiEndpoint } from "@/lib/ai-endpoint.server";
+
 
 export interface MarketInsightSummary {
   commodity: string;
