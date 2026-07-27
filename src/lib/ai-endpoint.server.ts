@@ -1,19 +1,18 @@
 /**
  * AI gateway resolver (server-only).
  *
- * Krish Sense can talk to any OpenAI-compatible chat endpoint. The first
- * provider whose API key is configured wins, so you can move off the Lovable
- * AI Gateway (and its workspace credits) just by adding a key:
+ * Krish Sense talks to any OpenAI-compatible chat endpoint. The first provider
+ * whose API key is configured wins:
  *
+ *   OPENAI_API_KEY      -> OpenAI            (primary)
  *   GEMINI_API_KEY      -> Google AI Studio  (generous free tier)
  *   OPENROUTER_API_KEY  -> OpenRouter        (has free ":free" models)
  *   GROQ_API_KEY        -> Groq              (free, very fast)
- *   LOVABLE_API_KEY     -> Lovable AI Gateway (default fallback, uses credits)
  *
  * Never import this from browser code.
  */
 
-export type AiProvider = "google" | "openrouter" | "groq" | "lovable";
+export type AiProvider = "openai" | "google" | "openrouter" | "groq";
 
 export type AiEndpoint = {
   url: string;
@@ -28,19 +27,30 @@ export type AiEndpoint = {
 type Tier = "fast" | "smart";
 
 const MODELS: Record<AiProvider, Record<Tier, string>> = {
+  openai: { fast: "gpt-4o-mini", smart: "gpt-4o" },
   google: { fast: "gemini-2.5-flash", smart: "gemini-2.5-pro" },
   openrouter: {
     fast: "google/gemini-2.0-flash-exp:free",
     smart: "deepseek/deepseek-chat-v3.1:free",
   },
   groq: { fast: "llama-3.3-70b-versatile", smart: "llama-3.3-70b-versatile" },
-  lovable: { fast: "google/gemini-3.6-flash", smart: "google/gemini-3.1-pro-preview" },
 };
 
 /**
  * Resolve the active chat endpoint. Returns null when no provider key exists.
  */
 export function resolveAiEndpoint(tier: Tier = "fast"): AiEndpoint | null {
+  const openai = process.env.OPENAI_API_KEY;
+  if (openai) {
+    return {
+      url: "https://api.openai.com/v1/chat/completions",
+      headers: { Authorization: `Bearer ${openai}`, "Content-Type": "application/json" },
+      model: MODELS.openai[tier],
+      provider: "openai",
+      supportsJsonMode: true,
+    };
+  }
+
   const google = process.env.GEMINI_API_KEY;
   if (google) {
     return {
@@ -74,17 +84,6 @@ export function resolveAiEndpoint(tier: Tier = "fast"): AiEndpoint | null {
     };
   }
 
-  const lovable = process.env.LOVABLE_API_KEY;
-  if (lovable) {
-    return {
-      url: "https://ai.gateway.lovable.dev/v1/chat/completions",
-      headers: { "Lovable-API-Key": lovable, "Content-Type": "application/json" },
-      model: MODELS.lovable[tier],
-      provider: "lovable",
-      supportsJsonMode: true,
-    };
-  }
-
   return null;
 }
 
@@ -93,9 +92,10 @@ export function activeAiProviderLabel(): string {
   const ep = resolveAiEndpoint();
   if (!ep) return "none";
   return {
+    openai: "OpenAI",
     google: "Google AI Studio",
     openrouter: "OpenRouter",
     groq: "Groq",
-    lovable: "Lovable AI Gateway",
   }[ep.provider];
 }
+
