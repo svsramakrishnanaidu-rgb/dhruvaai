@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "krish-sense-mcp",
+      "version": "0.1.0",
+      "title": "Krish Sense — Agricultural Advisory"
+    },
+    "tools": [
+      {
+        "name": "list_crops",
+        "title": "List crops",
+        "description": "List crops in the Krish Sense catalogue with optional text, category, season or district filters. Returns slug, name, season, soil, water need, profit % and expected yield.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "description": "Free-text match on crop or scientific name.",
+              "type": "string"
+            },
+            "category": {
+              "description": "Category such as Cereal, Pulse, Millet, Oilseed, Cash, Spice, Vegetable, Fruit.",
+              "type": "string"
+            },
+            "season": {
+              "description": "Season substring such as Kharif or Rabi.",
+              "type": "string"
+            },
+            "district": {
+              "description": "District name to match against a crop's suitable districts.",
+              "type": "string"
+            },
+            "trendingOnly": {
+              "description": "Only return crops flagged as trending.",
+              "type": "boolean"
+            },
+            "limit": {
+              "description": "Max rows to return (default 40, max 200).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_crop",
+        "title": "Get crop guide",
+        "description": "Get the full agronomy guide for one crop by slug: climate, soil, land preparation, seed rate, irrigation, fertilizer schedule, diseases, pests, harvesting, market price, rotation, tips and references.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "description": "Crop slug, e.g. 'rice', 'cotton', 'chilli'. Use list_crops to discover slugs."
+            }
+          },
+          "required": [
+            "slug"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_districts",
+        "title": "Districts and their crops",
+        "description": "List Andhra Pradesh districts (region, headquarters, soil, climate) or get one district by slug along with the crops cultivated there.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "slug": {
+              "description": "District slug for a single district. Omit to list all districts.",
+              "type": "string"
+            },
+            "region": {
+              "description": "Filter list by region: Coastal, Rayalaseema or Uttarandhra.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "find_crop_diseases",
+        "title": "Crop disease lookup",
+        "description": "Look up crop diseases by crop slug and/or symptom keywords. Returns symptoms, cause, severity, and organic and chemical control measures from that crop's own disease library.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "slug": {
+              "description": "Crop slug to restrict the search to one crop.",
+              "type": "string"
+            },
+            "symptom": {
+              "description": "Keyword to match against disease name, symptoms or cause.",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Max rows (default 20, max 100).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "calculate_fertilizer",
+        "title": "Fertilizer calculator",
+        "description": "Calculate the fertilizer quantities needed for a crop over a given land size, using that crop's own per-acre schedule. Returns per-acre and total kilograms per product and stage.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "description": "Crop slug, e.g. 'rice'. Use list_crops to discover slugs."
+            },
+            "landSize": {
+              "type": "number",
+              "description": "Land size as a number."
+            },
+            "unit": {
+              "description": "Unit for landSize (default acre).",
+              "type": "string",
+              "enum": [
+                "acre",
+                "hectare"
+              ]
+            }
+          },
+          "required": [
+            "slug",
+            "landSize"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_weather",
+        "title": "Live weather",
+        "description": "Get live weather and a 5-day forecast for a place (village, town, district or city). Uses the public Open-Meteo service — no personal location data is involved.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "place": {
+              "type": "string",
+              "description": "Place name, e.g. 'Guntur' or 'Anantapur'."
+            },
+            "countryCode": {
+              "description": "ISO country code to disambiguate; defaults to IN.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "place"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_market_prices",
+        "title": "Live mandi prices",
+        "description": "Get live Indian mandi (market) prices per quintal from the public Agmarknet dataset on data.gov.in, filtered by state, district, market or commodity.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "state": {
+              "description": "State name, e.g. 'Andhra Pradesh'.",
+              "type": "string"
+            },
+            "district": {
+              "description": "District name.",
+              "type": "string"
+            },
+            "market": {
+              "description": "Mandi/market name.",
+              "type": "string"
+            },
+            "commodity": {
+              "description": "Commodity name, e.g. 'Paddy(Dhan)(Common)', 'Cotton', 'Onion'.",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Max rows (default 50, max 300).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
