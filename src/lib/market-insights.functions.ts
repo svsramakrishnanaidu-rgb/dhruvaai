@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { resolveAiEndpoint } from "@/lib/ai-endpoint.server";
+
 
 export interface MarketInsightSummary {
   commodity: string;
@@ -46,17 +48,18 @@ Schema:
 export const generateMarketInsights = createServerFn({ method: "POST" })
   .validator((input: { snapshot: MarketInsightSummary[]; scope?: string }) => input)
   .handler(async ({ data }): Promise<MarketInsights> => {
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) {
+    const endpoint = resolveAiEndpoint("fast");
+    if (!endpoint) {
       return {
         ok: false,
         headline: "",
         summary: "",
         bullish: [], bearish: [], volatile: [], actionable: [],
         forecast: [], bestBuy: "", bestSell: "", riskLevel: "Moderate",
-        error: "LOVABLE_API_KEY missing",
+        error: "No AI provider key configured",
       };
     }
+
     if (!data.snapshot?.length) {
       return {
         ok: false,
@@ -71,15 +74,13 @@ export const generateMarketInsights = createServerFn({ method: "POST" })
     const top = [...data.snapshot].sort((a, b) => b.arrivals - a.arrivals).slice(0, 40);
 
     try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const res = await fetch(endpoint.url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Lovable-API-Key": key,
-        },
+        headers: endpoint.headers,
         body: JSON.stringify({
-          model: "google/gemini-3.5-flash",
-          response_format: { type: "json_object" },
+          model: endpoint.model,
+          ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
+
           messages: [
             { role: "system", content: SYSTEM },
             {

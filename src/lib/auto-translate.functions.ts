@@ -2,6 +2,8 @@
 // Batched calls to Lovable AI Gateway with aggressive client-side caching.
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { resolveAiEndpoint } from "@/lib/ai-endpoint.server";
+
 
 const In = z.object({
   lang: z.enum(["te", "hi"]),
@@ -16,8 +18,9 @@ const LANG_NAME: Record<"te" | "hi", string> = {
 export const translateBatch = createServerFn({ method: "POST" })
   .validator((i: unknown) => In.parse(i))
   .handler(async ({ data }): Promise<{ translations: string[] }> => {
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) return { translations: data.texts.map((t) => t) };
+    const endpoint = resolveAiEndpoint("fast");
+    if (!endpoint) return { translations: data.texts.map((t) => t) };
+
 
     const system = `You are a professional agricultural-domain translator into ${LANG_NAME[data.lang]}.
 Rules:
@@ -31,18 +34,19 @@ Rules:
     const user = `Translate each string. Return {"t":[...]} in order.\nInput: ${JSON.stringify(data.texts)}`;
 
     try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const res = await fetch(endpoint.url, {
         method: "POST",
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        headers: endpoint.headers,
         body: JSON.stringify({
-          model: "google/gemini-3.1-flash",
+          model: endpoint.model,
           messages: [
             { role: "system", content: system },
             { role: "user", content: user },
           ],
-          response_format: { type: "json_object" },
+          ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
         }),
       });
+
       if (!res.ok) {
         console.warn("[translateBatch] gateway", res.status, await res.text().catch(() => ""));
         return { translations: data.texts };
