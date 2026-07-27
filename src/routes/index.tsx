@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight, ArrowUpRight, MapPin, Sprout, Sun, TrendingUp, Leaf, Droplets,
   BarChart3, Compass, LineChart, ShieldCheck, CloudRain, Wind,
-  Sparkles, Bot, Languages, Star, Quote, PlayCircle,
+  Sparkles, Languages, Star, Quote, PlayCircle,
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
