@@ -34,18 +34,19 @@ Rules:
     const user = `Translate each string. Return {"t":[...]} in order.\nInput: ${JSON.stringify(data.texts)}`;
 
     try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const res = await fetch(endpoint.url, {
         method: "POST",
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        headers: endpoint.headers,
         body: JSON.stringify({
-          model: "google/gemini-3.1-flash",
+          model: endpoint.model,
           messages: [
             { role: "system", content: system },
             { role: "user", content: user },
           ],
-          response_format: { type: "json_object" },
+          ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
         }),
       });
+
       if (!res.ok) {
         console.warn("[translateBatch] gateway", res.status, await res.text().catch(() => ""));
         return { translations: data.texts };
