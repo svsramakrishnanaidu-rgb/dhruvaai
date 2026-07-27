@@ -776,3 +776,106 @@ html.is-touch .ks-safe {
 /* Scroll containment so a rail/sheet never chains its scroll into the page. */
 html.is-touch .snap-x,
 html.is-touch .menu-scroll { overscroll-behavior: contain; }
+
+/* ============================================================
+   KRISH AI — assistant orb, panel and accessibility layer
+   ============================================================ */
+
+:root { --ks-font-scale: 1; }
+html { font-size: calc(100% * var(--ks-font-scale)); }
+
+html.ks-high-contrast {
+  --foreground: 0 0% 100%;
+  --muted-foreground: 0 0% 88%;
+  --border: 45 90% 60%;
+}
+html.ks-high-contrast body { text-shadow: none; }
+html.ks-high-contrast .text-muted-foreground { color: hsl(var(--muted-foreground)); }
+
+.ks-orb {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  height: 3.25rem;
+  width: 3.25rem;
+  border-radius: 9999px;
+  color: hsl(var(--primary-foreground));
+  background: linear-gradient(145deg, hsl(var(--primary)), hsl(var(--primary) / 0.72));
+  border: 1px solid hsl(var(--primary) / 0.6);
+  box-shadow: 0 10px 30px -8px hsl(var(--primary) / 0.65);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+.ks-orb:hover { transform: translateY(-2px) scale(1.04); }
+.ks-orb:active { transform: scale(0.95); }
+.ks-orb-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--primary) / 0.45);
+  opacity: 0;
+}
+.ks-orb[data-active="true"] .ks-orb-ring { opacity: 1; animation: ks-orb-pulse 1.8s ease-out infinite; }
+@keyframes ks-orb-pulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.ks-ai-panel {
+  position: fixed;
+  z-index: 61;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(5.25rem + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  width: min(24rem, calc(100vw - 2rem));
+  height: min(34rem, calc(100dvh - 8rem));
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid hsl(var(--border) / 0.7);
+  background: hsl(var(--card));
+  box-shadow: 0 28px 70px -20px rgb(0 0 0 / 0.7);
+  animation: scale-in 0.24s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+@media (max-width: 640px) {
+  .ks-ai-panel {
+    left: 0.5rem; right: 0.5rem; width: auto;
+    bottom: calc(4.75rem + env(safe-area-inset-bottom));
+    height: min(70dvh, 32rem);
+  }
+}
+
+.ks-ai-icon {
+  display: grid;
+  place-items: center;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.ks-ai-icon:hover { background: hsl(var(--secondary) / 0.7); color: hsl(var(--foreground)); }
+.ks-ai-icon[data-live="true"] { color: hsl(var(--primary)); animation: pulse-glow 1.2s ease-in-out infinite; }
+
+.ks-ai-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--border) / 0.7);
+  background: hsl(var(--secondary) / 0.35);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.7rem;
+  color: hsl(var(--muted-foreground));
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.ks-ai-chip:hover { background: hsl(var(--secondary) / 0.8); color: hsl(var(--foreground)); }
+
+.ks-ai-collapse { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-orb, .ks-orb-ring, .ks-ai-panel { animation: none !important; transition: none !important; }
+}
