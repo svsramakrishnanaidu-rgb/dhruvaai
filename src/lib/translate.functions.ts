@@ -19,7 +19,7 @@ export const translateBatch = createServerFn({ method: "POST" })
     if (data.lang === "en" || data.items.length === 0) {
       return { translations: data.items };
     }
-    const key = process.env.LOVABLE_API_KEY;
+    
     const endpoint = resolveAiEndpoint("fast");
     if (!endpoint) throw new Error("No AI provider key configured");
 
