@@ -73,9 +73,14 @@ Return STRICT JSON only:
 export const askAssistant = createServerFn({ method: "POST" })
   .validator((i: unknown) => Input.parse(i))
   .handler(async ({ data }): Promise<AssistantReply> => {
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) {
-      return { reply: "", actions: [], suggestions: [], error: "AI is not configured on this deployment." };
+    const endpoint = resolveAiEndpoint("fast");
+    if (!endpoint) {
+      return {
+        reply: "",
+        actions: [],
+        suggestions: [],
+        error: "AI is not configured on this deployment. Add a GEMINI_API_KEY, OPENROUTER_API_KEY or GROQ_API_KEY.",
+      };
     }
 
     const userContent: unknown = data.imageDataUrl
@@ -86,13 +91,13 @@ export const askAssistant = createServerFn({ method: "POST" })
       : `SCREEN SNAPSHOT:\n${data.screen}\n\nUSER: ${data.message}`;
 
     try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const res = await fetch(endpoint.url, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Lovable-API-Key": key },
+        headers: endpoint.headers,
         body: JSON.stringify({
-          model: "google/gemini-3.6-flash",
-          reasoning_effort: "none",
-          response_format: { type: "json_object" },
+          model: endpoint.model,
+          ...(endpoint.provider === "lovable" ? { reasoning_effort: "none" } : {}),
+          ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
           messages: [
             { role: "system", content: systemPrompt(data.lang, data.favourites) },
             ...data.history,
@@ -107,10 +112,13 @@ export const askAssistant = createServerFn({ method: "POST" })
           res.status === 429
             ? "Too many requests right now — try again in a moment."
             : res.status === 402
-              ? "AI credits are exhausted for this workspace."
-              : `AI error ${res.status}. ${body.slice(0, 140)}`;
+              ? "AI credits are exhausted for this gateway. Add your own provider key to keep it free."
+              : res.status === 401 || res.status === 403
+                ? "The AI gateway rejected the API key. Check the configured provider key."
+                : `AI error ${res.status}. ${body.slice(0, 140)}`;
         return { reply: "", actions: [], suggestions: [], error: msg };
       }
+
 
       const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
       const raw = json.choices?.[0]?.message?.content ?? "{}";
