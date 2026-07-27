@@ -928,7 +928,7 @@ html.ks-high-contrast {
 }
 .ks-ai-aurora-a { top: -18rem; left: -12rem; background: radial-gradient(circle, color-mix(in oklab, var(--primary) 55%, transparent), transparent 68%); animation: ks-drift-a 22s ease-in-out infinite; }
 .ks-ai-aurora-b { bottom: -20rem; right: -14rem; background: radial-gradient(circle, color-mix(in oklab, var(--ks-glow) 40%, transparent), transparent 68%); animation: ks-drift-b 26s ease-in-out infinite; }
-.ks-ai-aurora-c { top: 28%; left: 40%; height: 30rem; width: 30rem; background: radial-gradient(circle, hsl(var(--accent) / 0.32), transparent 70%); animation: ks-drift-a 30s ease-in-out infinite reverse; }
+.ks-ai-aurora-c { top: 28%; left: 40%; height: 30rem; width: 30rem; background: radial-gradient(circle, color-mix(in oklab, var(--accent) 32%, transparent), transparent 70%); animation: ks-drift-a 30s ease-in-out infinite reverse; }
 @keyframes ks-drift-a { 0%,100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(6rem,4rem,0) scale(1.12); } }
 @keyframes ks-drift-b { 0%,100% { transform: translate3d(0,0,0) scale(1.05); } 50% { transform: translate3d(-5rem,-3rem,0) scale(0.94); } }
 
