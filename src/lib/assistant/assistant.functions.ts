@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { routeCatalogText, ACTION_CATALOG } from "./registry";
 import { resolveAiEndpoint } from "@/lib/ai-endpoint.server";
+import { offlineAnswer } from "./offline-brain";
+
 
 
 /**
@@ -72,18 +74,15 @@ Return STRICT JSON only:
 {"reply": string, "actions": [{"type": "...", ...args}], "suggestions": [up to 3 short follow-up questions the user could ask next]}`;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export const askAssistant = createServerFn({ method: "POST" })
   .validator((i: unknown) => Input.parse(i))
   .handler(async ({ data }): Promise<AssistantReply> => {
     const endpoint = resolveAiEndpoint("fast");
-    if (!endpoint) {
-      return {
-        reply: "",
-        actions: [],
-        suggestions: [],
-        error: "AI is not configured on this deployment. Add a GEMINI_API_KEY, OPENROUTER_API_KEY or GROQ_API_KEY.",
-      };
-    }
+
+    // No gateway configured → still serve the user from the offline brain.
+    if (!endpoint) return offlineAnswer(data.message, data.lang, data.screen);
 
     const userContent: unknown = data.imageDataUrl
       ? [
@@ -92,63 +91,77 @@ export const askAssistant = createServerFn({ method: "POST" })
         ]
       : `SCREEN SNAPSHOT:\n${data.screen}\n\nUSER: ${data.message}`;
 
-    try {
-      const res = await fetch(endpoint.url, {
-        method: "POST",
-        headers: endpoint.headers,
-        body: JSON.stringify({
-          model: endpoint.model,
-          
-          ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
-          messages: [
-            { role: "system", content: systemPrompt(data.lang, data.favourites) },
-            ...data.history,
-            { role: "user", content: userContent },
-          ],
-        }),
-      });
+    const body = JSON.stringify({
+      model: endpoint.model,
+      ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
+      messages: [
+        { role: "system", content: systemPrompt(data.lang, data.favourites) },
+        ...data.history,
+        { role: "user", content: userContent },
+      ],
+    });
 
-      if (!res.ok) {
-        const body = await res.text().catch(() => "");
-        const msg =
-          res.status === 429
-            ? "Too many requests right now — try again in a moment."
-            : res.status === 402
-              ? "AI credits are exhausted for this gateway. Add your own provider key to keep it free."
-              : res.status === 401 || res.status === 403
-                ? "The AI gateway rejected the API key. Check the configured provider key."
-                : `AI error ${res.status}. ${body.slice(0, 140)}`;
-        return { reply: "", actions: [], suggestions: [], error: msg };
-      }
-
-
-      const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-      const raw = json.choices?.[0]?.message?.content ?? "{}";
-      let parsed: Partial<AssistantReply> = {};
+    // Transient failures (429 / 5xx) are retried quietly with backoff. The user
+    // never sees a rate-limit message — if every attempt fails we answer
+    // locally instead.
+    for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        parsed = JSON.parse(raw);
-      } catch {
-        const m = raw.match(/\{[\s\S]*\}/);
-        if (m) {
-          try {
-            parsed = JSON.parse(m[0]);
-          } catch {
-            /* fall through */
+        const res = await fetch(endpoint.url, {
+          method: "POST",
+          headers: endpoint.headers,
+          body,
+        });
+
+        if (!res.ok) {
+          const retryable = res.status === 429 || res.status >= 500;
+          if (retryable && attempt < 2) {
+            await sleep(600 * (attempt + 1));
+            continue;
+          }
+          break; // terminal (401/402/400…) → offline brain below
+        }
+
+        const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+        const raw = json.choices?.[0]?.message?.content ?? "{}";
+        let parsed: Partial<AssistantReply> = {};
+        try {
+          parsed = JSON.parse(raw);
+        } catch {
+          const m = raw.match(/\{[\s\S]*\}/);
+          if (m) {
+            try {
+              parsed = JSON.parse(m[0]);
+            } catch {
+              /* fall through */
+            }
           }
         }
-      }
 
-      return {
-        reply: typeof parsed.reply === "string" && parsed.reply.trim() ? parsed.reply.trim() : raw.slice(0, 900),
-        actions: Array.isArray(parsed.actions) ? (parsed.actions.slice(0, 4) as AssistantReply["actions"]) : [],
-        suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions.slice(0, 3).map(String) : [],
-      };
-    } catch (err) {
-      return {
-        reply: "",
-        actions: [],
-        suggestions: [],
-        error: err instanceof Error ? err.message : "Assistant request failed.",
-      };
+        const text =
+          typeof parsed.reply === "string" && parsed.reply.trim()
+            ? parsed.reply.trim()
+            : raw.replace(/[{}"]/g, " ").trim().slice(0, 900);
+
+        if (!text) break;
+
+        return {
+          reply: text,
+          actions: Array.isArray(parsed.actions)
+            ? (parsed.actions.slice(0, 4) as AssistantReply["actions"])
+            : [],
+          suggestions: Array.isArray(parsed.suggestions)
+            ? parsed.suggestions.slice(0, 3).map(String)
+            : [],
+        };
+      } catch {
+        if (attempt < 2) {
+          await sleep(600 * (attempt + 1));
+          continue;
+        }
+      }
     }
+
+    // Gateway unavailable — keep controlling the app from local knowledge.
+    return offlineAnswer(data.message, data.lang, data.screen);
   });
+
