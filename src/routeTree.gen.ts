@@ -23,6 +23,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CalculatorsRouteImport } from './routes/calculators'
 import { Route as AtlasRouteImport } from './routes/atlas'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as AiRouteImport } from './routes/ai'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FertilizersIndexRouteImport } from './routes/fertilizers.index'
@@ -105,6 +106,11 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiRoute = AiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -167,6 +173,7 @@ const Char91DotmcpChar93InvokeToolToolRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ai': typeof AiRoute
   '/analytics': typeof AnalyticsRoute
   '/atlas': typeof AtlasRoute
   '/calculators': typeof CalculatorsRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ai': typeof AiRoute
   '/analytics': typeof AnalyticsRoute
   '/atlas': typeof AtlasRoute
   '/calculators': typeof CalculatorsRoute
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ai': typeof AiRoute
   '/analytics': typeof AnalyticsRoute
   '/atlas': typeof AtlasRoute
   '/calculators': typeof CalculatorsRoute
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/ai'
     | '/analytics'
     | '/atlas'
     | '/calculators'
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/ai'
     | '/analytics'
     | '/atlas'
     | '/calculators'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/ai'
     | '/analytics'
     | '/atlas'
     | '/calculators'
@@ -333,6 +345,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AiRoute: typeof AiRoute
   AnalyticsRoute: typeof AnalyticsRoute
   AtlasRoute: typeof AtlasRoute
   CalculatorsRoute: typeof CalculatorsRoute
@@ -458,6 +471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai': {
+      id: '/ai'
+      path: '/ai'
+      fullPath: '/ai'
+      preLoaderRoute: typeof AiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -541,6 +561,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AiRoute: AiRoute,
   AnalyticsRoute: AnalyticsRoute,
   AtlasRoute: AtlasRoute,
   CalculatorsRoute: CalculatorsRoute,
