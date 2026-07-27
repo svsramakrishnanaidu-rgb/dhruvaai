@@ -24,7 +24,16 @@ const Input = z.object({
 
 export type AssistantReply = {
   reply: string;
-  actions: { type: string; [k: string]: unknown }[];
+  actions: {
+    type: string;
+    path?: string;
+    lang?: string;
+    theme?: string;
+    scale?: number;
+    high?: boolean;
+    to?: string;
+    label?: string;
+  }[];
   suggestions: string[];
   error?: string;
 };
@@ -121,7 +130,7 @@ export const askAssistant = createServerFn({ method: "POST" })
 
       return {
         reply: typeof parsed.reply === "string" && parsed.reply.trim() ? parsed.reply.trim() : raw.slice(0, 900),
-        actions: Array.isArray(parsed.actions) ? parsed.actions.slice(0, 4) : [],
+        actions: Array.isArray(parsed.actions) ? (parsed.actions.slice(0, 4) as AssistantReply["actions"]) : [],
         suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions.slice(0, 3).map(String) : [],
       };
     } catch (err) {
