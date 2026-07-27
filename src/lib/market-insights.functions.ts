@@ -46,17 +46,18 @@ Schema:
 export const generateMarketInsights = createServerFn({ method: "POST" })
   .validator((input: { snapshot: MarketInsightSummary[]; scope?: string }) => input)
   .handler(async ({ data }): Promise<MarketInsights> => {
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) {
+    const endpoint = resolveAiEndpoint("fast");
+    if (!endpoint) {
       return {
         ok: false,
         headline: "",
         summary: "",
         bullish: [], bearish: [], volatile: [], actionable: [],
         forecast: [], bestBuy: "", bestSell: "", riskLevel: "Moderate",
-        error: "LOVABLE_API_KEY missing",
+        error: "No AI provider key configured",
       };
     }
+
     if (!data.snapshot?.length) {
       return {
         ok: false,
