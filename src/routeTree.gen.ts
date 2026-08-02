@@ -17,7 +17,6 @@ import { Route as PaddyFutureRouteImport } from './routes/paddy-future'
 import { Route as MusicRouteImport } from './routes/music'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MarketRouteImport } from './routes/market'
-import { Route as FertilizerRouteImport } from './routes/fertilizer'
 import { Route as DiseasesRouteImport } from './routes/diseases'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CalculatorsRouteImport } from './routes/calculators'
@@ -25,16 +24,12 @@ import { Route as AtlasRouteImport } from './routes/atlas'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as FertilizersIndexRouteImport } from './routes/fertilizers.index'
 import { Route as DistrictsIndexRouteImport } from './routes/districts.index'
 import { Route as CropsIndexRouteImport } from './routes/crops.index'
-import { Route as FertilizersSlugRouteImport } from './routes/fertilizers.$slug'
 import { Route as DistrictsSlugRouteImport } from './routes/districts.$slug'
 import { Route as CropsSlugRouteImport } from './routes/crops.$slug'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as FertilizersCropIndexRouteImport } from './routes/fertilizers.crop.index'
-import { Route as FertilizersCropCropRouteImport } from './routes/fertilizers.crop.$crop'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
 const WeatherRoute = WeatherRouteImport.update({
@@ -77,11 +72,6 @@ const MarketRoute = MarketRouteImport.update({
   path: '/market',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FertilizerRoute = FertilizerRouteImport.update({
-  id: '/fertilizer',
-  path: '/fertilizer',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DiseasesRoute = DiseasesRouteImport.update({
   id: '/diseases',
   path: '/diseases',
@@ -117,11 +107,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FertilizersIndexRoute = FertilizersIndexRouteImport.update({
-  id: '/fertilizers/',
-  path: '/fertilizers/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DistrictsIndexRoute = DistrictsIndexRouteImport.update({
   id: '/districts/',
   path: '/districts/',
@@ -130,11 +115,6 @@ const DistrictsIndexRoute = DistrictsIndexRouteImport.update({
 const CropsIndexRoute = CropsIndexRouteImport.update({
   id: '/crops/',
   path: '/crops/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FertilizersSlugRoute = FertilizersSlugRouteImport.update({
-  id: '/fertilizers/$slug',
-  path: '/fertilizers/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DistrictsSlugRoute = DistrictsSlugRouteImport.update({
@@ -159,16 +139,6 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
-const FertilizersCropIndexRoute = FertilizersCropIndexRouteImport.update({
-  id: '/fertilizers/crop/',
-  path: '/fertilizers/crop/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FertilizersCropCropRoute = FertilizersCropCropRouteImport.update({
-  id: '/fertilizers/crop/$crop',
-  path: '/fertilizers/crop/$crop',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -184,7 +154,6 @@ export interface FileRoutesByFullPath {
   '/calculators': typeof CalculatorsRoute
   '/contact': typeof ContactRoute
   '/diseases': typeof DiseasesRoute
-  '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
   '/mcp': typeof McpRoute
   '/music': typeof MusicRoute
@@ -197,13 +166,9 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
-  '/fertilizers/$slug': typeof FertilizersSlugRoute
   '/crops/': typeof CropsIndexRoute
   '/districts/': typeof DistrictsIndexRoute
-  '/fertilizers/': typeof FertilizersIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/fertilizers/crop/$crop': typeof FertilizersCropCropRoute
-  '/fertilizers/crop/': typeof FertilizersCropIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -213,7 +178,6 @@ export interface FileRoutesByTo {
   '/calculators': typeof CalculatorsRoute
   '/contact': typeof ContactRoute
   '/diseases': typeof DiseasesRoute
-  '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
   '/mcp': typeof McpRoute
   '/music': typeof MusicRoute
@@ -226,13 +190,9 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
-  '/fertilizers/$slug': typeof FertilizersSlugRoute
   '/crops': typeof CropsIndexRoute
   '/districts': typeof DistrictsIndexRoute
-  '/fertilizers': typeof FertilizersIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/fertilizers/crop/$crop': typeof FertilizersCropCropRoute
-  '/fertilizers/crop': typeof FertilizersCropIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -243,7 +203,6 @@ export interface FileRoutesById {
   '/calculators': typeof CalculatorsRoute
   '/contact': typeof ContactRoute
   '/diseases': typeof DiseasesRoute
-  '/fertilizer': typeof FertilizerRoute
   '/market': typeof MarketRoute
   '/mcp': typeof McpRoute
   '/music': typeof MusicRoute
@@ -256,13 +215,9 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/crops/$slug': typeof CropsSlugRoute
   '/districts/$slug': typeof DistrictsSlugRoute
-  '/fertilizers/$slug': typeof FertilizersSlugRoute
   '/crops/': typeof CropsIndexRoute
   '/districts/': typeof DistrictsIndexRoute
-  '/fertilizers/': typeof FertilizersIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/fertilizers/crop/$crop': typeof FertilizersCropCropRoute
-  '/fertilizers/crop/': typeof FertilizersCropIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -274,7 +229,6 @@ export interface FileRouteTypes {
     | '/calculators'
     | '/contact'
     | '/diseases'
-    | '/fertilizer'
     | '/market'
     | '/mcp'
     | '/music'
@@ -287,13 +241,9 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/crops/$slug'
     | '/districts/$slug'
-    | '/fertilizers/$slug'
     | '/crops/'
     | '/districts/'
-    | '/fertilizers/'
     | '/.mcp/invoke-tool/$tool'
-    | '/fertilizers/crop/$crop'
-    | '/fertilizers/crop/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -303,7 +253,6 @@ export interface FileRouteTypes {
     | '/calculators'
     | '/contact'
     | '/diseases'
-    | '/fertilizer'
     | '/market'
     | '/mcp'
     | '/music'
@@ -316,13 +265,9 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/crops/$slug'
     | '/districts/$slug'
-    | '/fertilizers/$slug'
     | '/crops'
     | '/districts'
-    | '/fertilizers'
     | '/.mcp/invoke-tool/$tool'
-    | '/fertilizers/crop/$crop'
-    | '/fertilizers/crop'
   id:
     | '__root__'
     | '/'
@@ -332,7 +277,6 @@ export interface FileRouteTypes {
     | '/calculators'
     | '/contact'
     | '/diseases'
-    | '/fertilizer'
     | '/market'
     | '/mcp'
     | '/music'
@@ -345,13 +289,9 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/crops/$slug'
     | '/districts/$slug'
-    | '/fertilizers/$slug'
     | '/crops/'
     | '/districts/'
-    | '/fertilizers/'
     | '/.mcp/invoke-tool/$tool'
-    | '/fertilizers/crop/$crop'
-    | '/fertilizers/crop/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -362,7 +302,6 @@ export interface RootRouteChildren {
   CalculatorsRoute: typeof CalculatorsRoute
   ContactRoute: typeof ContactRoute
   DiseasesRoute: typeof DiseasesRoute
-  FertilizerRoute: typeof FertilizerRoute
   MarketRoute: typeof MarketRoute
   McpRoute: typeof McpRoute
   MusicRoute: typeof MusicRoute
@@ -375,13 +314,9 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   CropsSlugRoute: typeof CropsSlugRoute
   DistrictsSlugRoute: typeof DistrictsSlugRoute
-  FertilizersSlugRoute: typeof FertilizersSlugRoute
   CropsIndexRoute: typeof CropsIndexRoute
   DistrictsIndexRoute: typeof DistrictsIndexRoute
-  FertilizersIndexRoute: typeof FertilizersIndexRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
-  FertilizersCropCropRoute: typeof FertilizersCropCropRoute
-  FertilizersCropIndexRoute: typeof FertilizersCropIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -442,13 +377,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/fertilizer': {
-      id: '/fertilizer'
-      path: '/fertilizer'
-      fullPath: '/fertilizer'
-      preLoaderRoute: typeof FertilizerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/diseases': {
       id: '/diseases'
       path: '/diseases'
@@ -498,13 +426,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/fertilizers/': {
-      id: '/fertilizers/'
-      path: '/fertilizers'
-      fullPath: '/fertilizers/'
-      preLoaderRoute: typeof FertilizersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/districts/': {
       id: '/districts/'
       path: '/districts'
@@ -517,13 +438,6 @@ declare module '@tanstack/react-router' {
       path: '/crops'
       fullPath: '/crops/'
       preLoaderRoute: typeof CropsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fertilizers/$slug': {
-      id: '/fertilizers/$slug'
-      path: '/fertilizers/$slug'
-      fullPath: '/fertilizers/$slug'
-      preLoaderRoute: typeof FertilizersSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/districts/$slug': {
@@ -554,20 +468,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/fertilizers/crop/': {
-      id: '/fertilizers/crop/'
-      path: '/fertilizers/crop'
-      fullPath: '/fertilizers/crop/'
-      preLoaderRoute: typeof FertilizersCropIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fertilizers/crop/$crop': {
-      id: '/fertilizers/crop/$crop'
-      path: '/fertilizers/crop/$crop'
-      fullPath: '/fertilizers/crop/$crop'
-      preLoaderRoute: typeof FertilizersCropCropRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -586,7 +486,6 @@ const rootRouteChildren: RootRouteChildren = {
   CalculatorsRoute: CalculatorsRoute,
   ContactRoute: ContactRoute,
   DiseasesRoute: DiseasesRoute,
-  FertilizerRoute: FertilizerRoute,
   MarketRoute: MarketRoute,
   McpRoute: McpRoute,
   MusicRoute: MusicRoute,
@@ -600,13 +499,9 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   CropsSlugRoute: CropsSlugRoute,
   DistrictsSlugRoute: DistrictsSlugRoute,
-  FertilizersSlugRoute: FertilizersSlugRoute,
   CropsIndexRoute: CropsIndexRoute,
   DistrictsIndexRoute: DistrictsIndexRoute,
-  FertilizersIndexRoute: FertilizersIndexRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
-  FertilizersCropCropRoute: FertilizersCropCropRoute,
-  FertilizersCropIndexRoute: FertilizersCropIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -20,7 +20,7 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
         out.push({ title: d.name, sub: `Disease in ${c.name}`, to: `/crops/${c.slug}`, kind: "disease" }),
       );
     });
-    out.push({ title: "Fertilizer Calculator", sub: "Tool", to: "/fertilizer", kind: "tool" });
+    out.push({ title: "Calculators", sub: "Tool", to: "/calculators", kind: "tool" });
     
     out.push({ title: "Market Prices", sub: "Module", to: "/market", kind: "module" });
     out.push({ title: "Crop Rotation", sub: "Tool", to: "/rotation", kind: "tool" });

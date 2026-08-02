@@ -188,7 +188,7 @@ function CropDetail() {
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
             <T>Need calculations for your exact land size?</T>{" "}
-            <Link to="/fertilizer" search={{ crop: c.slug } as any} className="story-link text-primary"><T>Open Fertilizer Calculator</T></Link>
+            <Link to="/calculators" search={{ crop: c.slug } as any} className="story-link text-primary"><T>Open Calculators</T></Link>
           </p>
         </Section>
 

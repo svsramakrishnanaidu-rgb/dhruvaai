@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  Bell, Sun, ArrowRight, ChevronRight, Calculator, FlaskConical,
+  Bell, Sun, ArrowRight, ChevronRight, Calculator,
   ShieldAlert, RefreshCw, TrendingUp, MapPin, Music2, Languages,
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
@@ -622,7 +622,6 @@ function QuickActions() {
     tone: "accent" | "primary" | "leaf" | "bronze";
   }[] = [
     { to: "/calculators", label: "Calculators", Icon: Calculator, tone: "accent" },
-    { to: "/fertilizers", label: "Fertilizers", Icon: FlaskConical, tone: "primary" },
     { to: "/diseases", label: "Diseases", Icon: ShieldAlert, tone: "leaf" },
     { to: "/rotation", label: "Rotation", Icon: RefreshCw, tone: "bronze" },
   ];
