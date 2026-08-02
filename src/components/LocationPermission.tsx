@@ -45,6 +45,9 @@ export function LocationPermission() {
     if (geoFlags.hasAsked() && !installed) return;
 
     const t = window.setTimeout(async () => {
+      // AutoLocate already fires the OS dialog on mobile; only step in when it
+      // didn't produce a real device fix.
+      if (geoFlags.hasAutoLocated()) return;
       const perm = await readGeoPermission();
       if (!alive) return;
       if (perm === "granted") return;
@@ -60,7 +63,7 @@ export function LocationPermission() {
       }
 
       if (perm === "prompt" || perm === "denied" || perm === "unsupported") setVisible(true);
-    }, 1500);
+    }, 5000);
 
 
     // Auto-dismiss if permission is granted from browser settings meanwhile.
