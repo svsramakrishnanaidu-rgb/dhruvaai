@@ -1,5 +1,11 @@
 import { useEffect } from "react";
-import { detectLocation, geoFlags, onPermissionChange, startLocationWatch } from "@/lib/geolocate";
+import {
+  detectLocation,
+  geoFlags,
+  onPermissionChange,
+  readGeoPermission,
+  startLocationWatch,
+} from "@/lib/geolocate";
 
 /**
  * Silent location resolver.
