@@ -3,6 +3,7 @@
 // knowledge center, then buckets them into curated shelves + a stage-wise
 // nutrition schedule. Pure derivation — no crop data is mutated or merged.
 
+import { aiImage } from "@/lib/fert-image";
 import {
   FERTILIZERS_ALL,
   type Fertilizer,
@@ -34,6 +35,58 @@ export type FertCrop = {
   npkPerAcre: { n: number; p: number; k: number };
   note: string;
 };
+
+// ── Content-derived imagery ───────────────────────────────────────────────
+// Every image prompt is built from the crop's own data (name, group, season,
+// NPK need) plus the section it illustrates, so no two cards repeat a photo.
+
+export function cropHeroImage(crop: FertCrop): string {
+  return aiImage(
+    `${crop.name} ${crop.group.toLowerCase()} crop field in India during ${crop.season}, farmer applying fertilizer, healthy canopy, wide cinematic landscape`,
+    1600,
+    900,
+  );
+}
+
+export function cropCardImage(crop: FertCrop): string {
+  return aiImage(
+    `close up of healthy ${crop.name} ${crop.group.toLowerCase()} crop in an Indian farm, ${crop.npkPerAcre.n}-${crop.npkPerAcre.p}-${crop.npkPerAcre.k} nutrition, sunlit rows`,
+    800,
+    600,
+  );
+}
+
+export function stageImage(crop: FertCrop, stage: string, nutrients: string): string {
+  return aiImage(
+    `${crop.name} crop at ${stage} stage (${nutrients}) in an Indian field, fertilizer being applied at this growth stage, agronomy documentary photo`,
+    900,
+    600,
+  );
+}
+
+export function comboImage(crop: FertCrop, title: string, when: string): string {
+  return aiImage(
+    `fertilizer combination "${title}" for ${crop.name} applied ${when}, bags and granules laid out beside the ${crop.name} field, Indian agriculture`,
+    900,
+    600,
+  );
+}
+
+export function shelfImage(crop: FertCrop, title: string): string {
+  return aiImage(
+    `${title} fertilizers for ${crop.name} — assorted product bags and granules on a wooden bench at an Indian agri input store, ${crop.group.toLowerCase()} crop visible behind`,
+    1200,
+    500,
+  );
+}
+
+export function avoidImage(crop: FertCrop): string {
+  return aiImage(
+    `warning sign beside a ${crop.name} field in India about unsuitable fertilizer use, damaged leaf tips, caution agronomy photo`,
+    1200,
+    500,
+  );
+}
 
 /** Universal terms — fertilizers tagged with these suit almost any crop. */
 const UNIVERSAL = ["all", "horticulture", "crops"];
@@ -156,6 +209,7 @@ export type Shelf = {
   key: string;
   title: string;
   subtitle: string;
+  image: string;
   items: Fertilizer[];
 };
 
@@ -167,7 +221,7 @@ export function shelvesFor(crop: FertCrop): Shelf[] {
   const priced = [...pool].sort((a, b) => a.f.price.inr - b.f.price.inr);
   const macro = byCat(pool, ["Complex NPK", "Nitrogen", "Phosphatic", "Potassic"]);
 
-  const shelves: Shelf[] = [
+  const shelves: Omit<Shelf, "image">[] = [
     {
       key: "best",
       title: "Best-selling for this crop",
@@ -224,7 +278,9 @@ export function shelvesFor(crop: FertCrop): Shelf[] {
     },
   ];
 
-  return shelves.filter((s) => s.items.length > 0);
+  return shelves
+    .filter((s) => s.items.length > 0)
+    .map((s) => ({ ...s, image: shelfImage(crop, s.title) }));
 }
 
 // ── Stage-wise nutrition schedule ─────────────────────────────────────────
@@ -234,6 +290,7 @@ export type StagePlan = {
   window: string;
   goal: string;
   nutrients: string;
+  image: string;
   picks: Fertilizer[];
 };
 
@@ -276,7 +333,14 @@ export function scheduleFor(crop: FertCrop): StagePlan[] {
       .sort((a, b) => b.score - a.score)
       .slice(0, 3)
       .map((x) => x.f);
-    return { stage: s.stage, window: s.window, goal: s.goal, nutrients: s.nutrients, picks };
+    return {
+      stage: s.stage,
+      window: s.window,
+      goal: s.goal,
+      nutrients: s.nutrients,
+      image: stageImage(crop, s.stage, s.nutrients),
+      picks,
+    };
   });
 }
 
@@ -285,6 +349,7 @@ export function scheduleFor(crop: FertCrop): StagePlan[] {
 export type Combo = {
   title: string;
   when: string;
+  image: string;
   items: Fertilizer[];
   why: string;
 };
@@ -294,7 +359,7 @@ export function combosFor(crop: FertCrop): Combo[] {
   const pick = (cats: FertilizerCategory[], n = 1) =>
     m.filter((x) => cats.includes(x.f.category)).sort((a, b) => b.score - a.score).slice(0, n).map((x) => x.f);
 
-  const combos: Combo[] = [
+  const combos: Omit<Combo, "image">[] = [
     {
       title: "Basal power pack",
       when: "At sowing / planting",
@@ -320,5 +385,7 @@ export function combosFor(crop: FertCrop): Combo[] {
       why: `Potassium drives translocation into the ${crop.group === "Cereal" || crop.group === "Millet" ? "grain" : "harvested part"}, lifting weight and quality grade.`,
     },
   ];
-  return combos.filter((c) => c.items.length > 0);
+  return combos
+    .filter((c) => c.items.length > 0)
+    .map((c) => ({ ...c, image: comboImage(crop, c.title, c.when) }));
 }
