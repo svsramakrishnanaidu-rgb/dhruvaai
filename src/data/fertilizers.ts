@@ -815,14 +815,6 @@ export const SOILS = [
 // ── Merge extended catalog (brand grades, WSF, chelated micros, biofert,
 //    organic manures, slow-release, hydroponic, boron/silicon/sulphur) ──
 import { FERTILIZERS_EXTRA } from "./fertilizers-extended";
-import heroUrea from "@/assets/fert-hero-urea.jpg";
-import heroDap from "@/assets/fert-hero-dap.jpg";
-import heroNpk from "@/assets/fert-hero-npk.jpg";
-import heroMop from "@/assets/fert-hero-mop.jpg";
-import heroWsf from "@/assets/fert-hero-wsf.jpg";
-import heroOrganic from "@/assets/fert-hero-organic.jpg";
-import heroBio from "@/assets/fert-hero-bio.jpg";
-import heroNano from "@/assets/fert-hero-nano.jpg";
 
 export const FERTILIZERS_ALL: Fertilizer[] = [...FERTILIZERS, ...FERTILIZERS_EXTRA];
 
