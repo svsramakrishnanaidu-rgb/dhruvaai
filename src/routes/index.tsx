@@ -330,7 +330,7 @@ function SectionHeader({ eyebrow, title, subtitle }: { eyebrow: string; title: s
    TRENDING crops — live from Agmarknet
    ============================================================ */
 function TrendingSection({ trending }: { trending: any[] }) {
-  const { data: live, loading, updatedAt } = useAgmarknetLive({ refreshMs: 60_000, limit: 2000 });
+  const { data: live, loading, updated } = useAgmarknetLive({ refreshMs: 60_000, limit: 2000 });
 
   // commodity name -> live row (first/best match wins)
   const liveMap = useMemo(() => {
