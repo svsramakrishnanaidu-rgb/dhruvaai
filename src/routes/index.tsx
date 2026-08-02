@@ -323,47 +323,116 @@ function SectionHeader({ eyebrow, title, subtitle }: { eyebrow: string; title: s
 }
 
 /* ============================================================
-   TRENDING crops
+   TRENDING crops — live from Agmarknet
    ============================================================ */
 function TrendingSection({ trending }: { trending: any[] }) {
+  const { data: live, loading, updatedAt } = useAgmarknetLive({ refreshMs: 60_000, limit: 2000 });
+
+  // commodity name -> live row (first/best match wins)
+  const liveMap = useMemo(() => {
+    const m = new Map<string, (typeof live)[number]>();
+    for (const row of live) {
+      const key = row.commodity.toLowerCase().trim();
+      if (!m.has(key)) m.set(key, row);
+    }
+    return m;
+  }, [live]);
+
+  const matchLive = (name: string) => {
+    const key = name.toLowerCase().trim();
+    if (liveMap.has(key)) return liveMap.get(key)!;
+    for (const [k, v] of liveMap) {
+      if (k.includes(key) || key.includes(k)) return v;
+    }
+    return null;
+  };
+
+  // Pull from the whole library, then rank by live market momentum so the
+  // section genuinely reflects what is moving in the mandis right now.
+  const cards = useMemo(() => {
+    const pool = CROP_LIST.filter((c: any) => c.trending || matchLive(c.name));
+    const source = pool.length >= 12 ? pool : CROP_LIST;
+    return source
+      .map((c: any) => ({ crop: c, live: matchLive(c.name) }))
+      .sort((a, b) => {
+        const av = a.live ? a.live.deltaPct : -999;
+        const bv = b.live ? b.live.deltaPct : -999;
+        if (av !== bv) return bv - av;
+        return (b.crop.profitPct ?? 0) - (a.crop.profitPct ?? 0);
+      })
+      .slice(0, 12);
+  }, [liveMap, trending]);
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
       <div className="flex items-end justify-between">
         <SectionHeader eyebrow="Trending" title="Crops moving this season." />
-        <Link to="/crops" className="hidden shrink-0 items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80 md:inline-flex">
-          Browse library <ArrowRight className="h-4 w-4" />
-        </Link>
+        <div className="hidden shrink-0 flex-col items-end gap-2 md:flex">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
+            <span className={`h-1.5 w-1.5 rounded-full bg-primary ${loading ? "animate-ping" : "animate-pulse"}`} />
+            {loading ? "Syncing mandis" : "Live · Agmarknet"}
+            {updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}` : ""}
+          </span>
+          <Link to="/crops" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80">
+            Browse library <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </div>
 
       <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {trending.map((c, i) => (
-          <Reveal key={c.slug} delay={i * 50}>
-            <Link
-              to="/crops/$slug"
-              params={{ slug: c.slug }}
-              className="group relative block aspect-[4/5] overflow-hidden rounded-3xl border border-border/60"
-              style={{ boxShadow: "var(--shadow-elegant)" }}
-            >
-              <img src={c.image} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
-              <span className="absolute left-3 top-3 rounded-full bg-primary/90 px-2 py-1 text-[9px] font-bold uppercase tracking-widest text-primary-foreground">
-                +{c.profitPct}%
-              </span>
-              <div className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full glass text-base">{c.emoji}</div>
-              <div className="absolute inset-x-0 bottom-0 p-4">
-                <div className="text-[10px] uppercase tracking-widest text-primary">{String(c.season).split(" ")[0]}</div>
-                <div className="mt-0.5 truncate font-display text-lg font-bold">{c.name}</div>
-                <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
-                  <Droplets className="h-3 w-3" /> {c.waterNeed}
+        {cards.map(({ crop: c, live: l }, i) => {
+          const up = (l?.deltaPct ?? 0) >= 0;
+          return (
+            <Reveal key={c.slug} delay={i * 50}>
+              <Link
+                to="/crops/$slug"
+                params={{ slug: c.slug }}
+                className="group relative block aspect-[4/5] overflow-hidden rounded-3xl border border-border/60"
+                style={{ boxShadow: "var(--shadow-elegant)" }}
+              >
+                <img src={c.image} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
+                <span
+                  className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest ${
+                    l
+                      ? up
+                        ? "bg-primary/90 text-primary-foreground"
+                        : "bg-destructive/90 text-destructive-foreground"
+                      : "bg-primary/90 text-primary-foreground"
+                  }`}
+                >
+                  {l ? (
+                    <>
+                      {up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                      {up ? "+" : ""}{l.deltaPct.toFixed(1)}%
+                    </>
+                  ) : (
+                    <>+{c.profitPct}%</>
+                  )}
+                </span>
+                <div className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full glass text-base">{c.emoji}</div>
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                  <div className="text-[10px] uppercase tracking-widest text-primary">{String(c.season).split(" ")[0]}</div>
+                  <div className="mt-0.5 truncate font-display text-lg font-bold">{c.name}</div>
+                  {l ? (
+                    <div className="mt-1 truncate text-[10px] text-muted-foreground">
+                      <span className="font-semibold text-foreground">₹{l.modal.toLocaleString("en-IN")}</span>/qtl · {l.markets} mandis
+                    </div>
+                  ) : (
+                    <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
+                      <Droplets className="h-3 w-3" /> {c.waterNeed}
+                    </div>
+                  )}
                 </div>
-              </div>
-            </Link>
-          </Reveal>
-        ))}
+              </Link>
+            </Reveal>
+          );
+        })}
       </div>
     </section>
   );
 }
+
 
 /* ============================================================
    CATEGORIES
