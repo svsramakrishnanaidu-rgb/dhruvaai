@@ -1,3 +1,5 @@
+import { aiImageFromTags } from "@/lib/fert-image";
+
 // Fertilizer Knowledge Center — image-first, richly typed encyclopedia.
 // Every fertilizer has multiple deterministic Unsplash image queries so
 // the UI can render galleries, comparisons, application-method visuals
@@ -85,11 +87,7 @@ const hash = (s: string) => {
 };
 const slug = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9\s,]/g, "").trim().replace(/\s+/g, ",");
-const img = (q: string, w = 1200, h = 800) => {
-  const tags = slug(q);
-  const lock = hash(`${tags}-${w}x${h}`);
-  return `https://loremflickr.com/${w}/${h}/${tags}/all?lock=${lock}`;
-};
+const img = (q: string, w = 1200, h = 800) => aiImageFromTags(slug(q), w, h);
 
 const mk = (
   slugId: string,
@@ -105,7 +103,9 @@ const mk = (
     name,
     ...data,
     images: {
-      hero: img(`${key},fertilizer,bag,agriculture`),
+      hero: img(
+        `${slugId},${name},${data.category} fertilizer,${data.form} form,NPK ${data.npk.n}-${data.npk.p}-${data.npk.k},product bag on indian farm field`,
+      ),
       packaging: [
         img(`${key},fertilizer,bag,package`),
         img(`${key},sack,warehouse,farm`),
