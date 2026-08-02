@@ -33,6 +33,8 @@ import { Route as DistrictsSlugRouteImport } from './routes/districts.$slug'
 import { Route as CropsSlugRouteImport } from './routes/crops.$slug'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as FertilizersCropIndexRouteImport } from './routes/fertilizers.crop.index'
+import { Route as FertilizersCropCropRouteImport } from './routes/fertilizers.crop.$crop'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
 const WeatherRoute = WeatherRouteImport.update({
@@ -157,6 +159,16 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const FertilizersCropIndexRoute = FertilizersCropIndexRouteImport.update({
+  id: '/fertilizers/crop/',
+  path: '/fertilizers/crop/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FertilizersCropCropRoute = FertilizersCropCropRouteImport.update({
+  id: '/fertilizers/crop/$crop',
+  path: '/fertilizers/crop/$crop',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -190,6 +202,8 @@ export interface FileRoutesByFullPath {
   '/districts/': typeof DistrictsIndexRoute
   '/fertilizers/': typeof FertilizersIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/fertilizers/crop/$crop': typeof FertilizersCropCropRoute
+  '/fertilizers/crop/': typeof FertilizersCropIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -217,6 +231,8 @@ export interface FileRoutesByTo {
   '/districts': typeof DistrictsIndexRoute
   '/fertilizers': typeof FertilizersIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/fertilizers/crop/$crop': typeof FertilizersCropCropRoute
+  '/fertilizers/crop': typeof FertilizersCropIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -245,6 +261,8 @@ export interface FileRoutesById {
   '/districts/': typeof DistrictsIndexRoute
   '/fertilizers/': typeof FertilizersIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/fertilizers/crop/$crop': typeof FertilizersCropCropRoute
+  '/fertilizers/crop/': typeof FertilizersCropIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -274,6 +292,8 @@ export interface FileRouteTypes {
     | '/districts/'
     | '/fertilizers/'
     | '/.mcp/invoke-tool/$tool'
+    | '/fertilizers/crop/$crop'
+    | '/fertilizers/crop/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -301,6 +321,8 @@ export interface FileRouteTypes {
     | '/districts'
     | '/fertilizers'
     | '/.mcp/invoke-tool/$tool'
+    | '/fertilizers/crop/$crop'
+    | '/fertilizers/crop'
   id:
     | '__root__'
     | '/'
@@ -328,6 +350,8 @@ export interface FileRouteTypes {
     | '/districts/'
     | '/fertilizers/'
     | '/.mcp/invoke-tool/$tool'
+    | '/fertilizers/crop/$crop'
+    | '/fertilizers/crop/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -356,6 +380,8 @@ export interface RootRouteChildren {
   DistrictsIndexRoute: typeof DistrictsIndexRoute
   FertilizersIndexRoute: typeof FertilizersIndexRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  FertilizersCropCropRoute: typeof FertilizersCropCropRoute
+  FertilizersCropIndexRoute: typeof FertilizersCropIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -528,6 +554,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fertilizers/crop/': {
+      id: '/fertilizers/crop/'
+      path: '/fertilizers/crop'
+      fullPath: '/fertilizers/crop/'
+      preLoaderRoute: typeof FertilizersCropIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fertilizers/crop/$crop': {
+      id: '/fertilizers/crop/$crop'
+      path: '/fertilizers/crop/$crop'
+      fullPath: '/fertilizers/crop/$crop'
+      preLoaderRoute: typeof FertilizersCropCropRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -565,6 +605,8 @@ const rootRouteChildren: RootRouteChildren = {
   DistrictsIndexRoute: DistrictsIndexRoute,
   FertilizersIndexRoute: FertilizersIndexRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  FertilizersCropCropRoute: FertilizersCropCropRoute,
+  FertilizersCropIndexRoute: FertilizersCropIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
