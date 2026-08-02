@@ -63,7 +63,7 @@ export function LocationPermission() {
       }
 
       if (perm === "prompt" || perm === "denied" || perm === "unsupported") setVisible(true);
-    }, 1500);
+    }, 5000);
 
 
     // Auto-dismiss if permission is granted from browser settings meanwhile.
