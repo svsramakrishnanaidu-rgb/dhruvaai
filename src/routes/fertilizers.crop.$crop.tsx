@@ -9,6 +9,7 @@ import {
   shelvesFor,
   scheduleFor,
   combosFor,
+  type FertCrop,
 } from "@/data/fertilizer-crops";
 import {
   ArrowLeft, Sparkles, CalendarRange, Ban, Calculator, Layers, Leaf,
@@ -46,7 +47,7 @@ export const Route = createFileRoute("/fertilizers/crop/$crop")({
 });
 
 function CropFertilizerPage() {
-  const crop = Route.useLoaderData();
+  const crop = Route.useLoaderData() as FertCrop;
   const [acres, setAcres] = useState(1);
 
   const matched = useMemo(() => fertilizersForFertCrop(crop), [crop]);
