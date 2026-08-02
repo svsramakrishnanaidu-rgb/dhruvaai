@@ -20,7 +20,6 @@ import { profileFor } from "@/lib/district-profiles";
 import heroImg from "@/assets/hero-farm.jpg";
 import analyticsImg from "@/assets/heroes/analytics.jpg";
 import rotationImg from "@/assets/heroes/rotation.jpg";
-import fertilizerImg from "@/assets/heroes/fertilizer.jpg";
 import marketImg from "@/assets/heroes/market.jpg";
 import weatherImg from "@/assets/heroes/weather.jpg";
 import schemesImg from "@/assets/heroes/schemes.jpg";
@@ -265,7 +264,6 @@ function FeatureGrid() {
     { to: "/analytics", image: analyticsImg, tag: "Atlas", title: "India Crop Atlas", copy: "Nine-state production intelligence, 2025-26 estimates.", icon: <BarChart3 className="h-4 w-4"/>, size: "lg" },
     { to: "/weather", image: weatherImg, tag: "Live", title: "Weather intelligence", copy: "Radar, AQI, soil moisture and agri advisories.", icon: <CloudRain className="h-4 w-4"/>, size: "md" },
     { to: "/market", image: marketImg, tag: "Mandi", title: "Market prices", copy: "Daily trends, MSP and profit estimator.", icon: <TrendingUp className="h-4 w-4"/>, size: "md" },
-    { to: "/fertilizer", image: fertilizerImg, tag: "Planner", title: "Fertilizer calculator", copy: "Per-acre nutrient math with organic options.", icon: <LineChart className="h-4 w-4"/>, size: "md" },
     { to: "/rotation", image: rotationImg, tag: "Wheel", title: "Rotation planner", copy: "Sequences that rebuild soil and profit.", icon: <Compass className="h-4 w-4"/>, size: "md" },
     { to: "/schemes", image: schemesImg, tag: "Govt", title: "Schemes & subsidies", copy: "Central + state programs, eligibility & links.", icon: <ShieldCheck className="h-4 w-4"/>, size: "lg" },
   ];

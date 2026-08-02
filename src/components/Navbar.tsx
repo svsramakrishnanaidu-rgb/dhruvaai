@@ -19,7 +19,6 @@ const NAV = [
   { to: "/paddy-future", key: "nav.paddyFuture" },
   { to: "/rotation", key: "nav.rotation" },
   { to: "/calculators", key: "nav.fertilizer" },
-  { to: "/fertilizers", key: "nav.fertilizers" },
   
   { to: "/weather", key: "nav.weather" },
   { to: "/market", key: "nav.market" },
@@ -51,7 +50,6 @@ const NAV_GROUPS = [
     label: "Inputs & Soil",
     items: [
       { to: "/calculators", key: "nav.fertilizer", Icon: Calculator },
-      { to: "/fertilizers", key: "nav.fertilizers", Icon: FlaskConical },
       { to: "/atlas", key: "nav.atlas", Icon: Layers },
     ],
   },

@@ -622,7 +622,6 @@ function QuickActions() {
     tone: "accent" | "primary" | "leaf" | "bronze";
   }[] = [
     { to: "/calculators", label: "Calculators", Icon: Calculator, tone: "accent" },
-    { to: "/fertilizers", label: "Fertilizers", Icon: FlaskConical, tone: "primary" },
     { to: "/diseases", label: "Diseases", Icon: ShieldAlert, tone: "leaf" },
     { to: "/rotation", label: "Rotation", Icon: RefreshCw, tone: "bronze" },
   ];

@@ -27,7 +27,7 @@ export function Footer() {
               { to: "/crops", label: t("nav.crops") },
               { to: "/paddy-future", label: t("nav.paddyFuture") },
               { to: "/rotation", label: t("nav.rotation") },
-              { to: "/fertilizer", label: t("nav.fertilizer") },
+              { to: "/calculators", label: t("nav.fertilizer") },
               { to: "/diseases", label: t("nav.diseases") },
             ]}
           />
