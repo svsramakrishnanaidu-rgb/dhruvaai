@@ -6,6 +6,7 @@
 // Self-contained builders (no import from fertilizers.ts) to avoid any
 // circular-import edge cases during Vite's SSR module init.
 
+import { aiImageFromTags } from "@/lib/fert-image";
 import type {
   Fertilizer,
   FertilizerCategory,
@@ -14,18 +15,9 @@ import type {
 } from "./fertilizers";
 
 // ── Content-based deterministic image helper (mirrors fertilizers.ts) ─────
-const hash = (s: string) => {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) h = (h ^ s.charCodeAt(i)) * 16777619;
-  return Math.abs(h | 0);
-};
 const slugify = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9\s,]/g, "").trim().replace(/\s+/g, ",");
-const img = (q: string, w = 1200, h = 800) => {
-  const tags = slugify(q);
-  const lock = hash(`${tags}-${w}x${h}`);
-  return `https://loremflickr.com/${w}/${h}/${tags}/all?lock=${lock}`;
-};
+const img = (q: string, w = 1200, h = 800) => aiImageFromTags(slugify(q), w, h);
 
 function buildImages(
   slug: string,
@@ -39,7 +31,9 @@ function buildImages(
   const crop = crop0.toLowerCase();
   const soil = soil0.toLowerCase();
   return {
-    hero: img(`${key},fertilizer,agriculture`),
+    hero: img(
+      `${slug},${key},${cat} fertilizer,${form} form,product bag on indian farm field`,
+    ),
     packaging: [
       img(`${key},fertilizer,bag,package`),
       img(`${key},sack,warehouse`),
