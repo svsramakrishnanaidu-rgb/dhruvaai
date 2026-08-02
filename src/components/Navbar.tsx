@@ -4,7 +4,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Menu, X, Search, Moon, Sun, Sprout,
   Home, LineChart, MapPin, Leaf, TrendingUp, RefreshCw, ShieldAlert,
-  Calculator, FlaskConical, Layers, Store, CloudSun, Landmark, Music2,
+  Calculator, Layers, Store, CloudSun, Landmark, Music2,
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { DistrictPicker } from "@/components/DistrictPicker";

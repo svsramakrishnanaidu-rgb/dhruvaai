@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  Bell, Sun, ArrowRight, ChevronRight, Calculator, FlaskConical,
+  Bell, Sun, ArrowRight, ChevronRight, Calculator,
   ShieldAlert, RefreshCw, TrendingUp, MapPin, Music2, Languages,
 } from "lucide-react";
 import { CROP_LIST } from "@/data/crops";
