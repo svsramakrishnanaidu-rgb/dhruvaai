@@ -19,6 +19,7 @@ import { LiveAnalysis } from "@/components/LiveAnalysis";
 import { LiveMarketBoard } from "@/components/LiveMarketBoard";
 import { MarketInsightsPanel } from "@/components/MarketInsightsPanel";
 import { MarketCommandCenter } from "@/components/MarketCommandCenter";
+import { MarketAnalyticsPro } from "@/components/MarketAnalyticsPro";
 
 import { locationStore, useLocation } from "@/lib/location-store";
 import {
@@ -148,6 +149,11 @@ function Analytics() {
         description="A spatial & quantitative matrix of area, yield and annual output metrics across India's foremost agricultural clusters — Rice, Wheat, Pulses, Oilseeds and Commercial crops."
       />
       <div className="mx-auto max-w-7xl px-6 py-16">
+
+      {/* Live agricultural market intelligence */}
+      <section className="mb-10">
+        <MarketAnalyticsPro />
+      </section>
 
       <LiveAnalysis />
 
