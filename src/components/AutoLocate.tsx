@@ -58,7 +58,7 @@ export function AutoLocate() {
       cancelIdleCallback?: (id: number) => void;
     };
     const useIdle = typeof w.requestIdleCallback === "function";
-    const id = useIdle ? w.requestIdleCallback!(run, { timeout: 2500 }) : window.setTimeout(run, 1200);
+    const id = useIdle ? w.requestIdleCallback!(() => void run(), { timeout: 1500 }) : window.setTimeout(() => void run(), 800);
 
     // If the user flips the permission on later, pick it up without a reload.
     const offPerm = onPermissionChange((state) => {
