@@ -9,6 +9,8 @@ import {
   shelvesFor,
   scheduleFor,
   combosFor,
+  cropHeroImage,
+  avoidImage,
   type FertCrop,
 } from "@/data/fertilizer-crops";
 import {
@@ -66,7 +68,16 @@ function CropFertilizerPage() {
 
       {/* Hero */}
       <Reveal>
-        <div className="card-elegant mt-5 p-6 md:p-10">
+        <div className="card-elegant mt-5 overflow-hidden">
+          <div className="relative h-56 w-full overflow-hidden md:h-72">
+            <img
+              src={cropHeroImage(crop)}
+              alt={`${crop.name} crop field with fertilizer application`}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+          </div>
+          <div className="p-6 md:p-10">
           <div className="flex flex-wrap items-start gap-6">
             <div className="grid h-20 w-20 place-items-center rounded-3xl bg-gradient-to-br from-primary/20 to-accent/20 text-5xl">
               {crop.emoji}
@@ -98,6 +109,7 @@ function CropFertilizerPage() {
             <Link to="/fertilizer" className="rounded-full bg-primary px-4 py-1.5 font-semibold text-primary-foreground">
               <Calculator className="mr-1 inline h-3.5 w-3.5" /> Dosage calculator
             </Link>
+          </div>
           </div>
         </div>
       </Reveal>
@@ -149,8 +161,15 @@ function CropFertilizerPage() {
 
           <ol className="mt-6 space-y-4">
             {schedule.map((s, i) => (
-              <li key={s.stage} className="card-elegant relative p-5 md:pl-16">
-                <span className="absolute left-5 top-5 hidden h-8 w-8 place-items-center rounded-full bg-primary font-display text-sm font-black text-primary-foreground md:grid">
+              <li key={s.stage} className="card-elegant relative overflow-hidden md:flex">
+                <img
+                  src={s.image}
+                  alt={`${crop.name} at ${s.stage}`}
+                  loading="lazy"
+                  className="h-40 w-full object-cover md:h-auto md:w-56 md:shrink-0"
+                />
+                <div className="relative flex-1 p-5 md:pl-16">
+                <span className="absolute left-4 top-5 hidden h-8 w-8 place-items-center rounded-full bg-primary font-display text-sm font-black text-primary-foreground md:grid">
                   {i + 1}
                 </span>
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -176,6 +195,7 @@ function CropFertilizerPage() {
                     ))}
                   </div>
                 )}
+                </div>
               </li>
             ))}
           </ol>
@@ -190,7 +210,14 @@ function CropFertilizerPage() {
           </h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {combos.map((c) => (
-              <div key={c.title} className="card-elegant p-5">
+              <div key={c.title} className="card-elegant overflow-hidden">
+                <img
+                  src={c.image}
+                  alt={`${c.title} for ${crop.name}`}
+                  loading="lazy"
+                  className="h-40 w-full object-cover"
+                />
+                <div className="p-5">
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="font-display text-xl font-bold">{c.title}</h3>
                   <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">{c.when}</span>
@@ -208,6 +235,7 @@ function CropFertilizerPage() {
                   ))}
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground">{c.why}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -225,6 +253,14 @@ function CropFertilizerPage() {
               </div>
               <span className="shrink-0 text-xs text-muted-foreground">{shelf.items.length} products</span>
             </div>
+            <div className="mt-4 overflow-hidden rounded-2xl">
+              <img
+                src={shelf.image}
+                alt={`${shelf.title} for ${crop.name}`}
+                loading="lazy"
+                className="h-32 w-full object-cover md:h-40"
+              />
+            </div>
             <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {shelf.items.map((f) => (
                 <FertMiniCard key={f.slug} f={f} />
@@ -237,7 +273,14 @@ function CropFertilizerPage() {
       {/* Not recommended */}
       {avoid.length > 0 && (
         <Reveal>
-          <section className="card-elegant mt-12 border-destructive/40 p-6">
+          <section className="card-elegant mt-12 overflow-hidden border-destructive/40">
+            <img
+              src={avoidImage(crop)}
+              alt={`Fertilizers to avoid on ${crop.name}`}
+              loading="lazy"
+              className="h-36 w-full object-cover md:h-44"
+            />
+            <div className="p-6">
             <h2 className="flex items-center gap-2 font-display text-2xl font-black text-destructive">
               <Ban className="h-5 w-5" /> Not recommended for {crop.name}
             </h2>
@@ -251,6 +294,7 @@ function CropFertilizerPage() {
                 </li>
               ))}
             </ul>
+            </div>
           </section>
         </Reveal>
       )}

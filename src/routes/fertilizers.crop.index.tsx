@@ -5,6 +5,7 @@ import {
   FERT_CROPS,
   FERT_CROP_GROUPS,
   fertilizersForFertCrop,
+  cropCardImage,
   type CropGroup,
 } from "@/data/fertilizer-crops";
 import { ArrowLeft, Search, Sprout, ArrowRight } from "lucide-react";
@@ -92,16 +93,28 @@ function CropWiseHub() {
             key={c.slug}
             to="/fertilizers/crop/$crop"
             params={{ crop: c.slug }}
-            className="card-elegant hover-lift group p-5"
+            className="card-elegant hover-lift group overflow-hidden"
           >
-            <div className="text-3xl">{c.emoji}</div>
-            <div className="mt-3 font-display text-lg font-bold leading-tight">{c.name}</div>
+            <div className="relative aspect-[4/3] overflow-hidden">
+              <img
+                src={cropCardImage(c)}
+                alt={`${c.name} crop`}
+                loading="lazy"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <span className="absolute left-3 top-3 rounded-xl bg-background/80 px-2 py-1 text-xl backdrop-blur">
+                {c.emoji}
+              </span>
+            </div>
+            <div className="p-5">
+            <div className="mt-0 font-display text-lg font-bold leading-tight">{c.name}</div>
             <div className="mt-1 text-xs text-muted-foreground">{c.season}</div>
             <div className="mt-4 flex items-center justify-between text-xs">
               <span className="inline-flex items-center gap-1 rounded-full border border-border/60 px-2 py-1">
                 <Sprout className="h-3 w-3 text-primary" /> {counts[c.slug]} products
               </span>
               <ArrowRight className="h-4 w-4 text-primary transition group-hover:translate-x-1" />
+            </div>
             </div>
           </Link>
         ))}
