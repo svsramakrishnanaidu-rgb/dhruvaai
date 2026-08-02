@@ -271,6 +271,25 @@ function FertilizerHub() {
           </Link>
         </div>
 
+        {/* Crop-wise entry */}
+        <Link
+          to="/fertilizers/crop"
+          className="card-elegant hover-lift mt-4 flex flex-wrap items-center gap-4 p-6"
+        >
+          <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-accent to-primary text-3xl">
+            🌾
+          </div>
+          <div className="min-w-[14rem] flex-1">
+            <div className="font-display text-xl font-black">Browse fertilizers crop-wise</div>
+            <div className="text-sm text-muted-foreground">
+              Paddy, wheat, cotton, sugarcane, pulses, millets, oilseeds, vegetables, fruits,
+              spices & plantation crops — with stage-wise nutrition schedules.
+            </div>
+          </div>
+          <ArrowRight className="h-5 w-5 text-primary" />
+        </Link>
+
+
         {/* Advanced filters row */}
         <div className="card-elegant p-5">
           <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
