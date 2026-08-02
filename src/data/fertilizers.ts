@@ -80,11 +80,6 @@ export type ApplicationMethod =
 // Primary source: LoremFlickr (Flickr photos matched to comma-separated tags,
 // stable per `lock` seed). Fallback: Picsum with a stable seed so a broken
 // tag combo still renders a picture instead of a grey box.
-const hash = (s: string) => {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) h = (h ^ s.charCodeAt(i)) * 16777619;
-  return Math.abs(h | 0);
-};
 const slug = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9\s,]/g, "").trim().replace(/\s+/g, ",");
 const img = (q: string, w = 1200, h = 800) => aiImageFromTags(slug(q), w, h);
@@ -851,18 +846,18 @@ export function fertilizersForCrop(cropName: string) {
  * while still keeping per-item photo galleries.
  */
 export function heroAIFor(f: Fertilizer): string {
-  const k = `${f.slug} ${f.name}`.toLowerCase();
-  if (k.includes("nano")) return heroNano;
-  if (k.includes("urea") && !k.includes("thio")) return heroUrea;
-  if (k.includes("dap") || k.includes("map ") || k.includes("mono-ammonium")) return heroDap;
-  if (k.includes("mop") || k.includes("muriate") || k.includes("potash chloride")) return heroMop;
-  if (f.category === "Bio-fertilizer" || k.includes("azolla") || k.includes("bga") || k.includes("rhizobium")) return heroBio;
-  if (f.category === "Organic" || f.category === "Soil amendment") return heroOrganic;
-  if (f.category === "Liquid / Water-soluble" || f.form === "Crystal" || f.form === "Liquid") return heroWsf;
-  if (f.category === "Complex NPK") return heroNpk;
-  if (f.category === "Nitrogen") return heroUrea;
-  if (f.category === "Phosphatic") return heroDap;
-  if (f.category === "Potassic") return heroMop;
-  return heroNpk;
+  return aiImageFromTags(
+    [
+      f.slug,
+      f.name,
+      `${f.category} fertilizer`,
+      `${f.form.toLowerCase()} form`,
+      `NPK ${f.npk.n}-${f.npk.p}-${f.npk.k}`,
+      f.suitableCrops[0] ? `used on ${f.suitableCrops[0].toLowerCase()} crop` : "indian farm",
+      "premium product bag beside crop field",
+    ].join(","),
+    1200,
+    750,
+  );
 }
 

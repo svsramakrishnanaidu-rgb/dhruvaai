@@ -15,11 +15,6 @@ import type {
 } from "./fertilizers";
 
 // ── Content-based deterministic image helper (mirrors fertilizers.ts) ─────
-const hash = (s: string) => {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) h = (h ^ s.charCodeAt(i)) * 16777619;
-  return Math.abs(h | 0);
-};
 const slugify = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9\s,]/g, "").trim().replace(/\s+/g, ",");
 const img = (q: string, w = 1200, h = 800) => aiImageFromTags(slugify(q), w, h);
