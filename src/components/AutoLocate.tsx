@@ -27,8 +27,29 @@ export function AutoLocate() {
     let cancelled = false;
     let stopWatch: (() => void) | null = null;
 
-    const run = () => {
+    const run = async () => {
       if (cancelled || geoFlags.hasAutoLocated()) return;
+
+      const isMobile =
+        window.matchMedia("(max-width: 1023px)").matches ||
+        (navigator.maxTouchPoints ?? 0) > 0;
+
+      if (isMobile) {
+        // Mobile: go straight for the real device fix. If permission was already
+        // granted this is silent; if it is still "prompt" the OS dialog appears
+        // right away so weather/market data uses the user's actual district.
+        const perm = await readGeoPermission();
+        if (cancelled) return;
+        if (perm !== "denied") {
+          const res = await detectLocation({ prompt: true });
+          if (cancelled) return;
+          if (res.status === "granted" && !res.approximate) {
+            if (!stopWatch) stopWatch = startLocationWatch();
+            return;
+          }
+        }
+      }
+
       void detectLocation({ prompt: false });
     };
 
