@@ -375,7 +375,7 @@ function TrendingSection({ trending }: { trending: any[] }) {
           <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
             <span className={`h-1.5 w-1.5 rounded-full bg-primary ${loading ? "animate-ping" : "animate-pulse"}`} />
             {loading ? "Syncing mandis" : "Live · Agmarknet"}
-            {updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}` : ""}
+            {updated ? ` · ${updated}` : ""}
           </span>
           <Link to="/crops" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80">
             Browse library <ArrowRight className="h-4 w-4" />
