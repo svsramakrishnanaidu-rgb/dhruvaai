@@ -60,7 +60,11 @@ function Home() {
           <HeroSection loc={loc} p={p} featured={featured} heroImg={heroImg} />
           <MarqueeStrip />
           <FeatureGrid />
+          <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6">
+            <TopTrendingBar />
+          </div>
           <TrendingSection trending={trending} />
+
           <CategoriesSection />
           <StatsSection cropsCount={CROP_LIST.length} />
           <TestimonialsSection />
