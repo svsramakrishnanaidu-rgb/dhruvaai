@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import {
-  ArrowRight, ArrowUpRight, MapPin, Sprout, Sun, TrendingUp, Leaf, Droplets,
+  ArrowRight, ArrowUpRight, MapPin, Sprout, Sun, TrendingUp, TrendingDown, Leaf, Droplets,
   BarChart3, Compass, LineChart, ShieldCheck, CloudRain, Wind,
   Sparkles, Languages, Star, Quote, PlayCircle,
 } from "lucide-react";
@@ -8,6 +9,9 @@ import { CROP_LIST } from "@/data/crops";
 import { Reveal } from "@/components/Reveal";
 import { MobileHome } from "@/components/MobileHome";
 import { useIsDesktop } from "@/hooks/use-viewport";
+import { useAgmarknetLive, type LiveCommodity } from "@/lib/agmarknet-live";
+import { TopTrendingBar } from "@/components/TopTrendingBar";
+
 
 
 import { CountUp } from "@/components/CountUp";
