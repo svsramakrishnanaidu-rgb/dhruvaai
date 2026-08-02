@@ -7,16 +7,21 @@ import {
   Loader2,
   AlertTriangle,
   Smartphone,
+  Settings,
+  Navigation,
   CheckCircle2,
   XCircle,
   CircleHelp,
 } from "lucide-react";
 import {
-  detectLocation,
   isGeoUsable,
   isStandalone,
+  locationSettingsHint,
   onPermissionChange,
+  openAppPermissionSettings,
+  openLocationSettings,
   readGeoPermission,
+  requestLocationPermission,
 } from "@/lib/geolocate";
 import { reverseGeocodePlace } from "@/lib/live-weather";
 
@@ -51,6 +56,7 @@ function PermissionsPage() {
   const [place, setPlace] = useState<string | null>(null);
   const [installed, setInstalled] = useState(false);
   const [secure, setSecure] = useState(true);
+  const [servicesOff, setServicesOff] = useState(false);
 
   const refresh = useCallback(async () => {
     setPerm(await readGeoPermission());
@@ -63,20 +69,32 @@ function PermissionsPage() {
     return onPermissionChange((s) => setPerm(s));
   }, [refresh]);
 
+  /** Runtime permission request — fired from a real tap, as Android requires. */
   const allow = async () => {
     setBusy(true);
     setNote(null);
-    const res = await detectLocation({ prompt: true });
+    const res = await requestLocationPermission({ highAccuracy: true });
     setBusy(false);
+    setServicesOff(res.servicesOff);
     await refresh();
-    if (res.status === "granted") {
+    if (res.granted) {
       setNote(
-        res.approximate
-          ? "Approximate location in use. Turn on device GPS for street-level accuracy."
-          : "Live location enabled. Weather now follows your current place.",
+        `Live location enabled${res.result?.district ? ` — ${res.result.district}` : ""}. Weather now follows your current place.`,
       );
     } else {
-      setNote(res.reason ?? "Location could not be read. Check your device location settings.");
+      setNote(
+        `${res.reason ?? "Location could not be read."} ${locationSettingsHint(res.servicesOff ? "services" : "permission")}`,
+      );
+    }
+  };
+
+  /** Deep-link into the OS settings screen when location is off or blocked. */
+  const goToSettings = () => {
+    const opened = servicesOff
+      ? openLocationSettings()
+      : openAppPermissionSettings() || openLocationSettings();
+    if (!opened) {
+      setNote(locationSettingsHint(servicesOff ? "services" : "permission"));
     }
   };
 
@@ -157,6 +175,15 @@ function PermissionsPage() {
           >
             Test live fix
           </button>
+          {(servicesOff || perm === "denied") && (
+            <button
+              onClick={goToSettings}
+              className="tap inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-5 py-2.5 text-sm font-semibold text-amber-200"
+            >
+              <Settings className="h-4 w-4" />
+              {servicesOff ? "Turn on location services" : "Open app settings"}
+            </button>
+          )}
           <Link
             to="/weather"
             className="tap inline-flex items-center gap-2 rounded-full border border-border/60 px-5 py-2.5 text-sm font-semibold text-muted-foreground"
@@ -175,6 +202,17 @@ function PermissionsPage() {
             <AlertTriangle className="mt-px h-3.5 w-3.5 flex-none text-accent" />
             <span>{note}</span>
           </p>
+        )}
+
+        {servicesOff && (
+          <div className="mt-4 flex items-start gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs leading-relaxed text-amber-200">
+            <Navigation className="mt-px h-4 w-4 flex-none" />
+            <span>
+              <strong className="block text-sm">Location services are turned off</strong>
+              The permission is fine, but your device can't produce a fix while the system Location
+              toggle is off. {locationSettingsHint("services")}
+            </span>
+          </div>
         )}
 
         {perm === "denied" && (

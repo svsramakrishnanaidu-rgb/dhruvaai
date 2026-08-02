@@ -126,6 +126,199 @@ export function onPermissionChange(cb: (s: PermissionState) => void): () => void
   };
 }
 
+/* ============================================================================
+   RUNTIME PERMISSION REQUEST (Android / iOS)
+   ----------------------------------------------------------------------------
+   The Android manifest declares ACCESS_FINE_LOCATION / ACCESS_COARSE_LOCATION,
+   but on Android 6+ (and in every WebView/TWA wrapper) the manifest entry only
+   makes the permission *requestable* — the OS dialog must still be triggered at
+   runtime, from a real user gesture. `requestLocationPermission()` is that
+   runtime request: call it from a tap/click handler only.
+   ========================================================================== */
+
+export type LocationRequestOutcome = {
+  /** Coarse classification of what happened. */
+  status: "granted" | "denied" | "servicesOff" | "timeout" | "insecure" | "unsupported";
+  granted: boolean;
+  /** True when permission is fine but the device's Location toggle is OFF. */
+  servicesOff: boolean;
+  /** True when the user blocked us permanently (needs app/site settings). */
+  blocked: boolean;
+  reason?: string;
+  /** Resolved state/district when the fix succeeded. */
+  result?: GeoResult;
+  accuracy?: number;
+};
+
+export function isAndroid(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /android/i.test(navigator.userAgent);
+}
+
+export function isIOS(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent;
+  return /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && (navigator.maxTouchPoints ?? 0) > 1);
+}
+
+/**
+ * Runtime location permission request.
+ *
+ * Must be invoked inside a user gesture — Android Chrome silently auto-denies
+ * geolocation prompts raised outside one. Never throws; always resolves with a
+ * classified outcome the UI can act on (ask again vs. open settings vs. turn on
+ * location services).
+ */
+export async function requestLocationPermission(
+  opts: { highAccuracy?: boolean; timeout?: number } = {},
+): Promise<LocationRequestOutcome> {
+  const { highAccuracy = true, timeout = 15000 } = opts;
+
+  if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
+    return {
+      status: "unsupported", granted: false, servicesOff: false, blocked: false,
+      reason: "This device or browser doesn't provide a location API.",
+    };
+  }
+
+  if (!isGeoUsable()) {
+    return {
+      status: "insecure", granted: false, servicesOff: false, blocked: false,
+      reason: "Precise location needs a secure (https) connection.",
+    };
+  }
+
+  // Pre-check: if the user already permanently blocked us, the OS dialog will
+  // never appear again — send them to settings instead of a silent no-op.
+  const pre = await readGeoPermission();
+  log("runtime-request:pre", pre);
+  if (pre === "denied") {
+    geoFlags.markAsked();
+    return {
+      status: "denied", granted: false, servicesOff: false, blocked: true,
+      reason: "Location permission is blocked for this app. Enable it in settings to continue.",
+    };
+  }
+
+  // This call is what actually raises the Android/iOS permission dialog.
+  const first = await getPosition({ enableHighAccuracy: highAccuracy, timeout, maximumAge: 0 });
+  geoFlags.markAsked();
+
+  if (first.ok) {
+    const c = first.pos.coords;
+    const result = await applyCoords(c.latitude, c.longitude, c.accuracy);
+    return {
+      status: "granted", granted: true, servicesOff: false, blocked: false,
+      result, accuracy: c.accuracy,
+    };
+  }
+
+  log("runtime-request:failed", first);
+
+  // 1 = PERMISSION_DENIED
+  if (first.code === 1) {
+    const after = await readGeoPermission();
+    return {
+      status: "denied", granted: false, servicesOff: false,
+      blocked: after === "denied",
+      reason: "Location access was denied. Allow it in settings to get local weather, soil and mandi data.",
+    };
+  }
+
+  // 2 = POSITION_UNAVAILABLE — on Android this is what you get when the OS
+  // Location toggle is off or no provider can produce a fix.
+  if (first.code === 2) {
+    return {
+      status: "servicesOff", granted: false, servicesOff: true, blocked: false,
+      reason: "Location services are turned off on your device. Turn on Location, then try again.",
+    };
+  }
+
+  // 3 / 0 = timeout or WebView weirdness — one low-accuracy retry before giving up.
+  const retry = await getPosition({ enableHighAccuracy: false, timeout: 10000, maximumAge: 60_000 });
+  if (retry.ok) {
+    const c = retry.pos.coords;
+    const result = await applyCoords(c.latitude, c.longitude, c.accuracy);
+    return {
+      status: "granted", granted: true, servicesOff: false, blocked: false,
+      result, accuracy: c.accuracy,
+    };
+  }
+  if (retry.code === 2) {
+    return {
+      status: "servicesOff", granted: false, servicesOff: true, blocked: false,
+      reason: "Location services are turned off on your device. Turn on Location, then try again.",
+    };
+  }
+
+  return {
+    status: "timeout", granted: false, servicesOff: false, blocked: false,
+    reason: "GPS didn't respond in time. Move to an open area or try again.",
+  };
+}
+
+/**
+ * Deep-links to the device location settings.
+ *
+ * Android (Chrome / TWA / WebView) honours `intent:` URLs, so we can open the
+ * system "Location" screen directly. iOS only allows `app-settings:` from a
+ * native shell, so it returns false there and the UI shows manual steps.
+ *
+ * @returns true when a settings screen was actually requested.
+ */
+export function openLocationSettings(): boolean {
+  if (typeof window === "undefined") return false;
+
+  if (isAndroid()) {
+    try {
+      // System Settings → Location
+      window.location.href =
+        "intent://#Intent;action=android.settings.LOCATION_SOURCE_SETTINGS;end";
+      return true;
+    } catch { /* fall through */ }
+  }
+
+  if (isIOS()) {
+    try {
+      window.location.href = "app-settings:";
+      return true;
+    } catch { /* fall through */ }
+  }
+
+  return false;
+}
+
+/** Opens the per-app/site permission screen (Android app details page). */
+export function openAppPermissionSettings(): boolean {
+  if (typeof window === "undefined") return false;
+  if (isAndroid()) {
+    try {
+      window.location.href =
+        "intent://#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;end";
+      return true;
+    } catch { /* noop */ }
+  }
+  return false;
+}
+
+/** Step-by-step copy for devices where we can't deep-link into settings. */
+export function locationSettingsHint(kind: "services" | "permission"): string {
+  if (isAndroid()) {
+    return kind === "services"
+      ? "Swipe down the quick settings panel and turn on Location, then tap Try again."
+      : "Open Settings → Apps → Krish Sense → Permissions → Location → Allow, then tap Try again.";
+  }
+  if (isIOS()) {
+    return kind === "services"
+      ? "Open Settings → Privacy & Security → Location Services and turn it on, then tap Try again."
+      : "Open Settings → Safari → Location → Allow, then tap Try again.";
+  }
+  return kind === "services"
+    ? "Turn on your system location service, then tap Try again."
+    : "Open your browser's site settings → Permissions → Location → Allow, then tap Try again.";
+}
+
+
 type PosOutcome =
   | { ok: true; pos: GeolocationPosition }
   | { ok: false; code: 0 | 1 | 2 | 3; message: string };
