@@ -112,16 +112,22 @@ async function fetchPage(
   q: AgmarknetQuery,
   limit: number,
   offset: number,
-  retries = 2,
+  retries = 3,
 ): Promise<{ total: number; records: AgmarknetRecord[] }> {
   const url = `${ENDPOINT}?${buildParams(key, q, limit, offset).toString()}`;
   let lastErr = "";
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const res = await fetch(url, { headers: { accept: "application/json" } });
+      if (res.status === 429) {
+        lastErr = "Upstream rate limit (429). Please update DATA_GOV_IN_API_KEY in secrets for higher limits.";
+        // On 429, wait longer before retry
+        await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+        continue;
+      }
       if (!res.ok) {
         lastErr = `Upstream ${res.status}`;
-        if (res.status < 500) break;
+        if (res.status < 500) break; // Don't retry client errors except 429
       } else {
         const json = (await res.json()) as { total?: number; records?: RawRecord[] };
         const records = normalize(json.records ?? []);
@@ -130,7 +136,7 @@ async function fetchPage(
     } catch (err) {
       lastErr = err instanceof Error ? err.message : String(err);
     }
-    await new Promise((r) => setTimeout(r, 350 * (attempt + 1)));
+    await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
   }
   throw new Error(lastErr || "Agmarknet request failed");
 }
@@ -184,14 +190,16 @@ export async function agmarknetQueryPaged(q: AgmarknetQuery): Promise<AgmarknetR
       const MAX_REQUESTS = 96; // keeps latency sane on low-quota keys
       for (let o = (q.offset ?? 0) + effective; o < target && offsets.length < MAX_REQUESTS; o += effective) offsets.push(o);
 
-      const CONCURRENCY = 8;
+      const CONCURRENCY = 4; // Reduced from 8 to mitigate 429 errors
       for (let i = 0; i < offsets.length; i += CONCURRENCY) {
         const batch = offsets.slice(i, i + CONCURRENCY);
         const pages = await Promise.all(
-          batch.map((o) => fetchPage(key, q, requested, o, 1).catch(() => ({ total, records: [] as AgmarknetRecord[] }))),
+          batch.map((o) => fetchPage(key, q, requested, o, 2).catch(() => ({ total, records: [] as AgmarknetRecord[] }))),
         );
         for (const p of pages) all.push(...p.records);
         if (all.length >= target) break;
+        // Small delay between batches to further mitigate rate limiting
+        await new Promise(r => setTimeout(r, 200));
       }
     }
   } catch (err) {
