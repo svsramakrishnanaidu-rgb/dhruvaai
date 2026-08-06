@@ -29,7 +29,7 @@ export function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Here's an enhanced version in a copy-friendly format:\n\nRedesign the Diseases section to display diseases on a crop-wise basis. When a user selects or searches for a specific crop, show all diseases associated with that crop in a well-organized layout. For each disease, include its name, symptoms, causes, affected growth stage, severity level, preventive measures, treatment methods, recommended pesticides/fungicides/bio-control solutions, dosage, application method, safety precautions, and high-quality reference images. Ensure every major crop grown in India is covered with comprehensive, accurate, and easy-to-navigate information. Also provide search, filter, and category options for quick access to crop-specific disease information."
+        aria-label="Here's a clearer and more professional version in copy-friendly format:\n\nDisplay diseases strictly based on the selected crop. When a user selects or searches for a specific crop, show only the diseases related to that crop. Do not display diseases from any other crops. The Diseases section should dynamically filter and update its content based on the selected crop, ensuring users see only relevant disease information. If no crop is selected, prompt the user to choose a crop first instead of displaying all diseases. This creates a clean, crop-specific experience and prevents unrelated disease information from appearing."
         aria-expanded={open}
         aria-haspopup="listbox"
         className="tap flex items-center gap-1.5 rounded-full px-2.5 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
@@ -40,7 +40,7 @@ export function LanguageSwitcher() {
       {open && (
         <ul
           role="listbox"
-          aria-label="Here's an enhanced version in a copy-friendly format:\n\nRedesign the Diseases section to display diseases on a crop-wise basis. When a user selects or searches for a specific crop, show all diseases associated with that crop in a well-organized layout. For each disease, include its name, symptoms, causes, affected growth stage, severity level, preventive measures, treatment methods, recommended pesticides/fungicides/bio-control solutions, dosage, application method, safety precautions, and high-quality reference images. Ensure every major crop grown in India is covered with comprehensive, accurate, and easy-to-navigate information. Also provide search, filter, and category options for quick access to crop-specific disease information."
+          aria-label="Here's a clearer and more professional version in copy-friendly format:\n\nDisplay diseases strictly based on the selected crop. When a user selects or searches for a specific crop, show only the diseases related to that crop. Do not display diseases from any other crops. The Diseases section should dynamically filter and update its content based on the selected crop, ensuring users see only relevant disease information. If no crop is selected, prompt the user to choose a crop first instead of displaying all diseases. This creates a clean, crop-specific experience and prevents unrelated disease information from appearing."
           className="absolute right-0 top-11 z-50 w-44 overflow-hidden rounded-xl border border-border/60 bg-popover shadow-2xl"
           style={{ animation: "scale-in .18s var(--ease-out-expo) both" }}
         >
