@@ -4,6 +4,8 @@ import img from "@/assets/crop-cotton.jpg";
 const cotton: Crop = {
   slug: "cotton",
   name: "Cotton",
+  localNames: { te: "ప్రత్తి (Cotton)", hi: "कपास (Cotton)", ta: "பருத்தி", kn: "ಹತ್ತಿ", ml: "പരുത്തി" },
+  tags: ["kapas", "pratti", "paruthi", "hatti", "bollworm", "fiber", "silver"],
   scientificName: "Gossypium hirsutum",
   image: img,
   emoji: "🌱",
