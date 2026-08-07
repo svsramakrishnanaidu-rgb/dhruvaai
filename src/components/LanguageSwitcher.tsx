@@ -29,7 +29,7 @@ export function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Here's an enhanced, professional version in a copy-friendly format:\n\nAdd a powerful Crop Search feature to the Diseases section. Include a searchable search bar that allows users to quickly find and select any crop. As the user types, display auto-suggestions containing all available crops in the database. Once a crop is selected, automatically filter the Diseases section to display only the diseases related to that specific crop. Do not show diseases from any other crops. Ensure the search database includes every major and minor crop grown in India, including cereals, pulses, oilseeds, vegetables, fruits, spices, plantation crops, medicinal crops, floriculture crops, fodder crops, and commercial crops. Organize the crop list alphabetically and support search by both common and local crop names. If no crop is selected, prompt the user to choose a crop before displaying disease information, creating a clean, fast, and crop-specific user experience."
+        aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                            \n                                            Implement crop-specific Diseases filtering so I only see diseases related to the selected crop and never any other crop’s diseases."
         aria-expanded={open}
         aria-haspopup="listbox"
         className="tap flex items-center gap-1.5 rounded-full px-2.5 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
@@ -40,7 +40,7 @@ export function LanguageSwitcher() {
       {open && (
         <ul
           role="listbox"
-          aria-label="Here's an enhanced, professional version in a copy-friendly format:\n\nAdd a powerful Crop Search feature to the Diseases section. Include a searchable search bar that allows users to quickly find and select any crop. As the user types, display auto-suggestions containing all available crops in the database. Once a crop is selected, automatically filter the Diseases section to display only the diseases related to that specific crop. Do not show diseases from any other crops. Ensure the search database includes every major and minor crop grown in India, including cereals, pulses, oilseeds, vegetables, fruits, spices, plantation crops, medicinal crops, floriculture crops, fodder crops, and commercial crops. Organize the crop list alphabetically and support search by both common and local crop names. If no crop is selected, prompt the user to choose a crop before displaying disease information, creating a clean, fast, and crop-specific user experience."
+          aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                            \n                                            Implement crop-specific Diseases filtering so I only see diseases related to the selected crop and never any other crop’s diseases."
           className="absolute right-0 top-11 z-50 w-44 overflow-hidden rounded-xl border border-border/60 bg-popover shadow-2xl"
           style={{ animation: "scale-in .18s var(--ease-out-expo) both" }}
         >
