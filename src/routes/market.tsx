@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, YAxis, XAxis, Tooltip, CartesianGrid, Cell } from "recharts";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
+import { IMAGE_PRESETS } from "@/lib/smart-image";
 import { HeroBanner } from "@/components/HeroBanner";
 import heroImg from "@/assets/heroes/market.jpg";
 import {
@@ -129,7 +130,22 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
   const t = tone(s.deltaPct);
   const gid = `spk-${s.commodity.replace(/[^a-z0-9]/gi, "")}`;
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/60 p-4 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-elegant">
+    <article className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/60 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-elegant">
+      <div className="relative aspect-video w-full overflow-hidden">
+        <img 
+          src={IMAGE_PRESETS.market(s.commodity)} 
+          alt={s.commodity} 
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
+          loading="lazy" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/20 to-transparent" />
+        <div className="absolute right-3 top-3">
+          <button onClick={onFav} aria-label={isFav ? "Remove favourite" : "Add favourite"} className="rounded-full bg-black/40 p-2 text-white backdrop-blur-md transition hover:bg-black/60 hover:text-primary">
+            <Star className={`h-4 w-4 ${isFav ? "fill-primary text-primary" : ""}`} />
+          </button>
+        </div>
+      </div>
+      <div className="p-4">
       <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-primary/10 blur-3xl" />
       <header className="flex items-start justify-between gap-2">
         <button onClick={onOpen} className="min-w-0 flex-1 text-left">
@@ -138,9 +154,6 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
             <MapPin className="h-3 w-3 shrink-0" />
             <span className="truncate">{s.topMandi ? `${s.topMandi.market}, ${s.topMandi.state}` : "—"}</span>
           </div>
-        </button>
-        <button onClick={onFav} aria-label={isFav ? "Remove favourite" : "Add favourite"} className="shrink-0 rounded-full p-1.5 text-muted-foreground transition hover:bg-secondary/60 hover:text-primary">
-          <Star className={`h-4 w-4 ${isFav ? "fill-primary text-primary" : ""}`} />
         </button>
       </header>
 
@@ -189,6 +202,7 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
         <span className="tabular-nums">{s.markets} mandis · {s.states} states</span>
         <span className="tabular-nums">{s.lastArrival}</span>
       </footer>
+      </div>
     </article>
   );
 }
