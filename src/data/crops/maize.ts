@@ -4,6 +4,8 @@ import img from "@/assets/crop-maize.jpg";
 const maize: Crop = {
   slug: "maize",
   name: "Maize",
+  localNames: { te: "మొక్కజొన్న (Maize)", hi: "मक्का (Maize)", ta: "மக்காச்சோளம்", kn: "ಮೆಕ್ಕೆಜೋಳ", ml: "ചോളം" },
+  tags: ["makka", "mokka", "jonna", "corn", "sweetcorn", "makai"],
   scientificName: "Zea mays",
   image: img,
   emoji: "🌽",
