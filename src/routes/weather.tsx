@@ -567,7 +567,17 @@ function WeatherPage() {
 
       {/* HERO CONDITION CARD */}
       <section className="mx-auto mt-6 max-w-7xl px-6">
-        <div className="relative overflow-hidden rounded-3xl border border-border/40">
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-border/40 shadow-2xl">
+          {weatherImage && (
+            <div className="absolute inset-0 z-0">
+              <img 
+                src={weatherImage} 
+                alt="Live weather condition" 
+                className="h-full w-full object-cover opacity-40 mix-blend-overlay transition-opacity duration-1000"
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-transparent" />
+            </div>
+          )}
           <WeatherBackground kind={kind} />
           <div className="relative z-10 grid gap-6 p-6 md:grid-cols-[1.2fr_1fr] md:p-10">
             <div>
