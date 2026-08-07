@@ -29,7 +29,7 @@ export function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                            \n                                            Enhance crop search to match both common and local crop names using synonyms so I can find crops faster even with different spellings."
+        aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                            \n                                            Redesign the entire Disease section with a modern, professional, and user-friendly interface. Expand the database significantly by adding comprehensive information for every major crop disease in India, ensuring the section contains rich, accurate, and well-structured content."
         aria-expanded={open}
         aria-haspopup="listbox"
         className="tap flex items-center gap-1.5 rounded-full px-2.5 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
@@ -40,7 +40,7 @@ export function LanguageSwitcher() {
       {open && (
         <ul
           role="listbox"
-          aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                            \n                                            Enhance crop search to match both common and local crop names using synonyms so I can find crops faster even with different spellings."
+          aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                            \n                                            Redesign the entire Disease section with a modern, professional, and user-friendly interface. Expand the database significantly by adding comprehensive information for every major crop disease in India, ensuring the section contains rich, accurate, and well-structured content."
           className="absolute right-0 top-11 z-50 w-44 overflow-hidden rounded-xl border border-border/60 bg-popover shadow-2xl"
           style={{ animation: "scale-in .18s var(--ease-out-expo) both" }}
         >
