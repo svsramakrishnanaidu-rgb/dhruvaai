@@ -88,7 +88,9 @@ function Diseases() {
                 <div className="flex items-center gap-4">
                   <span className="text-4xl">{selectedCrop?.emoji}</span>
                   <div>
-                    <h2 className="font-display text-2xl font-bold uppercase tracking-tight"><T>{selectedCrop?.name}</T></h2>
+                    <h2 className="font-display text-2xl font-bold uppercase tracking-tight">
+                      <T>{selectedCrop?.name || ""}</T>
+                    </h2>
                     <p className="text-xs italic text-muted-foreground">{selectedCrop?.scientificName}</p>
                   </div>
                 </div>
