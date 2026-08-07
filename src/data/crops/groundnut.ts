@@ -4,6 +4,8 @@ import img from "@/assets/crop-groundnut.jpg";
 const groundnut: Crop = {
   slug: "groundnut",
   name: "Groundnut",
+  localNames: { te: "వేరుశనగ (Groundnut)", hi: "मूंगफली (Groundnut)", ta: "நிலக்கடலை", kn: "ನೆಲಗಡಲೆ", ml: "നിലക്കടല" },
+  tags: ["peanut", "verusenaga", "mungfali", "sing", "kadalai", "earthnut"],
   scientificName: "Arachis hypogaea",
   image: img,
   emoji: "🥜",

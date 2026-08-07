@@ -13,6 +13,8 @@ const landPrep = [
 const rice: Crop = {
   slug: "rice",
   name: "Rice (Paddy)",
+  localNames: { te: "వరి (Paddy)", hi: "चावल (Paddy)", ta: "நெல்", kn: "ಭತ್ತ", ml: "നെല്ല്" },
+  tags: ["paddy", "dhana", "chawal", "annapoorna", "vari", "nellu", "vattu"],
   scientificName: "Oryza sativa",
   image: img,
   emoji: "🌾",

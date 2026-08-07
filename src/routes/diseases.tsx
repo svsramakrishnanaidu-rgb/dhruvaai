@@ -26,7 +26,9 @@ function Diseases() {
     return CROP_LIST.filter(c => 
       c.name.toLowerCase().includes(q) || 
       c.scientificName.toLowerCase().includes(q) ||
-      (c.category && c.category.toLowerCase().includes(q))
+      (c.category && c.category.toLowerCase().includes(q)) ||
+      (c.tags && c.tags.some(t => t.toLowerCase().includes(q))) ||
+      (c.localNames && Object.values(c.localNames).some(v => v?.toLowerCase().includes(q)))
     );
   }, [search]);
 
