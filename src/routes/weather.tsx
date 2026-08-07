@@ -34,6 +34,7 @@ import {
   AlertTriangle,
   Zap,
 } from "lucide-react";
+import { IMAGE_PRESETS } from "@/lib/smart-image";
 import { HeroBanner } from "@/components/HeroBanner";
 import { ManualLocationPicker, type ManualPlace } from "@/components/ManualLocationPicker";
 import { Reveal } from "@/components/Reveal";
@@ -442,6 +443,12 @@ function WeatherPage() {
     : "clear-day";
 
   const advisories = bundle ? buildAdvisories(bundle) : [];
+
+  const weatherImage = useMemo(() => {
+    if (!bundle) return null;
+    const cond = codeToSky(bundle.current.weatherCode);
+    return IMAGE_PRESETS.weather(cond);
+  }, [bundle]);
   const uv = bundle ? uvCategory(bundle.current.uv) : null;
 
   // Chart data
