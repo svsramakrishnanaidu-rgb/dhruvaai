@@ -1,4 +1,5 @@
 import { Disease } from "./types";
+import { IMAGE_PRESETS } from "@/lib/smart-image";
 
 export const DISEASE_DATABASE: Disease[] = [
   {
@@ -9,7 +10,7 @@ export const DISEASE_DATABASE: Disease[] = [
     affectedCrops: ["rice"],
     severity: "Critical",
     yieldLossEstimation: "30% - 100% in severe cases",
-    images: ["https://images.unsplash.com/photo-1599824694406-8d5918731502?q=80&w=1000"],
+    images: [IMAGE_PRESETS.disease("Rice", "Blast")],
     symptoms: {
       early: "Small bluish-green spots on leaves that look like water-soaked lesions.",
       mid: "Spots enlarge into spindle-shaped lesions with grey centers and brown borders.",
@@ -81,7 +82,7 @@ export const DISEASE_DATABASE: Disease[] = [
     affectedCrops: ["cotton"],
     severity: "Critical",
     yieldLossEstimation: "20% - 80% depending on stage of infection",
-    images: ["https://images.unsplash.com/photo-1594910413538-4e5595304b08?q=80&w=1000"],
+    images: [IMAGE_PRESETS.disease("Cotton", "Leaf Curl Virus")],
     symptoms: {
       early: "Thickening of veins on the underside of young leaves.",
       mid: "Leaves begin to curl upwards or downwards; leaves become leathery.",
