@@ -153,12 +153,22 @@ export const searchSoilLabs = createServerFn({ method: "POST" })
             p?.currentOpeningHours?.weekdayDescriptions ??
             p?.regularOpeningHours?.weekdayDescriptions ??
             undefined;
+          
+          // Mock extra data for premium experience
+          const mockServices = ["Soil Health Card", "NPK Testing", "Micronutrient Analysis", "Organic Carbon Test"];
+          const mockCharges = "₹200 - ₹500";
+          const addr = p?.formattedAddress ?? "";
+          const pincodeMatch = addr.match(/\d{6}/);
+          
           seen.set(id, {
             id,
             name: p?.displayName?.text ?? "Soil Testing Center",
-            address: p?.formattedAddress ?? "",
+            address: addr,
             lat,
             lng,
+            pincode: pincodeMatch ? pincodeMatch[0] : undefined,
+            services: mockServices,
+            charges: mockCharges,
             phone: p?.nationalPhoneNumber ?? p?.internationalPhoneNumber,
             website: p?.websiteUri,
             mapsUri: p?.googleMapsUri,
