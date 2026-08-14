@@ -243,7 +243,12 @@ function DetailDrawer({ s, updated, onClose, onAlert }: {
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-background/70 backdrop-blur-sm" role="dialog" aria-label={`${s.commodity} market detail`}>
       <button className="flex-1" aria-label="Close detail" onClick={onClose} />
-      <div className="h-full w-full max-w-2xl overflow-y-auto border-l border-border/60 bg-card/95 p-4 sm:p-6">
+      <div className="h-full w-full max-w-2xl overflow-y-auto border-l border-border/60 bg-card/95 p-4 sm:p-6 shadow-2xl">
+        <div className="relative mb-6 -mx-4 -mt-4 aspect-video sm:-mx-6 sm:-mt-6">
+          <DetailImage commodity={s.commodity} />
+          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+        </div>
+
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
@@ -391,6 +396,19 @@ function DetailDrawer({ s, updated, onClose, onAlert }: {
     </div>
   );
 }
+
+function DetailImage({ commodity }: { commodity: string }) {
+  const [err, setErr] = useState(false);
+  return (
+    <img 
+      src={err ? IMAGE_PRESETS.crop(commodity) : IMAGE_PRESETS.market(commodity)}
+      alt={commodity}
+      className="h-full w-full object-cover"
+      onError={() => setErr(true)}
+    />
+  );
+}
+
 
 /* ------------------------------------------------------------------ */
 /*  Page                                                               */
