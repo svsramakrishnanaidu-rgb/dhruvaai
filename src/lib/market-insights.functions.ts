@@ -14,15 +14,15 @@ export interface MarketInsightSummary {
 
 export interface MarketInsights {
   ok: boolean;
-  headline: string;
-  summary: string;
-  bullish: string[];
-  bearish: string[];
-  volatile: string[];
-  actionable: string[];
-  forecast: { horizon: string; view: string }[];
-  bestBuy: string;
-  bestSell: string;
+  headline: { en: string; te: string; hi: string };
+  summary: { en: string; te: string; hi: string };
+  bullish: { en: string[]; te: string[]; hi: string[] };
+  bearish: { en: string[]; te: string[]; hi: string[] };
+  volatile: { en: string[]; te: string[]; hi: string[] };
+  actionable: { en: string[]; te: string[]; hi: string[] };
+  forecast: { en: string; te: string; hi: string };
+  bestBuy: { en: string; te: string; hi: string };
+  bestSell: { en: string; te: string; hi: string };
   riskLevel: "Low" | "Moderate" | "High";
   error?: string;
 }
@@ -41,6 +41,8 @@ Schema:
   "volatile": { "en": string[], "te": string[], "hi": string[] },
   "actionable": { "en": string[], "te": string[], "hi": string[] },
   "forecast": { "en": string, "te": string, "hi": string },
+  "bestBuy": { "en": string, "te": string, "hi": string },
+  "bestSell": { "en": string, "te": string, "hi": string },
   "riskLevel": "Low"|"Moderate"|"High"
 }`;
 
@@ -108,15 +110,15 @@ export const generateMarketInsights = createServerFn({ method: "POST" })
       const parsed = JSON.parse(text) as Partial<MarketInsights>;
       return {
         ok: true,
-        headline: parsed.headline ?? "",
-        summary: parsed.summary ?? "",
-        bullish: parsed.bullish ?? [],
-        bearish: parsed.bearish ?? [],
-        volatile: parsed.volatile ?? [],
-        actionable: parsed.actionable ?? [],
-        forecast: parsed.forecast ?? [],
-        bestBuy: parsed.bestBuy ?? "",
-        bestSell: parsed.bestSell ?? "",
+        headline: parsed.headline ?? { en: "", te: "", hi: "" },
+        summary: parsed.summary ?? { en: "", te: "", hi: "" },
+        bullish: parsed.bullish ?? { en: [], te: [], hi: [] },
+        bearish: parsed.bearish ?? { en: [], te: [], hi: [] },
+        volatile: parsed.volatile ?? { en: [], te: [], hi: [] },
+        actionable: parsed.actionable ?? { en: [], te: [], hi: [] },
+        forecast: parsed.forecast ?? { en: "", te: "", hi: "" },
+        bestBuy: parsed.bestBuy ?? { en: "", te: "", hi: "" },
+        bestSell: parsed.bestSell ?? { en: "", te: "", hi: "" },
         riskLevel: (parsed.riskLevel as MarketInsights["riskLevel"]) ?? "Moderate",
       };
     } catch (err) {
