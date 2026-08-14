@@ -194,11 +194,12 @@ function HeroTile() {
       </p>
       <Link
         to="/crops"
-        className="btn-gold font-display inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[11px] uppercase tracking-widest active:scale-95"
+        className="btn-gold font-display inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-[12px] uppercase tracking-widest active:scale-95"
       >
         Explore Crops
-        <ArrowRight className="h-3 w-3" />
+        <ArrowRight className="h-4 w-4" />
       </Link>
+
     </div>
   );
 }
@@ -620,15 +621,18 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-center gap-3">
-        <div className="h-px w-8 bg-accent" />
-        <div className="flex gap-1.5">
-          <div className="h-1.5 w-1.5 rotate-45 bg-accent" />
-          <div className="h-1.5 w-1.5 rotate-45 border border-accent/40 bg-accent/20" />
-          <div className="h-1.5 w-1.5 rotate-45 border border-accent/40 bg-accent/20" />
+      <div className="flex items-center justify-center gap-4 py-2">
+        <div className="h-[2px] w-10 bg-accent/40 rounded-full overflow-hidden">
+          <div className="h-full w-1/3 bg-accent animate-[shimmer_2s_infinite]" />
         </div>
-        <div className="h-px w-8 bg-accent/30" />
+        <div className="flex gap-2">
+          <div className="h-2 w-2 rotate-45 bg-accent shadow-[0_0_8px_var(--accent)]" />
+          <div className="h-2 w-2 rotate-45 border border-accent/40 bg-white/10" />
+          <div className="h-2 w-2 rotate-45 border border-accent/40 bg-white/10" />
+        </div>
+        <div className="h-[2px] w-10 bg-accent/20 rounded-full" />
       </div>
+
     </div>
   );
 }
