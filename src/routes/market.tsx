@@ -60,14 +60,25 @@ function SmartSearch({
   value, onChange, suggestions, onPick,
 }: { value: string; onChange: (v: string) => void; suggestions: CommoditySummary[]; onPick: (s: CommoditySummary) => void }) {
   const [open, setOpen] = useState(false);
+  const [debouncedValue, setDebouncedValue] = useState(value);
   const boxRef = useRef<HTMLDivElement>(null);
   const voice = useVoiceSearch((text) => { onChange(text); setOpen(true); });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), 300);
+    return () => clearTimeout(timer);
+  }, [value]);
 
   useEffect(() => {
     const h = (e: MouseEvent) => { if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false); };
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
   }, []);
+
+  const filteredSuggestions = useMemo(() => {
+    if (!debouncedValue.trim()) return [];
+    return searchSummaries(suggestions, debouncedValue);
+  }, [debouncedValue, suggestions]);
 
   return (
     <div ref={boxRef} className="relative flex-1 min-w-0">
@@ -97,9 +108,9 @@ function SmartSearch({
         )}
       </div>
 
-      {open && value.trim() && suggestions.length > 0 && (
+      {open && debouncedValue.trim() && filteredSuggestions.length > 0 && (
         <ul className="absolute z-30 mt-2 max-h-80 w-full overflow-auto rounded-xl border border-border/60 bg-card/95 p-1 shadow-elegant backdrop-blur-xl">
-          {suggestions.slice(0, 10).map((s) => (
+          {filteredSuggestions.slice(0, 10).map((s) => (
             <li key={s.commodity}>
               <button
                 onClick={() => { onPick(s); setOpen(false); }}
@@ -121,6 +132,7 @@ function SmartSearch({
     </div>
   );
 }
+
 
 /* ------------------------------------------------------------------ */
 /*  Crop card                                                          */
