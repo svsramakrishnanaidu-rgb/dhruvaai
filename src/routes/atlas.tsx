@@ -65,17 +65,36 @@ function Atlas() {
     [q, mutation],
   );
 
-  const locateMe = useCallback(() => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const query = `${pos.coords.latitude.toFixed(5)},${pos.coords.longitude.toFixed(5)}`;
-        setQ("Current Location");
-        mutation.mutate(query);
-      },
-      () => {},
-      { enableHighAccuracy: true, timeout: 8000 },
-    );
+  const locateMe = useCallback(async () => {
+    try {
+      const { requestLocationPermission } = await import("@/lib/geolocate");
+      const outcome = await requestLocationPermission({ highAccuracy: true, timeout: 10000 });
+      
+      if (outcome.status === "granted" && outcome.result?.status === "granted") {
+        const query = `${outcome.result.accuracy ? 'precise' : 'fixed'}:${outcome.result.state || ''},${outcome.result.district || ''}`;
+        // Note: The geolocate applyCoords already sets the locationStore, 
+        // but for the Atlas we want to trigger the search mutation with coordinates.
+        if (outcome.accuracy) {
+          // If we have raw accuracy, it likely came from a fresh GPS fix
+          // We'll use the coordinates for the search
+          // Note: requestLocationPermission currently doesn't return raw lat/lon in the outcome object directly 
+          // besides via the internal applyCoords call which we'd have to duplicate or expose.
+          // Let's check navigator directly since we just got permission.
+          navigator.geolocation.getCurrentPosition((pos) => {
+            const lat = pos.coords.latitude.toFixed(5);
+            const lon = pos.coords.longitude.toFixed(5);
+            setQ("My Location");
+            mutation.mutate(`${lat},${lon}`);
+          });
+        }
+      } else if (outcome.status === "servicesOff") {
+        // Fallback to coarse if services are off but IP might work
+        setQ("Searching...");
+        mutation.mutate("current location");
+      }
+    } catch (err) {
+      console.error("Atlas location error:", err);
+    }
   }, [mutation]);
 
   const labs = useMemo(() => {

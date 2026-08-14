@@ -62,27 +62,38 @@ export const searchSoilLabs = createServerFn({ method: "POST" })
       "X-Connection-Api-Key": GMAPS,
     };
 
-    // 1) Geocode the query (place / district / PIN / village)
-    const q = `${data.query}, India`;
+    // 1) Handle coordinates or Geocode the query
     let center: AtlasSearchResult["center"] = null;
-    try {
-      const geo = await fetch(
-        `${GATEWAY_URL}/maps/api/geocode/json?address=${encodeURIComponent(q)}&region=in`,
-        { headers: auth },
-      );
-      if (geo.ok) {
-        const gj: any = await geo.json();
-        const r = gj?.results?.[0];
-        if (r?.geometry?.location) {
-          center = {
-            lat: Number(r.geometry.location.lat),
-            lng: Number(r.geometry.location.lng),
-            label: r.formatted_address ?? data.query,
-          };
+    
+    // Check if query is coordinates (lat,lon)
+    const coordMatch = data.query.match(/^([-+]?\d+(\.\d+)?),\s*([-+]?\d+(\.\d+)?)$/);
+    if (coordMatch) {
+      center = {
+        lat: parseFloat(coordMatch[1]),
+        lng: parseFloat(coordMatch[3]),
+        label: "Your Location",
+      };
+    } else {
+      const q = `${data.query}, India`;
+      try {
+        const geo = await fetch(
+          `${GATEWAY_URL}/maps/api/geocode/json?address=${encodeURIComponent(q)}&region=in`,
+          { headers: auth },
+        );
+        if (geo.ok) {
+          const gj: any = await geo.json();
+          const r = gj?.results?.[0];
+          if (r?.geometry?.location) {
+            center = {
+              lat: Number(r.geometry.location.lat),
+              lng: Number(r.geometry.location.lng),
+              label: r.formatted_address ?? data.query,
+            };
+          }
         }
+      } catch {
+        /* fall through */
       }
-    } catch {
-      /* fall through */
     }
 
     if (!center) {
