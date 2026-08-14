@@ -133,6 +133,7 @@ export function useAgmarknetLive(stateOrOpts?: string | UseAgmarknetOpts, legacy
   const [updated, setUpdated] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -158,7 +159,7 @@ export function useAgmarknetLive(stateOrOpts?: string | UseAgmarknetOpts, legacy
     load();
     const id = setInterval(load, refreshMs);
     return () => { alive = false; clearInterval(id); };
-  }, [state, refreshMs, limit, call]);
+  }, [state, refreshMs, limit, call, tick]);
 
   const stats = useMemo(() => {
     if (!data.length) return { total: 0, gainers: 0, losers: 0, avgModal: 0, totalArrivals: 0 };
@@ -169,5 +170,5 @@ export function useAgmarknetLive(stateOrOpts?: string | UseAgmarknetOpts, legacy
     return { total: data.length, gainers, losers, avgModal, totalArrivals };
   }, [data]);
 
-  return { data, updated, loading, error, stats, refresh: () => setTick?.(t => t + 1) || window.location.reload() };
+  return { data, updated, loading, error, stats, refresh: () => setTick(t => t + 1) };
 }
