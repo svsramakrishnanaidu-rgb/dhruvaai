@@ -200,7 +200,8 @@ export interface CommoditySummary {
   weekPct: number;    // change vs ~7 days ago (or window start)
   monthPct: number;   // change vs window start (best available history)
   markets: number;    // mandis reporting latest day
-  arrivals: number;   // total record count (arrival proxy)
+  arrivals: number;   // total records today (arrival proxy)
+  totalRecords: number; // total history count
   states: number;
   topMandi: MandiRow | null;
   cheapestMandi: MandiRow | null;
@@ -222,6 +223,7 @@ export interface CommoditySummary {
   signal: "BUY" | "HOLD" | "SELL";
   advice: string;
 }
+
 
 function regionStats(rows: AgmarknetRecord[], key: "state" | "district"): RegionStat[] {
   const map = new Map<string, AgmarknetRecord[]>();

@@ -179,8 +179,9 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
               <IndianRupee className="h-4 w-4 text-primary" />
               <AnimatedNumber value={s.modal} />
             </div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Modal · ₹/Quintal</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.markets} mandis · ₹/Q</div>
           </div>
+
           <div className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-bold tabular-nums ${t.cls}`}>
             <t.Icon className="h-3 w-3" />{pctText(s.deltaPct)}
           </div>
