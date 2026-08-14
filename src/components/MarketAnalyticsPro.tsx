@@ -242,21 +242,9 @@ export function MarketAnalyticsPro() {
           {/* State + arrivals */}
           <div className="grid gap-3 lg:grid-cols-2">
             <Card title="State-wise market activity & average modal price" icon={MapPin}>
-              <div className="h-72">
-                <ResponsiveContainer>
-                  <ComposedChart data={stateBoard}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.25} />
-                    <XAxis dataKey="name" tick={{ fontSize: 9 }} angle={-25} textAnchor="end" height={70} interval={0} />
-                    <YAxis yAxisId="l" tick={{ fontSize: 10 }} />
-                    <YAxis yAxisId="r" orientation="right" tick={{ fontSize: 10 }} />
-                    <Tooltip contentStyle={chartTip} />
-                    <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Bar yAxisId="l" dataKey="records" name="Records" fill="var(--primary)" fillOpacity={0.5} radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="r" dataKey="avg" name="Avg modal ₹" stroke="#f59e0b" strokeWidth={2} dot={false} />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
+              <StateActivityBoard rows={stateBoard} />
             </Card>
+
 
             <Card title="Arrival quantity leaders (supply pressure)" icon={Layers}>
               <div className="h-72">
