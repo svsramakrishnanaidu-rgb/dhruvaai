@@ -180,10 +180,10 @@ export function ManualLocationPicker({
   };
 
   return (
-    <div ref={rootRef} className="glass mx-auto mt-3 max-w-5xl rounded-3xl">
+    <div ref={rootRef} className={`${variant === 'atlas' ? 'bg-transparent' : 'glass mx-auto mt-3 max-w-5xl'} rounded-3xl`}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="tap flex w-full items-center gap-3 rounded-3xl px-4 py-3 text-left"
+        className={`tap flex w-full items-center gap-3 rounded-3xl ${variant === 'atlas' ? 'px-0' : 'px-4 py-3'} text-left`}
         aria-expanded={open}
       >
         <MapPin className="h-4 w-4 shrink-0 text-primary" />
