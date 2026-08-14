@@ -114,7 +114,7 @@ export async function agmarknetQuery(q: AgmarknetQuery): Promise<AgmarknetRespon
   const task = (async () => {
     try {
       const { total, records } = await fetchPage(key, q, q.limit ?? 500, q.offset ?? 0);
-      const data = AgmarknetResponseSchema.parse({ ok: true, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total, records });
+      const data = AgmarknetResponseSchema.parse({ ok: true, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total, records }) as AgmarknetResponse;
       cache.set(cacheKey, { data, at: Date.now() });
       return data;
     } catch (err) {
@@ -161,7 +161,7 @@ export async function agmarknetQueryPaged(q: AgmarknetQuery): Promise<AgmarknetR
           await new Promise(r => setTimeout(r, 200));
         }
       }
-      const data = AgmarknetResponseSchema.parse({ ok: true, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total: first.total || all.length, records: all });
+      const data = AgmarknetResponseSchema.parse({ ok: true, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total: first.total || all.length, records: all }) as AgmarknetResponse;
       cache.set(cacheKey, { data, at: Date.now() });
       return data;
     } catch (err) {
