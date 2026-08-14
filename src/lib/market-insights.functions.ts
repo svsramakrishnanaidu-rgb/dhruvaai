@@ -28,22 +28,22 @@ export interface MarketInsights {
 }
 
 const SYSTEM = `You are an expert Indian agricultural market analyst.
-You will receive a JSON snapshot of live Agmarknet mandi prices (data.gov.in) for many commodities across India.
-Produce a concise, farmer-facing market brief in clear plain English. Do NOT invent prices — use only what is in the JSON.
-Return ONLY strict JSON matching the schema. No prose outside JSON. No markdown fences.
+You will receive a JSON snapshot of live Agmarknet mandi prices (data.gov.in) for top commodities.
+Produce a concise, farmer-facing market brief in English, Telugu, and Hindi.
+Return ONLY strict JSON matching the schema.
+
 Schema:
 {
-  "headline": string (<= 90 chars),
-  "summary": string (2-3 sentences, plain English),
-  "bullish": string[] (up to 4 short bullet insights on gainers, name commodities),
-  "bearish": string[] (up to 4 short bullet insights on losers),
-  "volatile": string[] (up to 3 commodities with high price volatility),
-  "actionable": string[] (up to 4 concrete recommendations for farmers/traders),
-  "forecast": [{"horizon":"Short-term (1-2 wk)","view": string},{"horizon":"Medium-term (1-2 mo)","view": string}],
-  "bestBuy": string (one sentence, name specific commodity),
-  "bestSell": string (one sentence, name specific commodity),
+  "headline": { "en": string, "te": string, "hi": string },
+  "summary": { "en": string, "te": string, "hi": string },
+  "bullish": { "en": string[], "te": string[], "hi": string[] },
+  "bearish": { "en": string[], "te": string[], "hi": string[] },
+  "volatile": { "en": string[], "te": string[], "hi": string[] },
+  "actionable": { "en": string[], "te": string[], "hi": string[] },
+  "forecast": { "en": string, "te": string, "hi": string },
   "riskLevel": "Low"|"Moderate"|"High"
 }`;
+
 
 export const generateMarketInsights = createServerFn({ method: "POST" })
   .validator((input: { snapshot: MarketInsightSummary[]; scope?: string }) => input)

@@ -410,53 +410,84 @@ export interface MarketFeed {
 const memoryCache = new Map<string, { at: number; records: AgmarknetRecord[]; updated: string }>();
 const CACHE_TTL = 60_000;
 
+function getLocalCache(key: string) {
+  try {
+    const raw = localStorage.getItem(`market_feed_${key}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (Date.now() - parsed.at > CACHE_TTL * 5) return null;
+    return parsed;
+  } catch { return null; }
+}
+
+function setLocalCache(key: string, data: any) {
+  try {
+    localStorage.setItem(`market_feed_${key}`, JSON.stringify({ ...data, at: Date.now() }));
+  } catch {}
+}
+
 export function useMarketFeed(query: FeedQuery = {}): MarketFeed {
   const { state, district, market, commodity, limit = 2000, pages = 5, refreshMs = 120_000 } = query;
   const call = useServerFn(fetchAgmarknetPaged);
 
-  const cacheKey = JSON.stringify({ state, district, market, commodity, limit, pages });
-  const cached = memoryCache.get(cacheKey);
+  const cacheKey = useMemo(() => JSON.stringify({ state, district, market, commodity, limit, pages }), [state, district, market, commodity, limit, pages]);
+  const initial = useMemo(() => memoryCache.get(cacheKey) || (typeof window !== "undefined" ? getLocalCache(cacheKey) : null), [cacheKey]);
 
-  const [records, setRecords] = useState<AgmarknetRecord[]>(cached?.records ?? []);
-  const [updated, setUpdated] = useState(cached?.updated ?? "");
-  const [loading, setLoading] = useState(!cached);
+  const [records, setRecords] = useState<AgmarknetRecord[]>(initial?.records ?? []);
+  const [updated, setUpdated] = useState(initial?.updated ?? "");
+  const [loading, setLoading] = useState(!initial);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
+  const abortController = useRef<AbortController | null>(null);
   const alive = useRef(true);
 
-  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; abortController.current?.abort(); }; }, []);
 
   useEffect(() => {
-    const hit = memoryCache.get(cacheKey);
+    const hit = memoryCache.get(cacheKey) || (typeof window !== "undefined" ? getLocalCache(cacheKey) : null);
+
     if (hit && Date.now() - hit.at < CACHE_TTL && tick === 0) {
       setRecords(hit.records);
       setUpdated(hit.updated);
       setLoading(false);
       return;
     }
-    let cancelled = false;
-    const run = async () => {
-      if (!records.length) setLoading(true); else setRefreshing(true);
+
+    const fetchData = async (isRefresh = false) => {
+      if (abortController.current) abortController.current.abort();
+      const controller = new AbortController();
+      abortController.current = controller;
+
+      if (isRefresh) setRefreshing(true); else if (!records.length) setLoading(true);
+      setError(null);
+
       try {
         const res = await call({ data: { state, district, market, commodity, limit, pages } });
-        if (cancelled || !alive.current) return;
-        if (!res.ok && !res.records.length) {
-          setError(res.error ?? "Unable to reach the government market feed.");
-        } else {
+        if (controller.signal.aborted || !alive.current) return;
+        if (res.ok) {
           setRecords(res.records);
           setUpdated(res.updated);
-          setError(res.error ?? null);
-          memoryCache.set(cacheKey, { at: Date.now(), records: res.records, updated: res.updated });
+          const cacheEntry = { at: Date.now(), records: res.records, updated: res.updated };
+          memoryCache.set(cacheKey, cacheEntry);
+          if (typeof window !== "undefined") setLocalCache(cacheKey, cacheEntry);
+        } else {
+          setError(res.error || "Failed to fetch market data");
         }
-      } catch (e) {
-        if (!cancelled && alive.current) setError(e instanceof Error ? e.message : String(e));
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
+        if (alive.current) setError(err instanceof Error ? err.message : String(err));
       } finally {
-        if (!cancelled && alive.current) { setLoading(false); setRefreshing(false); }
+        if (alive.current && !controller.signal.aborted) {
+          setLoading(false);
+          setRefreshing(false);
+        }
       }
     };
-    run();
-    return () => { cancelled = true; };
+
+    fetchData(tick > 0);
+
+    return () => { abortController.current?.abort(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cacheKey, tick]);
 
@@ -467,6 +498,7 @@ export function useMarketFeed(query: FeedQuery = {}): MarketFeed {
   }, [refreshMs]);
 
   const refresh = useCallback(() => setTick((t) => t + 1), []);
+
 
   const summaries = useMemo(() => summarizeAll(records), [records]);
 
