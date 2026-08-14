@@ -445,7 +445,7 @@ export function useMarketFeed(query: FeedQuery = {}): MarketFeed {
   useEffect(() => { alive.current = true; return () => { alive.current = false; abortController.current?.abort(); }; }, []);
 
   useEffect(() => {
-    const hit = memoryCache.get(cacheKey);
+    const hit = memoryCache.get(cacheKey) || (typeof window !== "undefined" ? getLocalCache(cacheKey) : null);
 
     if (hit && Date.now() - hit.at < CACHE_TTL && tick === 0) {
       setRecords(hit.records);
@@ -453,28 +453,41 @@ export function useMarketFeed(query: FeedQuery = {}): MarketFeed {
       setLoading(false);
       return;
     }
-    let cancelled = false;
-    const run = async () => {
-      if (!records.length) setLoading(true); else setRefreshing(true);
+
+    const fetchData = async (isRefresh = false) => {
+      if (abortController.current) abortController.current.abort();
+      const controller = new AbortController();
+      abortController.current = controller;
+
+      if (isRefresh) setRefreshing(true); else if (!records.length) setLoading(true);
+      setError(null);
+
       try {
         const res = await call({ data: { state, district, market, commodity, limit, pages } });
-        if (cancelled || !alive.current) return;
-        if (!res.ok && !res.records.length) {
-          setError(res.error ?? "Unable to reach the government market feed.");
-        } else {
+        if (controller.signal.aborted || !alive.current) return;
+        if (res.ok) {
           setRecords(res.records);
           setUpdated(res.updated);
-          setError(res.error ?? null);
-          memoryCache.set(cacheKey, { at: Date.now(), records: res.records, updated: res.updated });
+          const cacheEntry = { at: Date.now(), records: res.records, updated: res.updated };
+          memoryCache.set(cacheKey, cacheEntry);
+          if (typeof window !== "undefined") setLocalCache(cacheKey, cacheEntry);
+        } else {
+          setError(res.error || "Failed to fetch market data");
         }
-      } catch (e) {
-        if (!cancelled && alive.current) setError(e instanceof Error ? e.message : String(e));
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
+        if (alive.current) setError(err instanceof Error ? err.message : String(err));
       } finally {
-        if (!cancelled && alive.current) { setLoading(false); setRefreshing(false); }
+        if (alive.current && !controller.signal.aborted) {
+          setLoading(false);
+          setRefreshing(false);
+        }
       }
     };
-    run();
-    return () => { cancelled = true; };
+
+    fetchData(tick > 0);
+
+    return () => { abortController.current?.abort(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cacheKey, tick]);
 
@@ -485,6 +498,7 @@ export function useMarketFeed(query: FeedQuery = {}): MarketFeed {
   }, [refreshMs]);
 
   const refresh = useCallback(() => setTick((t) => t + 1), []);
+
 
   const summaries = useMemo(() => summarizeAll(records), [records]);
 
