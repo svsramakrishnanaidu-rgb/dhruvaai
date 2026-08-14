@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+
 import {
   TrendingUp, TrendingDown, Minus, Search, Star, MapPin, Clock, Radio, RefreshCw,
   IndianRupee, Mic, MicOff, X, Bell, BellRing, SlidersHorizontal, Layers, Building2,
@@ -647,12 +648,14 @@ function MarketPage() {
             No live records match these filters yet. Try clearing filters or another crop name.
           </div>
         ) : (
-          <>
+          <Suspense fallback={<div className="col-span-full py-20 text-center text-muted-foreground">Loading market intelligence...</div>}>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filtered.slice(0, visible).map((s) => (
                 <CropCard key={s.commodity} s={s} isFav={isFav(s.commodity)} onFav={() => toggle(s.commodity)} onOpen={() => setOpenCrop(s.commodity)} />
               ))}
             </div>
+          </Suspense>
+
             {visible < filtered.length && (
               <div className="text-center">
                 <button onClick={() => setVisible((v) => v + 36)} className="rounded-xl border border-border/60 bg-card/50 px-5 py-2.5 text-sm font-semibold hover:border-primary/50">
