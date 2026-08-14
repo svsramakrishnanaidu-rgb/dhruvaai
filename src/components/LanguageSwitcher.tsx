@@ -29,7 +29,7 @@ export function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Market & Analytics — Enterprise Performance Upgrade\n\nCompletely optimize the Market and Analytics sections of the app for maximum speed, accuracy, reliability, and smooth real-time data transmission without changing the existing core data structure or user-facing functionality.\n\n1. High-Speed Data Retrieval\n...\n15. Final Requirement\n\nDo a complete end-to-end performance audit of the Market and Analytics sections and optimize the entire data retrieval, processing, validation, transmission, caching, AI-analysis, rendering, and error-handling pipeline.\n\nThe final result should feel instant, stable, accurate, production-grade, and highly responsive, while preserving the existing data and functionality.\n\nDo not redesign unrelated sections of the application. Focus this optimization specifically on Market, Analytics, data infrastructure, API performance, and their supporting services."
+        aria-label="Select Language"
         aria-expanded={open}
         aria-haspopup="listbox"
         className="tap flex items-center gap-1.5 rounded-full px-2.5 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
@@ -40,7 +40,7 @@ export function LanguageSwitcher() {
       {open && (
         <ul
           role="listbox"
-          aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Market & Analytics — Enterprise Performance Upgrade\n\nCompletely optimize the Market and Analytics sections of the app for maximum speed, accuracy, reliability, and smooth real-time data transmission without changing the existing core data structure or user-facing functionality.\n\n1. High-Speed Data Retrieval\n...\n15. Final Requirement\n\nDo a complete end-to-end performance audit of the Market and Analytics sections and optimize the entire data retrieval, processing, validation, transmission, caching, AI-analysis, rendering, and error-handling pipeline.\n\nThe final result should feel instant, stable, accurate, production-grade, and highly responsive, while preserving the existing data and functionality.\n\nDo not redesign unrelated sections of the application. Focus this optimization specifically on Market, Analytics, data infrastructure, API performance, and their supporting services."
+          aria-label="Language options"
 
           className="absolute right-0 top-11 z-50 w-44 overflow-hidden rounded-xl border border-border/60 bg-popover shadow-2xl"
           style={{ animation: "scale-in .18s var(--ease-out-expo) both" }}

@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Brain, RefreshCw, TrendingUp, TrendingDown, AlertTriangle, Target, Compass, Sparkles } from "lucide-react";
 import { useAgmarknetLive } from "@/lib/agmarknet-live";
+import { useI18n } from "@/lib/i18n";
 import { generateMarketInsights, type MarketInsights } from "@/lib/market-insights.functions";
 
 export function MarketInsightsPanel() {
+  const { lang } = useI18n() as { lang: "en" | "te" | "hi" };
   const { data, loading: dataLoading } = useAgmarknetLive({ refreshMs: 5 * 60 * 1000, limit: 3000 });
   const call = useServerFn(generateMarketInsights);
   const [insights, setInsights] = useState<MarketInsights | null>(null);
@@ -89,37 +91,30 @@ export function MarketInsightsPanel() {
             <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-primary">
               <Sparkles className="h-3 w-3" /> Headline
             </div>
-            <h4 className="font-display text-xl font-bold">{insights.headline}</h4>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{insights.summary}</p>
+            <h4 className="font-display text-xl font-bold">{insights.headline[lang]}</h4>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{insights.summary[lang]}</p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <List title="Bullish signals" tone="up" icon={<TrendingUp className="h-4 w-4" />} items={insights.bullish} />
-            <List title="Bearish signals" tone="down" icon={<TrendingDown className="h-4 w-4" />} items={insights.bearish} />
-            <List title="Volatile commodities" tone="warn" icon={<AlertTriangle className="h-4 w-4" />} items={insights.volatile} />
-            <List title="Actionable moves" tone="up" icon={<Target className="h-4 w-4" />} items={insights.actionable} />
+            <List title="Bullish signals" tone="up" icon={<TrendingUp className="h-4 w-4" />} items={insights.bullish[lang]} />
+            <List title="Bearish signals" tone="down" icon={<TrendingDown className="h-4 w-4" />} items={insights.bearish[lang]} />
+            <List title="Volatile commodities" tone="warn" icon={<AlertTriangle className="h-4 w-4" />} items={insights.volatile[lang]} />
+            <List title="Actionable moves" tone="up" icon={<Target className="h-4 w-4" />} items={insights.actionable[lang]} />
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <Callout icon={<Compass className="h-4 w-4 text-primary" />} label="Best buy signal">
-              {insights.bestBuy}
+              {insights.bestBuy[lang]}
             </Callout>
             <Callout icon={<Compass className="h-4 w-4 text-sunrise" />} label="Best sell signal">
-              {insights.bestSell}
+              {insights.bestSell[lang]}
             </Callout>
           </div>
 
-          {insights.forecast?.length > 0 && (
+          {insights.forecast[lang] && (
             <div className="rounded-2xl border border-border/60 bg-card/40 p-4">
               <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Forecast</div>
-              <ul className="grid gap-2 md:grid-cols-2">
-                {insights.forecast.map((f, i) => (
-                  <li key={i} className="rounded-xl border border-border/40 bg-background/40 p-3">
-                    <div className="text-xs font-semibold text-primary">{f.horizon}</div>
-                    <div className="text-sm">{f.view}</div>
-                  </li>
-                ))}
-              </ul>
+              <p className="text-sm">{insights.forecast[lang]}</p>
             </div>
           )}
 

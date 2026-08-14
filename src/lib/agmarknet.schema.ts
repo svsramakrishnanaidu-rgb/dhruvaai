@@ -11,6 +11,7 @@ const AgmarknetRecordSchema = z.object({
   min_price: z.number().default(0),
   max_price: z.number().default(0),
   modal_price: z.number().default(0),
+  source: z.string().default("data.gov.in / Agmarknet"),
 });
 
 export const AgmarknetResponseSchema = z.object({

@@ -107,7 +107,7 @@ export function AgmarknetLive({
       for (const r of records) next.set(rowKey(r), r.modal_price);
       return next;
     });
-    setRecords(res.records);
+    setRecords(res.records as AgmarknetRecord[]);
     setUpdated(res.updated);
     setLoading(false);
   }

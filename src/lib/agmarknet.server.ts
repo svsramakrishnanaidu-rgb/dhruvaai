@@ -9,7 +9,7 @@ export const AGMARKNET_SOURCE = "data.gov.in / Agmarknet (DMI, Ministry of Agric
 export interface AgmarknetRecord {
   state: string; district: string; market: string; commodity: string; variety: string;
   grade: string; arrival_date: string; min_price: number; max_price: number; modal_price: number;
-  source?: string; // Track origin of record
+  source: string; // Track origin of record
 }
 
 
@@ -36,21 +36,30 @@ function toNum(v: unknown): number {
 }
 
 function normalize(raw: RawRecord[]): AgmarknetRecord[] {
-  return raw
-    .map((r) => ({
-      state: pick(r, ["state", "State"]),
-      district: pick(r, ["district", "District"]),
-      market: pick(r, ["market", "Market"]),
-      commodity: pick(r, ["commodity", "Commodity"]),
-      variety: pick(r, ["variety", "Variety"]),
-      grade: pick(r, ["grade", "Grade"]),
-      arrival_date: pick(r, ["arrival_date", "Arrival_Date"]),
-      min_price: toNum(r["min_price"]),
-      max_price: toNum(r["max_price"]),
-      modal_price: toNum(r["modal_price"]),
-      source: AGMARKNET_SOURCE,
-    }))
-    .filter((r) => r.commodity && r.market && r.modal_price > 0 && r.arrival_date);
+  const records: AgmarknetRecord[] = [];
+  for (const r of raw) {
+    try {
+      const doc = {
+        state: pick(r, ["state", "State"]),
+        district: pick(r, ["district", "District"]),
+        market: pick(r, ["market", "Market"]),
+        commodity: pick(r, ["commodity", "Commodity"]),
+        variety: pick(r, ["variety", "Variety"]),
+        grade: pick(r, ["grade", "Grade"]),
+        arrival_date: pick(r, ["arrival_date", "Arrival_Date"]),
+        min_price: toNum(r["min_price"]),
+        max_price: toNum(r["max_price"]),
+        modal_price: toNum(r["modal_price"]),
+        source: AGMARKNET_SOURCE,
+      };
+      if (doc.commodity && doc.market && doc.modal_price > 0 && doc.arrival_date) {
+        records.push(doc as AgmarknetRecord);
+      }
+    } catch {
+      continue;
+    }
+  }
+  return records;
 }
 
 
@@ -67,6 +76,7 @@ function buildParams(key: string, q: AgmarknetQuery, limit: number, offset: numb
 }
 
 const cache = new Map<string, { data: AgmarknetResponse; at: number }>();
+const inflight = new Map<string, Promise<AgmarknetResponse>>();
 const TTL = 5 * 60 * 1000;
 
 async function fetchPage(key: string, q: AgmarknetQuery, limit: number, offset: number, retries = 3): Promise<{ total: number; records: AgmarknetRecord[] }> {
@@ -93,52 +103,74 @@ async function fetchPage(key: string, q: AgmarknetQuery, limit: number, offset: 
 export async function agmarknetQuery(q: AgmarknetQuery): Promise<AgmarknetResponse> {
   const key = process.env["DATA_GOV_IN_API_KEY"];
   if (!key) return { ok: false, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total: 0, records: [], error: "Missing API Key" };
+  
   const cacheKey = JSON.stringify({ q, type: "single" });
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.at < TTL) return cached.data;
 
-  try {
-    const { total, records } = await fetchPage(key, q, q.limit ?? 500, q.offset ?? 0);
-    const data = { ok: true, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total, records } as AgmarknetResponse;
-    cache.set(cacheKey, { data, at: Date.now() });
-    return data;
-  } catch (err) {
-    return { ok: false, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total: 0, records: [], error: err instanceof Error ? err.message : String(err) };
-  }
+  const existing = inflight.get(cacheKey);
+  if (existing) return existing;
+
+  const task = (async () => {
+    try {
+      const { total, records } = await fetchPage(key, q, q.limit ?? 500, q.offset ?? 0);
+      const data = AgmarknetResponseSchema.parse({ ok: true, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total, records }) as AgmarknetResponse;
+      cache.set(cacheKey, { data, at: Date.now() });
+      return data;
+    } catch (err) {
+      return { ok: false, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total: 0, records: [], error: err instanceof Error ? err.message : String(err) };
+    } finally {
+      inflight.delete(cacheKey);
+    }
+  })();
+
+  inflight.set(cacheKey, task);
+  return task;
 }
 
 export async function agmarknetQueryPaged(q: AgmarknetQuery): Promise<AgmarknetResponse> {
   const key = process.env["DATA_GOV_IN_API_KEY"];
   if (!key) return { ok: false, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total: 0, records: [], error: "Missing API Key" };
+  
   const cacheKey = JSON.stringify({ q, type: "paged" });
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.at < TTL) return cached.data;
 
-  const requested = Math.min(Math.max(q.limit ?? 2000, 100), 5000);
-  const budget = Math.min(requested * Math.min(Math.max(q.pages ?? 4, 1), 12), 12_000);
-  const all: AgmarknetRecord[] = [];
-  
-  try {
-    const first = await fetchPage(key, q, requested, q.offset ?? 0);
-    all.push(...first.records);
-    const effective = first.records.length;
-    if (effective > 0 && all.length < Math.min(budget, first.total)) {
-      const target = Math.min(budget, first.total);
-      const offsets = [];
-      for (let o = (q.offset ?? 0) + effective; o < target && offsets.length < 96; o += effective) offsets.push(o);
-      const batches = [];
-      for (let i = 0; i < offsets.length; i += 4) batches.push(offsets.slice(i, i + 4));
-      for (const batch of batches) {
-        const pages = await Promise.all(batch.map((o) => fetchPage(key, q, requested, o, 1).catch(() => ({ total: 0, records: [] }))));
-        for (const p of pages) all.push(...p.records);
-        if (all.length >= target) break;
-        await new Promise(r => setTimeout(r, 200));
+  const existing = inflight.get(cacheKey);
+  if (existing) return existing;
+
+  const task = (async () => {
+    const requested = Math.min(Math.max(q.limit ?? 2000, 100), 5000);
+    const budget = Math.min(requested * Math.min(Math.max(q.pages ?? 4, 1), 12), 12_000);
+    const all: AgmarknetRecord[] = [];
+    
+    try {
+      const first = await fetchPage(key, q, requested, q.offset ?? 0);
+      all.push(...first.records);
+      const effective = first.records.length;
+      if (effective > 0 && all.length < Math.min(budget, first.total)) {
+        const target = Math.min(budget, first.total);
+        const offsets = [];
+        for (let o = (q.offset ?? 0) + effective; o < target && offsets.length < 96; o += effective) offsets.push(o);
+        const batches = [];
+        for (let i = 0; i < offsets.length; i += 4) batches.push(offsets.slice(i, i + 4));
+        for (const batch of batches) {
+          const pages = await Promise.all(batch.map((o) => fetchPage(key, q, requested, o, 1).catch(() => ({ total: 0, records: [] }))));
+          for (const p of pages) all.push(...p.records);
+          if (all.length >= target) break;
+          await new Promise(r => setTimeout(r, 200));
+        }
       }
+      const data = AgmarknetResponseSchema.parse({ ok: true, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total: first.total || all.length, records: all }) as AgmarknetResponse;
+      cache.set(cacheKey, { data, at: Date.now() });
+      return data;
+    } catch (err) {
+      return { ok: false, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total: 0, records: [], error: err instanceof Error ? err.message : String(err) };
+    } finally {
+      inflight.delete(cacheKey);
     }
-    const data = { ok: true, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total: first.total || all.length, records: all } as AgmarknetResponse;
-    cache.set(cacheKey, { data, at: Date.now() });
-    return data;
-  } catch (err) {
-    return { ok: false, updated: new Date().toISOString(), source: AGMARKNET_SOURCE, total: 0, records: [], error: err instanceof Error ? err.message : String(err) };
-  }
+  })();
+
+  inflight.set(cacheKey, task);
+  return task;
 }

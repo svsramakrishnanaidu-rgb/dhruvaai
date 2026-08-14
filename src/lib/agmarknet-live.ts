@@ -146,7 +146,7 @@ export function useAgmarknetLive(stateOrOpts?: string | UseAgmarknetOpts, legacy
           setLoading(false);
           return;
         }
-        setData(summarize(res.records));
+        setData(summarize(res.records as AgmarknetRecord[]));
         setUpdated(res.updated);
         setError(null);
         setLoading(false);

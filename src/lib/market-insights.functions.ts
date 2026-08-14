@@ -14,15 +14,15 @@ export interface MarketInsightSummary {
 
 export interface MarketInsights {
   ok: boolean;
-  headline: string;
-  summary: string;
-  bullish: string[];
-  bearish: string[];
-  volatile: string[];
-  actionable: string[];
-  forecast: { horizon: string; view: string }[];
-  bestBuy: string;
-  bestSell: string;
+  headline: { en: string; te: string; hi: string };
+  summary: { en: string; te: string; hi: string };
+  bullish: { en: string[]; te: string[]; hi: string[] };
+  bearish: { en: string[]; te: string[]; hi: string[] };
+  volatile: { en: string[]; te: string[]; hi: string[] };
+  actionable: { en: string[]; te: string[]; hi: string[] };
+  forecast: { en: string; te: string; hi: string };
+  bestBuy: { en: string; te: string; hi: string };
+  bestSell: { en: string; te: string; hi: string };
   riskLevel: "Low" | "Moderate" | "High";
   error?: string;
 }
@@ -41,6 +41,8 @@ Schema:
   "volatile": { "en": string[], "te": string[], "hi": string[] },
   "actionable": { "en": string[], "te": string[], "hi": string[] },
   "forecast": { "en": string, "te": string, "hi": string },
+  "bestBuy": { "en": string, "te": string, "hi": string },
+  "bestSell": { "en": string, "te": string, "hi": string },
   "riskLevel": "Low"|"Moderate"|"High"
 }`;
 
@@ -49,28 +51,25 @@ export const generateMarketInsights = createServerFn({ method: "POST" })
   .validator((input: { snapshot: MarketInsightSummary[]; scope?: string }) => input)
   .handler(async ({ data }): Promise<MarketInsights> => {
     const endpoint = resolveAiEndpoint("fast");
-    if (!endpoint) {
-      return {
-        ok: false,
-        headline: "",
-        summary: "",
-        bullish: [], bearish: [], volatile: [], actionable: [],
-        forecast: [], bestBuy: "", bestSell: "", riskLevel: "Moderate",
-        error: "No AI provider key configured",
-      };
-    }
+    const emptyLangs = { en: "", te: "", hi: "" };
+    const emptyLists = { en: [], te: [], hi: [] };
+    const empty: MarketInsights = {
+      ok: false,
+      headline: emptyLangs,
+      summary: emptyLangs,
+      bullish: emptyLists,
+      bearish: emptyLists,
+      volatile: emptyLists,
+      actionable: emptyLists,
+      forecast: emptyLangs,
+      bestBuy: emptyLangs,
+      bestSell: emptyLangs,
+      riskLevel: "Moderate",
+    };
 
-    if (!data.snapshot?.length) {
-      return {
-        ok: false,
-        headline: "",
-        summary: "",
-        bullish: [], bearish: [], volatile: [], actionable: [],
-        forecast: [], bestBuy: "", bestSell: "", riskLevel: "Moderate",
-        error: "No market data available yet.",
-      };
-    }
-    // Trim to top ~40 commodities by arrivals to keep prompt small
+    if (!endpoint) return { ...empty, error: "No AI provider key configured" };
+    if (!data.snapshot?.length) return { ...empty, error: "No market data available yet." };
+
     const top = [...data.snapshot].sort((a, b) => b.arrivals - a.arrivals).slice(0, 40);
 
     try {
@@ -80,7 +79,6 @@ export const generateMarketInsights = createServerFn({ method: "POST" })
         body: JSON.stringify({
           model: endpoint.model,
           ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
-
           messages: [
             { role: "system", content: SYSTEM },
             {
@@ -96,35 +94,25 @@ export const generateMarketInsights = createServerFn({ method: "POST" })
       });
       if (!res.ok) {
         const body = await res.text();
-        return {
-          ok: false, headline: "", summary: "",
-          bullish: [], bearish: [], volatile: [], actionable: [],
-          forecast: [], bestBuy: "", bestSell: "", riskLevel: "Moderate",
-          error: `Gateway ${res.status}: ${body.slice(0, 200)}`,
-        };
+        return { ...empty, error: `Gateway ${res.status}: ${body.slice(0, 200)}` };
       }
       const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
       const text = json.choices?.[0]?.message?.content ?? "{}";
       const parsed = JSON.parse(text) as Partial<MarketInsights>;
       return {
         ok: true,
-        headline: parsed.headline ?? "",
-        summary: parsed.summary ?? "",
-        bullish: parsed.bullish ?? [],
-        bearish: parsed.bearish ?? [],
-        volatile: parsed.volatile ?? [],
-        actionable: parsed.actionable ?? [],
-        forecast: parsed.forecast ?? [],
-        bestBuy: parsed.bestBuy ?? "",
-        bestSell: parsed.bestSell ?? "",
+        headline: parsed.headline ?? emptyLangs,
+        summary: parsed.summary ?? emptyLangs,
+        bullish: parsed.bullish ?? emptyLists,
+        bearish: parsed.bearish ?? emptyLists,
+        volatile: parsed.volatile ?? emptyLists,
+        actionable: parsed.actionable ?? emptyLists,
+        forecast: parsed.forecast ?? emptyLangs,
+        bestBuy: parsed.bestBuy ?? emptyLangs,
+        bestSell: parsed.bestSell ?? emptyLangs,
         riskLevel: (parsed.riskLevel as MarketInsights["riskLevel"]) ?? "Moderate",
       };
     } catch (err) {
-      return {
-        ok: false, headline: "", summary: "",
-        bullish: [], bearish: [], volatile: [], actionable: [],
-        forecast: [], bestBuy: "", bestSell: "", riskLevel: "Moderate",
-        error: err instanceof Error ? err.message : String(err),
-      };
+      return { ...empty, error: err instanceof Error ? err.message : String(err) };
     }
   });
