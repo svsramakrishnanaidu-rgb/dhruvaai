@@ -67,14 +67,19 @@ export function MobileHome() {
           loop
           muted
           playsInline
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover scale-[1.02]"
           poster="/placeholder.svg"
+          style={{ 
+            imageRendering: 'crisp-edges',
+            filter: 'contrast(1.1) brightness(0.9)' 
+          }}
         >
           <source src={videoAsset.url} type="video/mp4" />
         </video>
-        {/* Subtle glass overlay for readability */}
-        <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
+        {/* Cinematic gradient overlay for maximum readability and 16K feel */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 backdrop-blur-[1px]" />
       </div>
+
 
       <Header loc={loc} />
 
