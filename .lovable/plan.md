@@ -1,42 +1,46 @@
-## National Soil Testing Atlas Redesign
+# Plan - Market & Analytics Enterprise Performance Upgrade
 
-### User Requirements
-- Premium interactive map interface (India-wide).
-- Accurate map markers and clustering.
-- Search/filter by State, District, Village, Pincode, Name, and Services.
-- Detailed info panel: Distance, Address, Contact, Hours, Services, Charges, Navigation, Status.
-- "Near Me" GPS functionality.
-- Neo-glassmorphism/Agriculture-themed UI.
-- Interactive animations.
-- Responsive for mobile (Android/iOS) and desktop.
-- High performance and fast loading.
+Optimize the Market and Analytics sections for speed, reliability, and accuracy through a multi-layer optimization of the data pipeline, caching, and AI integration.
 
-### Technical Implementation
+## User Review Required
 
-#### 1. Server-Side Improvements (`src/lib/soil-atlas.functions.ts`)
-- Update `LabCenter` interface to include `state`, `district`, `pincode`, `services`, `charges`.
-- Enhance `searchSoilLabs` to support structured search (State/District/etc).
-- Add "services available" mock data or filter logic.
+> [!IMPORTANT]
+> The AI insights currently use a deterministic heuristic on the client and a server function for deeper analysis. I will preserve this structure but optimize the server-side AI calls to be more efficient and strictly validated.
 
-#### 2. Component Overhaul (`src/components/GoogleAtlasMap.tsx`)
-- Implement Marker Clustering (using `@googlemaps/markerclusterer`).
-- Custom markers with agricultural styling (gold/green).
-- Smooth pan/zoom animations using GSAP on selection.
+- **Data Privacy**: Market data is sourced from public government APIs (Agmarknet). AI analysis only processes anonymized, aggregated market statistics.
+- **Accuracy**: AI is used strictly for trend analysis and natural language summaries. Numerical price data is never "hallucinated" or overwritten by AI.
 
-#### 3. Route Overhaul (`src/routes/atlas.tsx`)
-- Implement a split-pane layout for desktop (Left: Filters & List, Right: Map).
-- Implement a bottom-drawer or tabbed view for mobile.
-- Add "Stats Bar" (Total centers, Open now, Nearby).
-- Add "Service Filters" chips.
-- Use `framer-motion` for list animations and detail panel transitions.
+## Proposed Changes
 
-#### 4. UI/UX Refinement
-- Apply `neo-glass-card` and gold accents from `styles.css`.
-- Add cinematic background/overlays.
-- Implement "Service" category icons.
+### Data Pipeline & Backend (`src/lib/agmarknet.server.ts`, `src/lib/agmarknet.functions.ts`)
+- Implement server-side response caching (TTL: 5 minutes) for common market queries.
+- Add Zod-based validation to the Agmarknet response normalization layer.
+- Optimize the paged fetcher to use adaptive concurrency and better error recovery (exponential backoff).
+- Implement request deduplication at the server level for identical concurrent queries.
 
-### File Changes
-- `src/lib/soil-atlas.functions.ts`: Expand schema and query logic.
-- `src/components/GoogleAtlasMap.tsx`: Add clustering and custom markers.
-- `src/routes/atlas.tsx`: Complete UI reconstruction.
-- `src/components/ManualLocationPicker.tsx`: Ensure consistency with atlas search.
+### Caching & State Management (`src/lib/market-intel.ts`)
+- Enhance `useMarketFeed` with a more robust client-side cache (using `localStorage` for offline persistence and in-memory for session speed).
+- Add background pre-fetching for frequently visited crops/states.
+- Implement request cancellation (AbortController) to stop obsolete fetches when filters change rapidly.
+
+### AI Intelligence Layer (`src/lib/market-insights.functions.ts`)
+- Optimize the prompt to use smaller, pre-aggregated data snapshots to reduce latency and token usage.
+- Add a strictly validated JSON output schema check.
+- Ensure multilingual support (English, Telugu, Hindi) for generated insights.
+
+### UI Performance (`src/routes/market.tsx`, `src/components/MarketCommandCenter.tsx`)
+- Implement virtualization for long lists of mandi rates.
+- Add skeleton loaders and progressive rendering for charts.
+- Debounce search and filter inputs (300ms) to prevent excessive API calls.
+- Add "Last Updated" and "Source" metadata badges to every data point.
+
+## Verification Plan
+
+### Automated Tests
+- Run `vitest` to verify data normalization and validation logic.
+- Verify `agmarknet.server.ts` handles API failures and retries correctly.
+
+### Manual Verification
+- Test mobile responsiveness and scrolling smoothness on a simulated low-end device.
+- Verify that toggling filters quickly does not result in "stale" data landing over "fresh" data (race condition check).
+- Check the console for unnecessary re-renders in `MarketCommandCenter`.
