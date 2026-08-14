@@ -483,9 +483,9 @@ export function useMarketFeed(query: FeedQuery = {}): MarketFeed {
         const res = await call({ data: { state, district, market, commodity, limit, pages } });
         if (controller.signal.aborted || !alive.current) return;
         if (res.ok) {
-          setRecords(res.records);
+          setRecords(res.records as AgmarknetRecord[]);
           setUpdated(res.updated);
-          const cacheEntry = { at: Date.now(), records: res.records, updated: res.updated };
+          const cacheEntry = { at: Date.now(), records: res.records as AgmarknetRecord[], updated: res.updated };
           memoryCache.set(cacheKey, cacheEntry);
           if (typeof window !== "undefined") setLocalCache(cacheKey, cacheEntry);
         } else {
