@@ -7,6 +7,8 @@ import {
 import { CROP_LIST } from "@/data/crops";
 import { useLocation } from "@/lib/location-store";
 import { haptic } from "@/lib/haptics";
+import videoAsset from "@/assets/background_video.mp4.asset.json";
+
 
 
 import {
@@ -57,19 +59,36 @@ export function MobileHome() {
   );
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-clip bg-background pb-24 text-foreground lg:hidden">
+    <div className="relative min-h-screen w-full overflow-x-clip pb-24 text-foreground lg:hidden">
+      {/* Background Video - Fixed and Stationary */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="h-full w-full object-cover"
+          poster="/placeholder.svg"
+        >
+          <source src={videoAsset.url} type="video/mp4" />
+        </video>
+        {/* Subtle glass overlay for readability */}
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
+      </div>
+
       <Header loc={loc} />
 
-      <div className="relative z-10 px-4">
-        <div className="grid grid-cols-2 gap-3">
+      <div className="relative z-10 px-4 mt-2">
+        <div className="grid grid-cols-2 gap-4">
           <HeroTile />
-          <WeatherTile district={loc.district} />
-          <MarketPulseTile />
+          <div className="col-span-2 grid grid-cols-2 gap-4">
+            <WeatherTile district={loc.district} />
+            <MarketPulseTile />
+          </div>
+          
           <TrendingRail items={trendingItems} />
 
-          {/* `perf-section` = content-visibility:auto — the browser skips layout
-              and paint for these tiles until they approach the viewport. */}
-          <div className="perf-section col-span-2 grid grid-cols-2 gap-3">
+          <div className="col-span-2 grid grid-cols-2 gap-4 mt-2">
             <QuickActions />
             <SchemesTile />
             <AnalyticsTile profileYield={0.92} />
@@ -80,12 +99,13 @@ export function MobileHome() {
   );
 }
 
+
 /* ============================================================
    HEADER
    ============================================================ */
 function Header({ loc }: { loc: { state: string; district: string } }) {
   return (
-    <header className="relative z-10 flex items-center justify-between px-6 pb-2 pt-6">
+    <header className="relative z-10 flex items-center justify-between px-6 pb-2 pt-8">
       <div className="flex min-w-0 flex-col">
         <div className="flex items-center gap-1.5">
           <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-primary shadow-[0_0_10px_var(--primary)]" />
@@ -97,7 +117,8 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
           {loc.state} · {loc.district}
         </span>
       </div>
-      <div className="card-elegant flex shrink-0 items-center gap-0.5 rounded-2xl p-1">
+      <div className="neo-glass flex shrink-0 items-center gap-0.5 rounded-2xl p-1.5 px-2">
+
         <HeaderIcon to="/districts" label="Change district" icon={<MapPin className="h-[15px] w-[15px]" />} />
         <HeaderDivider />
         <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[15px] w-[15px]" />} />
@@ -159,7 +180,7 @@ function HeaderIcon({
    ============================================================ */
 function HeroTile() {
   return (
-    <div className="card-elegant relative col-span-2 overflow-hidden p-6">
+    <div className="neo-glass-card relative col-span-2 overflow-hidden px-7 py-8">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
@@ -204,7 +225,7 @@ function WeatherTile({ district }: { district: string }) {
   const sky = wx ? codeToSky(wx.weatherCode) : "—";
 
   return (
-    <div className="card-elegant p-5">
+    <div className="neo-glass-card p-5 px-6">
       <div className="mb-4 flex items-start justify-between">
         <div
           className="grid h-10 w-10 place-items-center rounded-full gold-border"
@@ -249,8 +270,9 @@ function MarketPulseTile() {
   return (
     <Link
       to="/market"
-      className="group relative block aspect-square overflow-hidden border border-accent/30 bg-card shadow-[0_0_20px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-accent active:scale-[0.98]"
+      className="group relative block aspect-square overflow-hidden neo-glass-card shadow-2xl transition-all duration-300 hover:border-accent/50 active:scale-[0.98]"
     >
+
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-60"
@@ -490,10 +512,11 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
               key={c.slug}
               to="/crops/$slug"
               params={{ slug: c.slug }}
-              className={`group relative w-[280px] shrink-0 snap-start overflow-hidden border border-accent/30 bg-card transition active:scale-[0.98] ${
+              className={`group relative w-[280px] shrink-0 snap-start overflow-hidden neo-glass-card transition active:scale-[0.98] ${
                 idx > 0 ? "opacity-90" : ""
               }`}
             >
+
               {/* Grain overlay */}
               <div
                 aria-hidden
@@ -551,7 +574,7 @@ function TrendingRail({ items }: { items: TrendingItem[] }) {
               <div className="relative space-y-4 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 space-y-0.5">
-                    <h4 className="font-display truncate text-xl font-bold uppercase leading-none tracking-tight text-foreground">
+                    <h4 className="font-display truncate text-2xl font-black uppercase leading-none tracking-tight text-foreground">
                       {c.name}
                     </h4>
                     <p className="font-display text-[10px] font-medium uppercase tracking-[0.2em] text-accent/60">
@@ -637,7 +660,7 @@ function QuickActions() {
         <Link
           key={to}
           to={to}
-          className="card-elegant flex items-center gap-3 p-4 transition active:scale-[0.97]"
+          className="neo-glass-card flex items-center gap-3 p-4 transition active:scale-[0.97]"
           onPointerDown={() => haptic("select")}
 
         >
@@ -665,7 +688,7 @@ function SchemesTile() {
   return (
     <Link
       to="/schemes"
-      className="card-elegant col-span-2 mt-2 flex items-center justify-between p-5 transition active:scale-[0.98]"
+      className="neo-glass-card col-span-2 mt-2 flex items-center justify-between p-5 transition active:scale-[0.98]"
     >
       <div className="min-w-0">
         <div className="font-display mb-1 text-[10px] font-black uppercase tracking-widest text-accent">
@@ -694,7 +717,7 @@ function AnalyticsTile({ profileYield }: { profileYield: number }) {
   return (
     <Link
       to="/analytics"
-      className="card-elegant col-span-2 mt-2 overflow-hidden p-5 transition active:scale-[0.98]"
+      className="neo-glass-card col-span-2 mt-2 overflow-hidden p-5 transition active:scale-[0.98]"
     >
       <div className="flex items-end justify-between">
         <div className="min-w-0">

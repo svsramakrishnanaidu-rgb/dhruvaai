@@ -215,7 +215,31 @@
   background-clip: text;
   color: transparent;
 }
+@utility neo-glass {
+  background: var(--neo-glass-bg);
+  backdrop-filter: blur(var(--neo-glass-blur)) saturate(160%);
+  border: 1px solid var(--neo-glass-border);
+  box-shadow: var(--neo-glass-shadow);
+  position: relative;
+  overflow: hidden;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--neo-glass-highlight);
+    pointer-events: none;
+  }
+}
 
+@utility neo-glass-card {
+  @apply neo-glass;
+  border-radius: 2.5rem;
+  padding: 1.5rem;
+  transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
+  &:active {
+    transform: scale(0.97);
+  }
+}
 
 
 @utility hover-lift {
