@@ -190,7 +190,7 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
         <div className="mt-2 grid grid-cols-3 gap-1 text-[10px]">
           <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Min</span><div className="font-semibold tabular-nums">{fmtINR(s.min)}</div></div>
           <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Max</span><div className="font-semibold tabular-nums">{fmtINR(s.max)}</div></div>
-          <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Arrivals</span><div className="font-semibold tabular-nums">{s.arrivals}</div></div>
+          <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Volume</span><div className="font-semibold tabular-nums">{s.arrivals}</div></div>
         </div>
 
         <div className="mt-2 -mx-1 h-14">

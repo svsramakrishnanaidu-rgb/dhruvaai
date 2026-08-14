@@ -294,8 +294,10 @@ export function summarizeCommodity(commodity: string, rows: AgmarknetRecord[]): 
 
   const mandis = [...latest].sort((a, b) => b.modal_price - a.modal_price).map(toMandiRow);
 
-  const arrivals = rows.length;
-  const supply: CommoditySummary["supply"] = latest.length > 60 ? "High" : latest.length > 18 ? "Moderate" : "Low";
+  const arrivals = latest.length;
+  const totalRecords = rows.length;
+  const supply: CommoditySummary["supply"] = arrivals > 60 ? "High" : arrivals > 18 ? "Moderate" : "Low";
+
   const demand: CommoditySummary["demand"] = deltaPct > 2 ? "High" : deltaPct < -2 ? "Low" : "Moderate";
 
   // Forecast: momentum-damped projection toward the window median.
@@ -335,7 +337,9 @@ export function summarizeCommodity(commodity: string, rows: AgmarknetRecord[]): 
     monthPct,
     markets: new Set(latest.map((r) => r.market)).size,
     arrivals,
+    totalRecords,
     states: new Set(rows.map((r) => r.state)).size,
+
     topMandi: top,
     cheapestMandi: cheapest,
     volatility: Math.round(vol),
