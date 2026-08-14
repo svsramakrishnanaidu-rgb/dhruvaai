@@ -14,6 +14,8 @@ const GoogleAtlasMap = lazy(() =>
   import("@/components/GoogleAtlasMap").then((m) => ({ default: m.GoogleAtlasMap })),
 );
 
+import { ManualLocationPicker, type ManualPlace } from "@/components/ManualLocationPicker";
+
 export const Route = createFileRoute("/atlas")({
   head: () => ({
     meta: [
