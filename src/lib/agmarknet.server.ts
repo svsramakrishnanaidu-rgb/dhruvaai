@@ -9,7 +9,9 @@ export const AGMARKNET_SOURCE = "data.gov.in / Agmarknet (DMI, Ministry of Agric
 export interface AgmarknetRecord {
   state: string; district: string; market: string; commodity: string; variety: string;
   grade: string; arrival_date: string; min_price: number; max_price: number; modal_price: number;
+  source?: string; // Track origin of record
 }
+
 
 export type AgmarknetResponse = z.infer<typeof AgmarknetResponseSchema>;
 
@@ -46,9 +48,11 @@ function normalize(raw: RawRecord[]): AgmarknetRecord[] {
       min_price: toNum(r["min_price"]),
       max_price: toNum(r["max_price"]),
       modal_price: toNum(r["modal_price"]),
+      source: AGMARKNET_SOURCE,
     }))
-    .filter((r) => r.commodity && r.market && r.modal_price > 0);
+    .filter((r) => r.commodity && r.market && r.modal_price > 0 && r.arrival_date);
 }
+
 
 function buildParams(key: string, q: AgmarknetQuery, limit: number, offset: number) {
   const params = new URLSearchParams({ "api-key": key, format: "json", limit: String(limit), offset: String(offset) });

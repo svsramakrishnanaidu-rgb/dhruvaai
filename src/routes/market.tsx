@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+
 import {
   TrendingUp, TrendingDown, Minus, Search, Star, MapPin, Clock, Radio, RefreshCw,
   IndianRupee, Mic, MicOff, X, Bell, BellRing, SlidersHorizontal, Layers, Building2,
@@ -141,14 +142,17 @@ function SmartSearch({
 function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boolean; onFav: () => void; onOpen: () => void }) {
   const t = tone(s.deltaPct);
   const gid = `spk-${s.commodity.replace(/[^a-z0-9]/gi, "")}`;
+  const [imgError, setImgError] = useState(false);
+  
   return (
     <article className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/60 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-elegant">
-      <div className="relative aspect-video w-full overflow-hidden">
+      <div className="relative aspect-video w-full overflow-hidden bg-muted/20">
         <img 
-          src={IMAGE_PRESETS.market(s.commodity)} 
+          src={imgError ? IMAGE_PRESETS.crop(s.commodity) : IMAGE_PRESETS.market(s.commodity)} 
           alt={s.commodity} 
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
-          loading="lazy" 
+          loading="lazy"
+          onError={() => setImgError(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/20 to-transparent" />
         <div className="absolute right-3 top-3">
@@ -176,8 +180,9 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
               <IndianRupee className="h-4 w-4 text-primary" />
               <AnimatedNumber value={s.modal} />
             </div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Modal · ₹/Quintal</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.markets} mandis · ₹/Q</div>
           </div>
+
           <div className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-bold tabular-nums ${t.cls}`}>
             <t.Icon className="h-3 w-3" />{pctText(s.deltaPct)}
           </div>
@@ -186,7 +191,7 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
         <div className="mt-2 grid grid-cols-3 gap-1 text-[10px]">
           <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Min</span><div className="font-semibold tabular-nums">{fmtINR(s.min)}</div></div>
           <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Max</span><div className="font-semibold tabular-nums">{fmtINR(s.max)}</div></div>
-          <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Arrivals</span><div className="font-semibold tabular-nums">{s.arrivals}</div></div>
+          <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Volume</span><div className="font-semibold tabular-nums">{s.arrivals}</div></div>
         </div>
 
         <div className="mt-2 -mx-1 h-14">
@@ -240,7 +245,12 @@ function DetailDrawer({ s, updated, onClose, onAlert }: {
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-background/70 backdrop-blur-sm" role="dialog" aria-label={`${s.commodity} market detail`}>
       <button className="flex-1" aria-label="Close detail" onClick={onClose} />
-      <div className="h-full w-full max-w-2xl overflow-y-auto border-l border-border/60 bg-card/95 p-4 sm:p-6">
+      <div className="h-full w-full max-w-2xl overflow-y-auto border-l border-border/60 bg-card/95 p-4 sm:p-6 shadow-2xl">
+        <div className="relative mb-6 -mx-4 -mt-4 aspect-video sm:-mx-6 sm:-mt-6">
+          <DetailImage commodity={s.commodity} />
+          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+        </div>
+
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
@@ -388,6 +398,19 @@ function DetailDrawer({ s, updated, onClose, onAlert }: {
     </div>
   );
 }
+
+function DetailImage({ commodity }: { commodity: string }) {
+  const [err, setErr] = useState(false);
+  return (
+    <img 
+      src={err ? IMAGE_PRESETS.crop(commodity) : IMAGE_PRESETS.market(commodity)}
+      alt={commodity}
+      className="h-full w-full object-cover"
+      onError={() => setErr(true)}
+    />
+  );
+}
+
 
 /* ------------------------------------------------------------------ */
 /*  Page                                                               */
@@ -625,12 +648,15 @@ function MarketPage() {
             No live records match these filters yet. Try clearing filters or another crop name.
           </div>
         ) : (
-          <>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filtered.slice(0, visible).map((s) => (
-                <CropCard key={s.commodity} s={s} isFav={isFav(s.commodity)} onFav={() => toggle(s.commodity)} onOpen={() => setOpenCrop(s.commodity)} />
-              ))}
-            </div>
+          <div className="space-y-8">
+            <Suspense fallback={<div className="col-span-full py-20 text-center text-muted-foreground">Loading market intelligence...</div>}>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filtered.slice(0, visible).map((s) => (
+                  <CropCard key={s.commodity} s={s} isFav={isFav(s.commodity)} onFav={() => toggle(s.commodity)} onOpen={() => setOpenCrop(s.commodity)} />
+                ))}
+              </div>
+            </Suspense>
+
             {visible < filtered.length && (
               <div className="text-center">
                 <button onClick={() => setVisible((v) => v + 36)} className="rounded-xl border border-border/60 bg-card/50 px-5 py-2.5 text-sm font-semibold hover:border-primary/50">
@@ -638,8 +664,9 @@ function MarketPage() {
                 </button>
               </div>
             )}
-          </>
+          </div>
         )}
+
       </div>
 
       {detail && (

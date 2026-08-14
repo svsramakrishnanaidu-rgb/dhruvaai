@@ -121,10 +121,20 @@ function aliasHits(query: string, commodity: string): number {
     const group = [canonical, ...alts];
     const queryInGroup = group.some((g) => g.includes(q) || q.includes(g));
     const commodityInGroup = group.some((g) => c.includes(g) || g.includes(c));
-    if (queryInGroup && commodityInGroup) return 700;
+    if (queryInGroup && commodityInGroup) return 900;
   }
   return 0;
 }
+
+const CATEGORY_MAP: Record<string, MarketCategory> = {
+  "black gram (urd beans)(whole)": "Pulses",
+  "green gram (moong)(whole)": "Pulses",
+  "arhar (tur/red gram)(whole)": "Pulses",
+  "bengal gram(gram)(whole)": "Pulses",
+  "paddy(dhan)(common)": "Cereals",
+  "cotton": "Fibre",
+  "sugarcane": "Commercial",
+};
 
 /* ------------------------------------------------------------------ */
 /*  Category taxonomy                                                  */
@@ -153,6 +163,7 @@ const CATEGORY_RULES: [MarketCategory, string[]][] = [
 
 export function categorizeCommodity(name: string): MarketCategory {
   const n = name.toLowerCase();
+  if (CATEGORY_MAP[n]) return CATEGORY_MAP[n];
   for (const [cat, keys] of CATEGORY_RULES) {
     if (keys.some((k) => n.includes(k))) return cat;
   }
@@ -189,7 +200,8 @@ export interface CommoditySummary {
   weekPct: number;    // change vs ~7 days ago (or window start)
   monthPct: number;   // change vs window start (best available history)
   markets: number;    // mandis reporting latest day
-  arrivals: number;   // total record count (arrival proxy)
+  arrivals: number;   // total records today (arrival proxy)
+  totalRecords: number; // total history count
   states: number;
   topMandi: MandiRow | null;
   cheapestMandi: MandiRow | null;
@@ -211,6 +223,7 @@ export interface CommoditySummary {
   signal: "BUY" | "HOLD" | "SELL";
   advice: string;
 }
+
 
 function regionStats(rows: AgmarknetRecord[], key: "state" | "district"): RegionStat[] {
   const map = new Map<string, AgmarknetRecord[]>();
@@ -281,8 +294,10 @@ export function summarizeCommodity(commodity: string, rows: AgmarknetRecord[]): 
 
   const mandis = [...latest].sort((a, b) => b.modal_price - a.modal_price).map(toMandiRow);
 
-  const arrivals = rows.length;
-  const supply: CommoditySummary["supply"] = latest.length > 60 ? "High" : latest.length > 18 ? "Moderate" : "Low";
+  const arrivals = latest.length;
+  const totalRecords = rows.length;
+  const supply: CommoditySummary["supply"] = arrivals > 60 ? "High" : arrivals > 18 ? "Moderate" : "Low";
+
   const demand: CommoditySummary["demand"] = deltaPct > 2 ? "High" : deltaPct < -2 ? "Low" : "Moderate";
 
   // Forecast: momentum-damped projection toward the window median.
@@ -322,7 +337,9 @@ export function summarizeCommodity(commodity: string, rows: AgmarknetRecord[]): 
     monthPct,
     markets: new Set(latest.map((r) => r.market)).size,
     arrivals,
+    totalRecords,
     states: new Set(rows.map((r) => r.state)).size,
+
     topMandi: top,
     cheapestMandi: cheapest,
     volatility: Math.round(vol),
