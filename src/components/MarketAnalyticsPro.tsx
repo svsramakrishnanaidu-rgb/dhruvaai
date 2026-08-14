@@ -30,6 +30,86 @@ function Card({ title, icon: Icon, children, className = "" }: { title: string; 
   );
 }
 
+type StateRow = { name: string; avg: number; records: number; mandis: number };
+
+function StateActivityBoard({ rows }: { rows: StateRow[] }) {
+  const [mode, setMode] = useState<"records" | "avg">("records");
+  const sorted = useMemo(
+    () => [...rows].sort((a, b) => (mode === "records" ? b.records - a.records : b.avg - a.avg)),
+    [rows, mode],
+  );
+  const peak = Math.max(1, ...sorted.map((r) => (mode === "records" ? r.records : r.avg)));
+  const totalRecords = sorted.reduce((n, r) => n + r.records, 0);
+  const totalMandis = sorted.reduce((n, r) => n + r.mandis, 0);
+
+  if (!sorted.length) {
+    return <p className="py-10 text-center text-xs text-muted-foreground">No state activity in this feed yet.</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex gap-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+          <span className="rounded-lg border border-border/50 bg-background/60 px-2 py-1 tabular-nums">
+            <b className="text-foreground">{sorted.length}</b> states
+          </span>
+          <span className="rounded-lg border border-border/50 bg-background/60 px-2 py-1 tabular-nums">
+            <b className="text-foreground">{totalMandis}</b> mandis
+          </span>
+          <span className="rounded-lg border border-border/50 bg-background/60 px-2 py-1 tabular-nums">
+            <b className="text-foreground">{totalRecords}</b> records
+          </span>
+        </div>
+        <div className="inline-flex rounded-xl border border-border/50 bg-background/60 p-0.5">
+          {(["records", "avg"] as const).map((m) => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+                mode === m ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {m === "records" ? "Activity" : "Avg price"}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <ul className="max-h-72 space-y-1.5 overflow-y-auto pr-1">
+        {sorted.map((r, i) => {
+          const val = mode === "records" ? r.records : r.avg;
+          const pct = Math.max(4, Math.round((val / peak) * 100));
+          return (
+            <li
+              key={r.name}
+              className="group relative overflow-hidden rounded-xl border border-border/50 bg-background/50 px-3 py-2 transition hover:border-primary/50"
+            >
+              <div
+                className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary/25 to-primary/5 transition-all"
+                style={{ width: `${pct}%` }}
+                aria-hidden
+              />
+              <div className="relative flex items-center gap-3">
+                <span className="w-5 shrink-0 text-[11px] font-bold tabular-nums text-primary/80">{i + 1}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-semibold">{r.name}</p>
+                  <p className="text-[10px] tabular-nums text-muted-foreground">
+                    {r.mandis} mandis · {r.records} records
+                  </p>
+                </div>
+                <span className="shrink-0 text-right text-xs font-bold tabular-nums">
+                  {mode === "records" ? r.records : fmtINR(r.avg)}
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+
 const chartTip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 11 };
 
 function csvFor(rows: CommoditySummary[]): string {
