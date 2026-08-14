@@ -35,6 +35,7 @@ function Atlas() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [view, setView] = useState<"map" | "list">("map");
   const [filterType, setFilterType] = useState<string>("All");
+  const [manualPlace, setManualPlace] = useState<ManualPlace | null>(null);
   
   const searchFn = useServerFn(searchSoilLabs);
 
@@ -42,6 +43,17 @@ function Atlas() {
     mutationFn: (query: string) => searchFn({ data: { query } }),
     onSuccess: () => setActiveId(null),
   });
+
+  const onManualSelect = useCallback((p: ManualPlace) => {
+    setManualPlace(p);
+    setQ(p.name);
+    mutation.mutate(`${p.lat},${p.lon}`);
+  }, [mutation]);
+
+  const onManualClear = useCallback(() => {
+    setManualPlace(null);
+    setQ("");
+  }, []);
 
   const onSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -125,6 +137,15 @@ function Atlas() {
                 />
               </form>
               
+              <div className="pt-2">
+                <ManualLocationPicker 
+                  active={manualPlace} 
+                  onSelect={onManualSelect} 
+                  onClear={onManualClear}
+                  variant="atlas"
+                />
+              </div>
+
               <div className="flex gap-2">
                 <button
                   type="button"
