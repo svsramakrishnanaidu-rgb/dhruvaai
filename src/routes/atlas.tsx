@@ -150,9 +150,16 @@ function Atlas() {
                 <button
                   type="button"
                   onClick={locateMe}
-                  className="flex-1 neo-glass-card py-2 px-3 text-xs font-bold flex items-center justify-center gap-2 hover:bg-white/5 transition-colors"
+                  className="flex-1 neo-glass-card py-2 px-3 text-xs font-bold flex items-center justify-center gap-2 hover:bg-white/5 transition-colors group"
                 >
-                  <LocateFixed className="w-3 h-3 text-primary" /> Near Me
+                  <LocateFixed className="w-3 h-3 text-primary group-hover:scale-110 transition-transform" /> 
+                  <span className="relative">
+                    Live GPS
+                    <span className="absolute -top-1 -right-2 flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                    </span>
+                  </span>
                 </button>
                 <button
                   onClick={onSubmit}
