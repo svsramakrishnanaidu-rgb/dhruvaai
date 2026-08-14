@@ -17,8 +17,20 @@ interface ImageOptions {
  */
 export function getSmartImage(tags: string[], options: ImageOptions = {}): string {
   const { width = 1280, height = 720, seed = 42, nologo = true } = options;
-  const prompt = encodeURIComponent(tags.join(", ") + ", high quality, agricultural photography, professional lighting, macro detail");
-  return `https://pollinations.ai/p/${prompt}?width=${width}&height=${height}&seed=${seed}&nologo=${nologo}`;
+  const prompt = encodeURIComponent(
+    tags.join(", ") + ", high quality, agricultural photography, professional lighting, macro detail",
+  );
+  // NOTE: the correct image endpoint is image.pollinations.ai/prompt/*.
+  // pollinations.ai/p/* returns an HTML page, which breaks <img> tags.
+  const params = new URLSearchParams({
+    width: String(width),
+    height: String(height),
+    seed: String(seed),
+    model: "flux",
+    referrer: "krishsense",
+  });
+  if (nologo) params.set("nologo", "true");
+  return `https://image.pollinations.ai/prompt/${prompt}?${params.toString()}`;
 }
 
 /**
