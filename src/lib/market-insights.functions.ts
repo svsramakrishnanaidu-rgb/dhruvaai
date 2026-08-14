@@ -51,28 +51,25 @@ export const generateMarketInsights = createServerFn({ method: "POST" })
   .validator((input: { snapshot: MarketInsightSummary[]; scope?: string }) => input)
   .handler(async ({ data }): Promise<MarketInsights> => {
     const endpoint = resolveAiEndpoint("fast");
-    if (!endpoint) {
-      return {
-        ok: false,
-        headline: "",
-        summary: "",
-        bullish: [], bearish: [], volatile: [], actionable: [],
-        forecast: [], bestBuy: "", bestSell: "", riskLevel: "Moderate",
-        error: "No AI provider key configured",
-      };
-    }
+    const emptyLangs = { en: "", te: "", hi: "" };
+    const emptyLists = { en: [], te: [], hi: [] };
+    const empty: MarketInsights = {
+      ok: false,
+      headline: emptyLangs,
+      summary: emptyLangs,
+      bullish: emptyLists,
+      bearish: emptyLists,
+      volatile: emptyLists,
+      actionable: emptyLists,
+      forecast: emptyLangs,
+      bestBuy: emptyLangs,
+      bestSell: emptyLangs,
+      riskLevel: "Moderate",
+    };
 
-    if (!data.snapshot?.length) {
-      return {
-        ok: false,
-        headline: "",
-        summary: "",
-        bullish: [], bearish: [], volatile: [], actionable: [],
-        forecast: [], bestBuy: "", bestSell: "", riskLevel: "Moderate",
-        error: "No market data available yet.",
-      };
-    }
-    // Trim to top ~40 commodities by arrivals to keep prompt small
+    if (!endpoint) return { ...empty, error: "No AI provider key configured" };
+    if (!data.snapshot?.length) return { ...empty, error: "No market data available yet." };
+
     const top = [...data.snapshot].sort((a, b) => b.arrivals - a.arrivals).slice(0, 40);
 
     try {
@@ -82,7 +79,6 @@ export const generateMarketInsights = createServerFn({ method: "POST" })
         body: JSON.stringify({
           model: endpoint.model,
           ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
-
           messages: [
             { role: "system", content: SYSTEM },
             {
@@ -98,35 +94,25 @@ export const generateMarketInsights = createServerFn({ method: "POST" })
       });
       if (!res.ok) {
         const body = await res.text();
-        return {
-          ok: false, headline: "", summary: "",
-          bullish: [], bearish: [], volatile: [], actionable: [],
-          forecast: [], bestBuy: "", bestSell: "", riskLevel: "Moderate",
-          error: `Gateway ${res.status}: ${body.slice(0, 200)}`,
-        };
+        return { ...empty, error: `Gateway ${res.status}: ${body.slice(0, 200)}` };
       }
       const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
       const text = json.choices?.[0]?.message?.content ?? "{}";
       const parsed = JSON.parse(text) as Partial<MarketInsights>;
       return {
         ok: true,
-        headline: parsed.headline ?? { en: "", te: "", hi: "" },
-        summary: parsed.summary ?? { en: "", te: "", hi: "" },
-        bullish: parsed.bullish ?? { en: [], te: [], hi: [] },
-        bearish: parsed.bearish ?? { en: [], te: [], hi: [] },
-        volatile: parsed.volatile ?? { en: [], te: [], hi: [] },
-        actionable: parsed.actionable ?? { en: [], te: [], hi: [] },
-        forecast: parsed.forecast ?? { en: "", te: "", hi: "" },
-        bestBuy: parsed.bestBuy ?? { en: "", te: "", hi: "" },
-        bestSell: parsed.bestSell ?? { en: "", te: "", hi: "" },
+        headline: parsed.headline ?? emptyLangs,
+        summary: parsed.summary ?? emptyLangs,
+        bullish: parsed.bullish ?? emptyLists,
+        bearish: parsed.bearish ?? emptyLists,
+        volatile: parsed.volatile ?? emptyLists,
+        actionable: parsed.actionable ?? emptyLists,
+        forecast: parsed.forecast ?? emptyLangs,
+        bestBuy: parsed.bestBuy ?? emptyLangs,
+        bestSell: parsed.bestSell ?? emptyLangs,
         riskLevel: (parsed.riskLevel as MarketInsights["riskLevel"]) ?? "Moderate",
       };
     } catch (err) {
-      return {
-        ok: false, headline: "", summary: "",
-        bullish: [], bearish: [], volatile: [], actionable: [],
-        forecast: [], bestBuy: "", bestSell: "", riskLevel: "Moderate",
-        error: err instanceof Error ? err.message : String(err),
-      };
+      return { ...empty, error: err instanceof Error ? err.message : String(err) };
     }
   });

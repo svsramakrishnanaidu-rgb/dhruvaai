@@ -36,30 +36,30 @@ function toNum(v: unknown): number {
 }
 
 function normalize(raw: RawRecord[]): AgmarknetRecord[] {
-  return raw
-    .map((r) => {
-      try {
-        const doc = {
-          state: pick(r, ["state", "State"]),
-          district: pick(r, ["district", "District"]),
-          market: pick(r, ["market", "Market"]),
-          commodity: pick(r, ["commodity", "Commodity"]),
-          variety: pick(r, ["variety", "Variety"]),
-          grade: pick(r, ["grade", "Grade"]),
-          arrival_date: pick(r, ["arrival_date", "Arrival_Date"]),
-          min_price: toNum(r["min_price"]),
-          max_price: toNum(r["max_price"]),
-          modal_price: toNum(r["modal_price"]),
-          source: AGMARKNET_SOURCE,
-        };
-        // Strict record validation
-        if (!doc.commodity || !doc.market || doc.modal_price <= 0 || !doc.arrival_date) return null;
-        return doc;
-      } catch {
-        return null;
+  const records: AgmarknetRecord[] = [];
+  for (const r of raw) {
+    try {
+      const doc = {
+        state: pick(r, ["state", "State"]),
+        district: pick(r, ["district", "District"]),
+        market: pick(r, ["market", "Market"]),
+        commodity: pick(r, ["commodity", "Commodity"]),
+        variety: pick(r, ["variety", "Variety"]),
+        grade: pick(r, ["grade", "Grade"]),
+        arrival_date: pick(r, ["arrival_date", "Arrival_Date"]),
+        min_price: toNum(r["min_price"]),
+        max_price: toNum(r["max_price"]),
+        modal_price: toNum(r["modal_price"]),
+        source: AGMARKNET_SOURCE,
+      };
+      if (doc.commodity && doc.market && doc.modal_price > 0 && doc.arrival_date) {
+        records.push(doc as AgmarknetRecord);
       }
-    })
-    .filter((r): r is AgmarknetRecord => r !== null);
+    } catch {
+      continue;
+    }
+  }
+  return records;
 }
 
 
