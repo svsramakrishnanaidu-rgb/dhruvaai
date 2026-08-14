@@ -1,10 +1,24 @@
-import { getSmartImage } from "./smart-image";
+/**
+ * Intelligent image pipeline for Krish Sense.
+ * Uses Pollinations AI (Flux model) for context-aware, high-quality imagery
+ * across the entire application.
+ */
 
 interface ImageOptions {
   width?: number;
   height?: number;
   seed?: number;
   nologo?: boolean;
+}
+
+/**
+ * Generates a deterministic AI image URL based on tags and optional parameters.
+ * Optimized for fast loading and context accuracy.
+ */
+export function getSmartImage(tags: string[], options: ImageOptions = {}): string {
+  const { width = 1280, height = 720, seed = 42, nologo = true } = options;
+  const prompt = encodeURIComponent(tags.join(", ") + ", high quality, agricultural photography, professional lighting, macro detail");
+  return `https://pollinations.ai/p/${prompt}?width=${width}&height=${height}&seed=${seed}&nologo=${nologo}`;
 }
 
 /**
