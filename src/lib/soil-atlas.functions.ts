@@ -14,6 +14,11 @@ export interface LabCenter {
   address: string;
   lat: number;
   lng: number;
+  state?: string;
+  district?: string;
+  pincode?: string;
+  services?: string[];
+  charges?: string;
   phone?: string;
   website?: string;
   mapsUri?: string;
