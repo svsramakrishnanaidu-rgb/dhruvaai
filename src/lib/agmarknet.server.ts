@@ -9,7 +9,7 @@ export const AGMARKNET_SOURCE = "data.gov.in / Agmarknet (DMI, Ministry of Agric
 export interface AgmarknetRecord {
   state: string; district: string; market: string; commodity: string; variety: string;
   grade: string; arrival_date: string; min_price: number; max_price: number; modal_price: number;
-  source?: string; // Track origin of record
+  source: string; // Track origin of record
 }
 
 
