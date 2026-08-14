@@ -121,10 +121,20 @@ function aliasHits(query: string, commodity: string): number {
     const group = [canonical, ...alts];
     const queryInGroup = group.some((g) => g.includes(q) || q.includes(g));
     const commodityInGroup = group.some((g) => c.includes(g) || g.includes(c));
-    if (queryInGroup && commodityInGroup) return 700;
+    if (queryInGroup && commodityInGroup) return 900;
   }
   return 0;
 }
+
+const CATEGORY_MAP: Record<string, MarketCategory> = {
+  "black gram (urd beans)(whole)": "Pulses",
+  "green gram (moong)(whole)": "Pulses",
+  "arhar (tur/red gram)(whole)": "Pulses",
+  "bengal gram(gram)(whole)": "Pulses",
+  "paddy(dhan)(common)": "Cereals",
+  "cotton": "Fibre",
+  "sugarcane": "Commercial",
+};
 
 /* ------------------------------------------------------------------ */
 /*  Category taxonomy                                                  */
@@ -153,6 +163,7 @@ const CATEGORY_RULES: [MarketCategory, string[]][] = [
 
 export function categorizeCommodity(name: string): MarketCategory {
   const n = name.toLowerCase();
+  if (CATEGORY_MAP[n]) return CATEGORY_MAP[n];
   for (const [cat, keys] of CATEGORY_RULES) {
     if (keys.some((k) => n.includes(k))) return cat;
   }

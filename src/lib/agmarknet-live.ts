@@ -169,5 +169,5 @@ export function useAgmarknetLive(stateOrOpts?: string | UseAgmarknetOpts, legacy
     return { total: data.length, gainers, losers, avgModal, totalArrivals };
   }, [data]);
 
-  return { data, updated, loading, error, stats };
+  return { data, updated, loading, error, stats, refresh: () => setTick?.(t => t + 1) || window.location.reload() };
 }

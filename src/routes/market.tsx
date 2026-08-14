@@ -141,14 +141,17 @@ function SmartSearch({
 function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boolean; onFav: () => void; onOpen: () => void }) {
   const t = tone(s.deltaPct);
   const gid = `spk-${s.commodity.replace(/[^a-z0-9]/gi, "")}`;
+  const [imgError, setImgError] = useState(false);
+  
   return (
     <article className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/60 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-elegant">
-      <div className="relative aspect-video w-full overflow-hidden">
+      <div className="relative aspect-video w-full overflow-hidden bg-muted/20">
         <img 
-          src={IMAGE_PRESETS.market(s.commodity)} 
+          src={imgError ? IMAGE_PRESETS.crop(s.commodity) : IMAGE_PRESETS.market(s.commodity)} 
           alt={s.commodity} 
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
-          loading="lazy" 
+          loading="lazy"
+          onError={() => setImgError(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/20 to-transparent" />
         <div className="absolute right-3 top-3">

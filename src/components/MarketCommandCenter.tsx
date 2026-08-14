@@ -26,7 +26,7 @@ const CHART_TOOLTIP = {
 const REFRESH_MS = 60_000;
 
 export function MarketCommandCenter() {
-  const { data, updated, loading, error, stats } = useAgmarknetLive({ refreshMs: REFRESH_MS });
+  const { data, updated, loading, error, stats, refresh } = useAgmarknetLive({ refreshMs: REFRESH_MS });
   const [tick, setTick] = useState(0);
 
   // Countdown to next refresh
@@ -110,6 +110,8 @@ export function MarketCommandCenter() {
           label="Next Refresh"
           value={`${secondsToNext}s`}
           tone="info"
+          onClick={refresh}
+          className="cursor-pointer hover:border-primary/30"
         />
         <StatusPill
           icon={<Brain className="h-4 w-4" />}
@@ -273,17 +275,21 @@ function percent(a: number, b: number) {
 }
 
 function StatusPill({
-  icon, label, value, tone, sub, pulse,
+  icon, label, value, tone, sub, pulse, onClick, className,
 }: {
   icon: React.ReactNode; label: string; value: string;
   tone: "ok" | "warn" | "err" | "info"; sub?: string; pulse?: boolean;
+  onClick?: () => void; className?: string;
 }) {
   const dot =
     tone === "ok" ? "bg-primary" :
     tone === "warn" ? "bg-amber-400" :
     tone === "err" ? "bg-destructive" : "bg-sky-400";
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/40 px-3 py-2">
+    <div 
+      onClick={onClick}
+      className={`flex items-center gap-3 rounded-xl border border-border/50 bg-card/40 px-3 py-2 transition-colors ${className ?? ""}`}
+    >
       <span className="relative inline-flex h-2.5 w-2.5 shrink-0">
         <span className={`absolute inset-0 rounded-full ${dot} ${pulse ? "animate-ping opacity-60" : ""}`} />
         <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${dot}`} />

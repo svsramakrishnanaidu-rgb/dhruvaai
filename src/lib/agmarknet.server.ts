@@ -47,7 +47,7 @@ function normalize(raw: RawRecord[]): AgmarknetRecord[] {
       max_price: toNum(r["max_price"]),
       modal_price: toNum(r["modal_price"]),
     }))
-    .filter((r) => r.commodity && r.market && r.modal_price > 0);
+    .filter((r) => r.commodity && r.market && r.modal_price > 0 && r.arrival_date);
 }
 
 function buildParams(key: string, q: AgmarknetQuery, limit: number, offset: number) {
