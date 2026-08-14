@@ -317,8 +317,9 @@ function DetailDrawer({ s, updated, onClose, onAlert }: {
               </thead>
               <tbody>
                 {s.mandis.map((m, i) => (
-                  <tr key={`${m.market}-${m.variety}-${i}`} className="border-t border-border/40 hover:bg-secondary/40">
+                  <tr key={`${m.market}-${m.variety}-${m.grade}-${i}`} className="border-t border-border/40 hover:bg-secondary/40">
                     <td className="p-2 font-semibold">{m.market}</td>
+
                     <td className="p-2 text-muted-foreground">{m.district}</td>
                     <td className="p-2 text-muted-foreground">{m.state}</td>
                     <td className="p-2 text-muted-foreground">{m.variety}</td>
