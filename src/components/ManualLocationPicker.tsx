@@ -115,11 +115,13 @@ export function ManualLocationPicker({
   onSelect,
   onClear,
   defaultOpen = false,
+  variant = "default",
 }: {
   active: ManualPlace | null;
   onSelect: (p: ManualPlace) => void;
   onClear: () => void;
   defaultOpen?: boolean;
+  variant?: "default" | "atlas";
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const [state, setState] = useState(active?.state ?? "");
