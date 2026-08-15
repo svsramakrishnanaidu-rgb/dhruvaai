@@ -14,6 +14,8 @@
 
   --font-display: "Clash Display", "Japan Ramen", "Orbitron", system-ui, sans-serif;
   --font-sans: "Figtree", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", "Figtree", system-ui, sans-serif;
+  --font-accent: "Orbitron", "Japan Ramen", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
   --color-background: var(--background);
@@ -376,7 +378,7 @@ div:has(> iframe[src*="lovable.dev"]) {
   body {
     background: var(--gradient-hero);
     color: var(--color-foreground);
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     min-height: 100dvh;
@@ -413,7 +415,9 @@ div:has(> iframe[src*="lovable.dev"]) {
     font-display: swap;
   }
 
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  h1, h2 { font-family: var(--font-display); letter-spacing: -0.02em; text-transform: uppercase; font-weight: 900; }
+  h3, h4 { font-family: var(--font-accent); letter-spacing: 0.05em; text-transform: uppercase; }
+  p, span, li, a { font-family: var(--font-body); }
   ::selection { background: color-mix(in oklab, var(--primary) 55%, transparent); color: var(--color-foreground); }
 
   /* Accessible focus ring on every interactive element. */
