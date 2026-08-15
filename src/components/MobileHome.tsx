@@ -7,7 +7,7 @@ import {
 import { CROP_LIST } from "@/data/crops";
 import { useLocation } from "@/lib/location-store";
 import { haptic } from "@/lib/haptics";
-import videoAsset from "@/assets/background_video.mp4.asset.json";
+import bgAsset from "@/assets/bg-moonlit-crimson.jpg.asset.json";
 
 
 
@@ -63,7 +63,7 @@ export function MobileHome() {
       {/* Background Image - Fixed and Stationary */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <img
-          src="/__l5e/assets-v1/8cd9f6a7-ab65-42c5-9944-fca0d60e646b/bg-moonlit-crimson.jpg"
+          src={bgAsset.url}
           alt=""
           className="h-full w-full object-cover"
           style={{ 
@@ -185,7 +185,7 @@ function HeroTile() {
         className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
         style={{ background: "color-mix(in oklab, var(--accent) 35%, transparent)" }}
       />
-      <h1 className="font-display mb-3 text-[42px] uppercase leading-[0.9] tracking-tighter">
+      <h1 className="font-display mb-3 text-[36px] uppercase leading-[0.95] tracking-tighter">
         <span className="text-white">KRISH</span><br /><span className="text-gradient">SENSE</span>
       </h1>
       <p className="mb-5 max-w-[220px] text-xs leading-relaxed text-muted-foreground">
