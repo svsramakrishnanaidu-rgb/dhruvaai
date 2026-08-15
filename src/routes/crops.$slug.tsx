@@ -67,43 +67,43 @@ function CropDetail() {
   }, [c.slug]);
 
   return (
-    <div ref={rootRef}>
+    <div ref={rootRef} className="relative min-h-screen bg-web-bg-midnight font-[Plus Jakarta Sans]">
       {/* Cover */}
-      <section className="relative isolate overflow-hidden">
+      <section className="relative isolate overflow-hidden min-h-[80vh] flex items-center">
         <div className="absolute inset-0 -z-10">
           <img src={c.image} alt={c.name} className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/50 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-web-bg-midnight/80 via-web-bg-midnight/40 to-web-bg-midnight" />
         </div>
         <div className="mx-auto max-w-7xl px-6 pt-10 pb-24 md:pt-14 md:pb-32">
           <div>
-            <Link to="/crops" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-3 w-3" /> <T>Back to library</T>
+            <Link to="/crops" className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-web-sage hover:text-web-gold transition-colors">
+              <ArrowLeft className="h-3.5 w-3.5" /> <T>Back to library</T>
             </Link>
             <Reveal delay={60}>
               <div className="mt-6 flex items-center gap-3">
-                <span className="grid h-14 w-14 place-items-center rounded-2xl glass text-4xl">{c.emoji}</span>
-                <span className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
+                <span className="grid h-16 w-16 place-items-center rounded-[1.5rem] web-glass border-web-leaf/20 text-4xl shadow-2xl">{c.emoji}</span>
+                <span className="rounded-full border border-web-emerald/40 bg-web-emerald/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-web-emerald">
                   <T>{c.season}</T>
                 </span>
               </div>
             </Reveal>
             <Reveal delay={140}>
-              <h1 className="mt-4 font-display text-6xl font-black tracking-tight md:text-8xl">
+              <h1 className="mt-4 font-[Unbounded] text-6xl font-black tracking-tight text-web-mist md:text-8xl lg:text-9xl">
                 <T>{c.name}</T>
               </h1>
-              <p className="mt-2 italic text-muted-foreground">{c.scientificName}</p>
+              <p className="mt-2 text-xs font-black italic uppercase tracking-widest text-web-gold opacity-80">{c.scientificName}</p>
               {c.description && (
-                <p className="mt-4 max-w-2xl text-base text-muted-foreground"><T>{c.description}</T></p>
+                <p className="mt-6 max-w-2xl text-[11px] font-bold uppercase tracking-widest text-web-sage leading-relaxed opacity-90"><T>{c.description}</T></p>
               )}
             </Reveal>
 
             <Reveal delay={280}>
               <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                 <Fact icon={<Thermometer className="h-4 w-4" />} label="Temperature" value={c.temperature} />
-                <Fact icon={<CloudRain className="h-4 w-4" />} label="Rainfall" value={c.rainfall} />
-                <Fact icon={<Droplets className="h-4 w-4" />} label="Water" value={c.waterNeed} />
-                <Fact icon={<Sprout className="h-4 w-4" />} label="Soil pH" value={c.soilPh} />
-                <Fact icon={<TrendingUp className="h-4 w-4" />} label="Profit" value={`+${c.profitPct}%`} />
+                <Fact icon={<CloudRain className="h-4 w-4" />} label="Rainfall Profile" value={c.rainfall} />
+                <Fact icon={<Droplets className="h-4 w-4" />} label="Water Demand" value={c.waterNeed} />
+                <Fact icon={<Sprout className="h-4 w-4" />} label="Soil pH Balance" value={c.soilPh} />
+                <Fact icon={<TrendingUp className="h-4 w-4" />} label="Profit Margin" value={`+${c.profitPct}%`} />
               </div>
             </Reveal>
           </div>
@@ -117,12 +117,12 @@ function CropDetail() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {c.landPrep.map((s, i) => (
               <Reveal key={s.title} delay={i * 60}>
-                <div className="card-elegant hover-lift relative p-6">
-                  <div className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-primary to-accent px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
-                    STEP {i + 1}
+                <div className="web-glass relative p-6 border-web-leaf/10 hover:border-web-emerald/30 hover:-translate-y-2 transition-all duration-500 rounded-[2rem]">
+                  <div className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-web-emerald to-web-gold px-3 py-1 text-[9px] font-black text-web-bg-midnight uppercase tracking-widest">
+                    PHASE {i + 1}
                   </div>
-                  <h3 className="mt-1 font-display text-xl font-bold"><T>{s.title}</T></h3>
-                  <p className="mt-2 text-sm text-muted-foreground"><T>{s.description}</T></p>
+                  <h3 className="mt-2 font-[Unbounded] text-lg font-black text-web-mist uppercase tracking-tight"><T>{s.title}</T></h3>
+                  <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-web-sage leading-relaxed"><T>{s.description}</T></p>
                 </div>
               </Reveal>
             ))}
