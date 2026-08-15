@@ -438,7 +438,7 @@ export function MusicPlayer() {
                 if (audioRef.current) audioRef.current.currentTime = v;
                 setProgress(v);
               }}
-              className="h-1 w-full cursor-pointer accent-primary"
+              className="h-1 w-full cursor-pointer accent-primary-crimson"
               aria-label="Seek"
             />
             <div className="mt-0.5 flex justify-between text-[10px] tabular-nums text-muted-foreground">
