@@ -502,7 +502,7 @@ export function MusicPlayer() {
               <input
                 value={query} onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search library"
-                className="w-full rounded-full border border-border/60 bg-background/60 py-1.5 pl-7 pr-2 text-xs outline-none focus:border-primary"
+                className="w-full rounded-full border border-white/10 bg-midnight-navy/60 py-1.5 pl-7 pr-2 text-[10px] font-bold uppercase tracking-widest text-moonlight-white outline-none focus:border-primary-crimson transition-colors"
               />
             </div>
             <select
