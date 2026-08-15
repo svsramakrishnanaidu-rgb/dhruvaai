@@ -50,17 +50,17 @@ export function MiniPlayer() {
 
           {/* Time + volume (desktop) */}
           <div className="hidden items-center gap-2 md:flex">
-            <span className="font-display text-[10px] tabular-nums text-muted-foreground">{formatTime(currentTime)}</span>
+            <span className="font-display text-[10px] tabular-nums text-muted-blue-gray">{formatTime(currentTime)}</span>
             <div className="flex items-center gap-1.5">
-              <Volume2 className="h-3.5 w-3.5 text-muted-foreground" />
+              <Volume2 className="h-3.5 w-3.5 text-muted-blue-gray" />
               <input
                 type="range" min={0} max={1} step={0.01} value={volume}
                 onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="h-1 w-20 cursor-pointer accent-[color:var(--accent)]"
+                className="h-1 w-20 cursor-pointer accent-primary-crimson"
                 aria-label="Volume"
               />
             </div>
-            <span className="font-display text-[10px] tabular-nums text-muted-foreground">{formatTime(duration)}</span>
+            <span className="font-display text-[10px] tabular-nums text-muted-blue-gray">{formatTime(duration)}</span>
           </div>
 
           {/* Progress bar */}
