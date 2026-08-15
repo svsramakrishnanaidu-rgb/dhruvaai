@@ -40,7 +40,7 @@ export function LanguageSwitcher() {
       {open && (
         <ul
           role="listbox"
-          aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Generate images for every crop in the Market section based on the specific crop. Generate a unique image for each crop and provide high credits for image generation."
+          aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            ADD MENU SECTION IN WEBSITE VERSION ALSO LIKE APP VERSION"
           style={{ animation: "scale-in .18s var(--ease-out-expo) both" }}
         >
           {LANGS.map((l) => {
