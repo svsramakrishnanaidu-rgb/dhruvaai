@@ -28,10 +28,10 @@ export function MiniPlayer() {
               )}
             </div>
             <div className="min-w-0">
-              <p className="font-display truncate text-[13px] font-bold uppercase tracking-wide text-foreground">
+              <p className="font-display truncate text-[13px] font-black uppercase tracking-tight text-moonlight-white">
                 {current.title}
               </p>
-              <p className="truncate text-[11px] text-muted-foreground">{current.artist} · {current.album}</p>
+              <p className="truncate text-[11px] font-bold uppercase tracking-widest text-muted-blue-gray">{current.artist} · {current.album}</p>
             </div>
           </Link>
 
