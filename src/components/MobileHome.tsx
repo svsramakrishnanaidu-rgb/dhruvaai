@@ -225,22 +225,21 @@ function WeatherTile({ district }: { district: string }) {
   const sky = wx ? codeToSky(wx.weatherCode) : "—";
 
   return (
-    <div className="neo-glass-card p-5 px-6">
-      <div className="mb-4 flex items-start justify-between">
+    <div className="neo-glass-card p-6 border border-white/10">
+      <div className="mb-6 flex items-start justify-between">
         <div
-          className="grid h-10 w-10 place-items-center rounded-full gold-border"
-          style={{ background: "linear-gradient(135deg, color-mix(in oklab, var(--accent) 35%, transparent), transparent)" }}
+          className="grid h-12 w-12 place-items-center rounded-2xl bg-white/5 border border-white/10 shadow-inner"
         >
-          <Sun className="h-5 w-5 text-accent" />
+          <Sun className="h-6 w-6 text-primary-crimson" />
         </div>
-        <span className="font-display text-[10px] font-bold uppercase tracking-widest text-accent/70">
+        <span className="font-display text-[9px] font-black uppercase tracking-[0.3em] text-primary-crimson/80 bg-primary-crimson/10 px-2 py-0.5 rounded-full">
           Live
         </span>
       </div>
-      <div className="font-display text-2xl font-bold tracking-tight text-foreground">
+      <div className="font-display text-3xl font-black tracking-tighter text-white">
         {temp != null ? `${temp}°C` : "—"}
       </div>
-      <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
+      <div className="mt-2 truncate text-[10px] font-black uppercase tracking-widest text-muted-blue-gray/80">
         {sky} · {district}
       </div>
     </div>
