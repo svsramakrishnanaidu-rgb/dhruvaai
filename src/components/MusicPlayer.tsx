@@ -404,12 +404,12 @@ export function MusicPlayer() {
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
           onDrop={onDrop}
-          className={`glass relative w-[min(92vw,380px)] rounded-2xl p-3 shadow-elegant ${dragOver ? "ring-2 ring-primary" : ""}`}
+          className={`neo-glass relative w-[min(92vw,380px)] rounded-[2rem] p-4 border border-white/10 shadow-2xl ${dragOver ? "ring-2 ring-primary-crimson" : ""}`}
         >
           {/* Header now-playing */}
-          <div className="flex items-center gap-2">
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary/60 to-accent/60">
-              <ListMusic className="h-5 w-5 text-primary-foreground" />
+          <div className="flex items-center gap-3">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-primary-crimson to-bright-crimson shadow-lg shadow-primary-crimson/20">
+              <ListMusic className="h-6 w-6 text-white" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-semibold">{currentTrack?.name ?? "—"}</div>
