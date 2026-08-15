@@ -224,8 +224,8 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                           {active && (
                             <span
                               aria-hidden
-                              className="absolute inset-y-1 right-1 w-[3px] rounded-full"
-                              style={{ background: "linear-gradient(180deg, transparent, var(--accent), transparent)" }}
+                              className="absolute inset-y-2 right-2 w-1 rounded-full shadow-[0_0_10px_rgba(227,25,55,0.5)]"
+                              style={{ background: "linear-gradient(180deg, transparent, var(--primary-crimson), transparent)" }}
                             />
                           )}
                         </Link>
