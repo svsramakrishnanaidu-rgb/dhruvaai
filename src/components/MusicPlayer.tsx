@@ -449,13 +449,13 @@ export function MusicPlayer() {
           {/* Transport */}
           <div className="mt-2 flex items-center justify-between">
             <div className="flex items-center gap-1">
-              <button onClick={() => setShuffle((s) => !s)} aria-pressed={shuffle} className={`grid h-8 w-8 place-items-center rounded-full ${shuffle ? "text-primary" : "text-muted-foreground hover:text-foreground"}`} title="Shuffle">
+              <button onClick={() => setShuffle((s) => !s)} aria-pressed={shuffle} className={`grid h-8 w-8 place-items-center rounded-full ${shuffle ? "text-primary-crimson" : "text-muted-blue-gray hover:text-moonlight-white"}`} title="Shuffle">
                 <Shuffle className="h-4 w-4" />
               </button>
-              <button onClick={prevTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:text-foreground" title="Previous">
+              <button onClick={prevTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-blue-gray hover:text-moonlight-white" title="Previous">
                 <SkipBack className="h-4 w-4" />
               </button>
-              <button onClick={playPause} className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground hover:brightness-110" title={playing ? "Pause" : "Play"}>
+              <button onClick={playPause} className="grid h-10 w-10 place-items-center rounded-full bg-primary-crimson text-white hover:brightness-110 shadow-lg shadow-primary-crimson/20" title={playing ? "Pause" : "Play"}>
                 {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </button>
               <button onClick={nextTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:text-foreground" title="Next">
