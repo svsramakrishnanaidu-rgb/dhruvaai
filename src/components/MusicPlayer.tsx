@@ -537,9 +537,9 @@ export function MusicPlayer() {
             {filtered.map((t) => {
               const isActive = t.id === currentId;
               return (
-                <div key={t.id} className={`group flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs ${isActive ? "bg-primary/15" : "hover:bg-secondary/50"}`}>
-                  <button onClick={() => goto(t.id)} className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-secondary/70 text-foreground">
-                    {isActive && playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                <div key={t.id} className={`group flex items-center gap-3 rounded-xl px-2.5 py-2 text-xs transition-all ${isActive ? "bg-primary-crimson/15 border border-primary-crimson/20" : "hover:bg-white/5 border border-transparent"}`}>
+                  <button onClick={() => goto(t.id)} className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition-all ${isActive ? "bg-primary-crimson text-white shadow-lg shadow-primary-crimson/30" : "bg-white/10 text-moonlight-white"}`}>
+                    {isActive && playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                   </button>
                   <div className="min-w-0 flex-1">
                     {renameId === t.id ? (
