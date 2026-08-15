@@ -12,10 +12,10 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
 
-  --font-display: "Clash Display", "Japan Ramen", "Orbitron", system-ui, sans-serif;
-  --font-sans: "Figtree", "Inter", system-ui, sans-serif;
-  --font-body: "Inter", "Figtree", system-ui, sans-serif;
-  --font-accent: "Orbitron", "Japan Ramen", sans-serif;
+  --font-display: "Unbounded", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-body: "Instrument Sans", system-ui, sans-serif;
+  --font-accent: "Space Grotesk", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
   --color-background: var(--background);
