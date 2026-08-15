@@ -75,8 +75,8 @@ export function MiniPlayer() {
               className="h-full transition-[width] duration-150"
               style={{
                 width: `${Math.min(100, Math.max(0, progress * 100))}%`,
-                background: "linear-gradient(90deg, var(--accent), var(--primary))",
-                boxShadow: "0 0 12px color-mix(in oklab, var(--accent) 60%, transparent)",
+                background: "linear-gradient(90deg, var(--primary-crimson), var(--bright-crimson))",
+                boxShadow: "0 0 12px color-mix(in oklab, var(--primary-crimson) 60%, transparent)",
               }}
             />
           </div>
