@@ -119,15 +119,15 @@ function HeroSection({ loc, p, featured }: any) {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 to="/crops"
-                className="group inline-flex items-center gap-3 rounded-2xl bg-primary-crimson px-10 py-5 text-sm font-bold text-white transition-all hover:brightness-110 hover:scale-105 hover:shadow-[0_0_40px_rgba(227,25,55,0.4)] tap"
-                style={{ boxShadow: "var(--shadow-glow)" }}
+                className="group inline-flex items-center gap-3 rounded-[1.75rem] bg-primary-crimson px-10 py-5 text-xs font-black uppercase tracking-[0.2em] text-white transition-all hover:brightness-110 hover:scale-[1.03] hover:shadow-[0_20px_50px_-10px_rgba(227,25,55,0.5)] active:scale-95 tap"
+                style={{ boxShadow: "0 10px 40px -10px rgba(227,25,55,0.4)" }}
               >
                 Explore crops
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/analytics"
-                className="group inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-10 py-5 text-sm font-bold backdrop-blur-xl transition-all hover:bg-white/10 tap"
+                className="group inline-flex items-center gap-3 rounded-[1.75rem] border border-white/15 bg-white/10 px-10 py-5 text-xs font-black uppercase tracking-[0.2em] text-moonlight-white backdrop-blur-2xl transition-all hover:bg-white/20 active:scale-95 tap"
               >
                 <PlayCircle className="h-4 w-4 text-primary-crimson" />
                 See the India atlas
@@ -198,7 +198,7 @@ function HeroSection({ loc, p, featured }: any) {
 
 function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="neo-glass flex items-center gap-4 rounded-[1.25rem] px-6 py-4 border border-white/10">
+    <div className="neo-glass flex items-center gap-4 rounded-[1.75rem] px-7 py-5 border border-white/15 shadow-2xl">
       <div className="grid h-10 w-10 place-items-center rounded-full bg-white/5 text-primary-crimson border border-white/10">{icon}</div>
       <div className="min-w-0">
         <div className="text-[10px] uppercase tracking-widest text-muted-blue-gray font-bold">{label}</div>
@@ -210,7 +210,7 @@ function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string
 
 function MiniBadge({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className={`rounded-2xl border px-3 py-3 backdrop-blur-md transition-colors ${accent ? "border-primary-crimson/40 bg-primary-crimson/10" : "border-white/5 bg-white/5"}`}>
+    <div className={`rounded-[1.25rem] border px-4 py-4 backdrop-blur-2xl transition-all ${accent ? "border-primary-crimson/40 bg-primary-crimson/15" : "border-white/15 bg-white/10 shadow-xl"}`}>
       <div className="text-[9px] uppercase tracking-widest text-muted-blue-gray font-bold">{label}</div>
       <div className={`text-sm font-black mt-0.5 ${accent ? "text-primary-crimson" : "text-moonlight-white"}`}>{value}</div>
     </div>
