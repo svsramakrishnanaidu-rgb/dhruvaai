@@ -272,22 +272,22 @@ function Diseases() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
+    <div className="mx-auto max-w-7xl px-6 py-16 font-[Plus Jakarta Sans]">
       <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Disease Intelligence</span>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-6xl">Pathogen Registry</h1>
-        <p className="mt-3 max-w-xl text-muted-foreground">Select your crop to access India's most comprehensive database of agricultural diseases, pests, and clinical advisories.</p>
+        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-web-sage">Disease Intelligence</span>
+        <h1 className="mt-2 font-[Unbounded] text-5xl font-black tracking-tight text-web-gold md:text-6xl">Pathogen Registry</h1>
+        <p className="mt-3 max-w-xl text-xs font-bold uppercase tracking-widest text-web-sage/80">Select your crop to access India's most comprehensive database of agricultural diseases, pests, and clinical advisories.</p>
       </Reveal>
 
       <div className="mt-12 space-y-10">
         <div className="relative max-w-md">
-          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-web-sage" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search crops or diseases..."
-            className="w-full rounded-2xl border border-border/40 bg-background/40 py-3.5 pl-11 pr-4 text-sm backdrop-blur transition-all focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
+            className="w-full rounded-2xl border border-web-leaf/10 bg-web-bg-midnight/40 py-3.5 pl-11 pr-4 text-xs font-bold text-web-mist backdrop-blur transition-all focus:border-web-emerald/50"
           />
         </div>
 
@@ -298,10 +298,10 @@ function Diseases() {
                 <button
                   key={c.slug}
                   onClick={() => setSelectedCropSlug(c.slug)}
-                  className="group relative overflow-hidden rounded-3xl border border-border/40 bg-secondary/20 p-6 text-center transition-all hover:border-primary/40 hover:bg-primary/5 hover:shadow-xl"
+                  className="group relative overflow-hidden rounded-3xl border border-web-leaf/10 bg-web-bg-midnight/30 p-6 text-center transition-all hover:border-web-emerald/40 hover:bg-web-emerald/10 hover:shadow-xl"
                 >
                   <div className="text-4xl transition-transform duration-300 group-hover:scale-125">{c.emoji}</div>
-                  <div className="mt-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-primary">
+                  <div className="mt-3 text-[9px] font-black uppercase tracking-widest text-web-sage group-hover:text-web-gold">
                     <T>{c.name}</T>
                   </div>
                 </button>
@@ -311,11 +311,11 @@ function Diseases() {
         ) : (
           <Reveal delay={100}>
             <div className="space-y-8">
-              <div className="flex flex-wrap items-center justify-between gap-4 rounded-[2rem] border border-primary/20 bg-primary/5 p-6 md:p-8 backdrop-blur">
+              <div className="flex flex-wrap items-center justify-between gap-4 rounded-[2rem] border border-web-emerald/20 bg-web-emerald/5 p-6 md:p-8 backdrop-blur">
                 <div className="flex items-center gap-6">
                   <span className="text-5xl">{selectedCrop?.emoji}</span>
                   <div>
-                    <h2 className="font-display text-3xl font-bold uppercase tracking-tight">
+                    <h2 className="font-[Unbounded] text-3xl font-black uppercase tracking-tight text-web-gold">
                       <T>{selectedCrop?.name || ""}</T>
                     </h2>
                     <p className="text-sm italic text-muted-foreground">{selectedCrop?.scientificName}</p>
@@ -335,8 +335,8 @@ function Diseases() {
                   <button
                     key={cat}
                     onClick={() => setCategoryFilter(cat)}
-                    className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-all ${
-                      categoryFilter === cat ? "bg-primary text-primary-foreground" : "bg-secondary hover:bg-secondary/80"
+                    className={`rounded-full px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-all ${
+                      categoryFilter === cat ? "bg-web-gold text-web-bg-midnight" : "bg-web-bg-midnight/40 border border-web-leaf/10 text-web-sage hover:bg-web-bg-midnight/60"
                     }`}
                   >
                     {cat}
@@ -353,7 +353,7 @@ function Diseases() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
                       onClick={() => setSelectedDiseaseSlug(d.slug)}
-                      className="group cursor-pointer overflow-hidden rounded-[2rem] border border-border/40 bg-background shadow-sm transition-all hover:border-primary/40 hover:shadow-2xl"
+                      className="web-glass group cursor-pointer overflow-hidden rounded-[2rem] border-web-leaf/10 bg-web-bg-midnight/30 shadow-sm transition-all hover:border-web-emerald/40 hover:shadow-2xl"
                     >
                       <div className="relative aspect-[16/10] overflow-hidden">
                         <img 

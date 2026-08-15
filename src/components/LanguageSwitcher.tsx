@@ -29,12 +29,12 @@ export function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            background modifications also remove of today only"
+        aria-label="Change language"
         aria-expanded={open}
         aria-haspopup="listbox"
-        className="tap flex items-center gap-1.5 rounded-full px-2.5 text-xs font-bold uppercase tracking-widest text-muted-blue-gray transition-all hover:bg-white/5 hover:text-moonlight-white"
+        className="tap flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-web-sage transition-all hover:bg-web-emerald/10 hover:text-web-gold font-[Plus Jakarta Sans]"
       >
-        <Languages className="h-4 w-4" aria-hidden />
+        <Languages className="h-4 w-4 text-web-gold" aria-hidden />
         <span className="hidden sm:inline">{current.native}</span>
       </button>
       {open && (
@@ -42,7 +42,7 @@ export function LanguageSwitcher() {
           role="listbox"
           aria-label={t("aria.changeLanguage")}
           style={{ animation: "scale-in .18s var(--ease-out-expo) both" }}
-          className="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-2xl border border-white/10 bg-midnight-navy py-1 shadow-2xl z-50"
+          className="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-[1.5rem] border border-web-leaf/10 bg-web-bg-midnight/95 py-1 shadow-2xl z-50 backdrop-blur-xl font-[Plus Jakarta Sans]"
         >
           {LANGS.map((l) => {
             const selected = l.code === lang;
@@ -52,15 +52,15 @@ export function LanguageSwitcher() {
                   role="option"
                   aria-selected={selected}
                   onClick={() => { setLang(l.code); setOpen(false); }}
-                  className={`flex w-full items-center justify-between gap-2 px-3 py-2.5 text-xs font-bold uppercase tracking-widest transition-all hover:bg-white/5 ${
-                    selected ? "text-primary-crimson" : "text-muted-blue-gray hover:text-moonlight-white"
+                  className={`flex w-full items-center justify-between gap-2 px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all hover:bg-web-emerald/10 ${
+                    selected ? "text-web-emerald" : "text-web-sage hover:text-web-mist"
                   }`}
                 >
                   <span>
                     <span>{l.native}</span>
                     <span className="ml-2 text-[9px] opacity-40">{l.code}</span>
                   </span>
-                  {selected && <Check className="h-3.5 w-3.5" aria-hidden />}
+                  {selected && <Check className="h-3.5 w-3.5 text-web-gold" aria-hidden />}
                 </button>
               </li>
             );

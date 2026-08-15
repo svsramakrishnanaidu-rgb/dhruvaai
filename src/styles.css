@@ -15,6 +15,11 @@
   --font-display: "Orbitron", "Rajdhani", system-ui, sans-serif;
   --font-sans: "Inter", "Manrope", system-ui, sans-serif;
 
+  /* Website-specific Font Tokens */
+  --web-font-hero: "Unbounded", var(--font-display);
+  --web-font-ui: "Plus Jakarta Sans", var(--font-sans);
+  --web-font-body: "Instrument Sans", var(--font-sans);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -128,6 +133,37 @@
   --neo-glass-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.8);
   --neo-glass-highlight: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%, rgba(255, 255, 255, 0.02) 100%);
 
+
+  /* Midnight Forest Palette (Website-Only) */
+  --web-bg-midnight: #071A12;
+  --web-bg-forest: #0D2B1D;
+  --web-emerald: #176B45;
+  --web-leaf: #56A96B;
+  --web-sage: #94B89A;
+  --web-gold: #D4A84B;
+  --web-sand: #D8C8A8;
+  --web-mist: #F1F5F0;
+
+  /* Glass Depth System (Website-Only) */
+  --web-glass-1: rgba(7, 26, 18, 0.42);
+  --web-glass-2: rgba(7, 26, 18, 0.55);
+  --web-glass-blur: 40px;
+  --web-glass-border: rgba(212, 168, 75, 0.22);
+}
+
+@utility web-glass {
+  background: var(--web-glass-1);
+  backdrop-filter: blur(var(--web-glass-blur)) saturate(180%);
+  border: 1px solid var(--web-glass-border);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+@utility web-text-gold {
+  background: linear-gradient(135deg, var(--web-gold), var(--web-sand));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 8px rgba(212, 168, 75, 0.3));
 }
 
 

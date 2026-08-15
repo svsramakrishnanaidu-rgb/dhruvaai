@@ -111,9 +111,9 @@ function Atlas() {
   }), [labs]);
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-screen bg-web-bg-midnight">
       {/* Background decoration */}
-      <div className="fixed inset-0 pointer-events-none opacity-20 bg-[radial-gradient(circle_at_50%_-20%,#E5C36622,transparent_50%)]" />
+      <div className="fixed inset-0 pointer-events-none opacity-20 bg-[radial-gradient(circle_at_50%_-20%,var(--web-emerald),transparent_50%)]" />
       
       <div className="relative z-10 mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:h-screen lg:overflow-hidden flex flex-col">
         <header className="mb-6">
@@ -123,10 +123,10 @@ function Atlas() {
             className="flex flex-col md:flex-row md:items-end justify-between gap-4"
           >
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary mb-1">
+              <div className="text-[10px] font-black uppercase tracking-[0.4em] text-web-sage mb-1">
                 National Agriculture Data Hub
               </div>
-              <h1 className="font-display text-3xl font-bold tracking-tight text-gradient sm:text-4xl">
+              <h1 className="font-[Unbounded] text-3xl font-black tracking-tight text-web-gold sm:text-4xl">
                 Soil Testing Atlas
               </h1>
             </div>
@@ -144,15 +144,15 @@ function Atlas() {
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="neo-glass-card p-4 space-y-4"
+              className="web-glass p-4 space-y-4 border-web-leaf/10 font-[Plus Jakarta Sans]"
             >
               <form onSubmit={onSubmit} className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-web-sage" />
                 <input
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Search District, Pincode, Village..."
-                  className="w-full bg-background/40 border border-white/5 rounded-2xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                  className="w-full bg-web-bg-midnight/40 border border-web-leaf/10 rounded-2xl py-3 pl-10 pr-4 text-xs font-bold text-web-mist focus:outline-none focus:border-web-emerald/50 transition-all"
                 />
               </form>
               
@@ -169,21 +169,21 @@ function Atlas() {
                 <button
                   type="button"
                   onClick={locateMe}
-                  className="flex-1 neo-glass-card py-2 px-3 text-xs font-bold flex items-center justify-center gap-2 hover:bg-white/5 transition-colors group"
+                  className="flex-1 web-glass border-web-leaf/10 py-2 px-3 text-[10px] font-black flex items-center justify-center gap-2 hover:bg-web-emerald/10 transition-colors group text-web-mist uppercase tracking-widest"
                 >
-                  <LocateFixed className="w-3 h-3 text-primary group-hover:scale-110 transition-transform" /> 
+                  <LocateFixed className="w-3 h-3 text-web-gold group-hover:scale-110 transition-transform" /> 
                   <span className="relative">
                     Live GPS
                     <span className="absolute -top-1 -right-2 flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-web-emerald opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-web-emerald"></span>
                     </span>
                   </span>
                 </button>
                 <button
                   onClick={onSubmit}
                   disabled={mutation.isPending}
-                  className="flex-[1.5] btn-gold py-2 px-4 text-xs flex items-center justify-center gap-2"
+                  className="flex-[1.5] bg-web-emerald/20 border border-web-emerald/30 py-2 px-4 text-[10px] font-black uppercase tracking-widest text-web-gold flex items-center justify-center gap-2 hover:bg-web-emerald/30 transition-all"
                 >
                   {mutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />} 
                   Find Labs
@@ -195,10 +195,10 @@ function Atlas() {
                   <button
                     key={type}
                     onClick={() => setFilterType(type)}
-                    className={`whitespace-nowrap px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
+                    className={`whitespace-nowrap px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all ${
                       filterType === type 
-                        ? "bg-primary text-black border-primary" 
-                        : "bg-white/5 border-white/10 text-muted-foreground hover:border-white/20"
+                        ? "bg-web-gold text-web-bg-midnight border-web-gold" 
+                        : "bg-web-bg-midnight/40 border-web-leaf/10 text-web-sage hover:border-web-emerald/40 hover:text-web-mist"
                     }`}
                   >
                     {type}
@@ -237,11 +237,11 @@ function Atlas() {
                     ))}
                   </motion.div>
                 ) : (
-                  <div className="neo-glass-card p-10 text-center space-y-3">
-                    <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
-                      <MapPin className="text-primary w-6 h-6" />
+                  <div className="web-glass p-10 text-center space-y-3 border-web-leaf/10 font-[Plus Jakarta Sans]">
+                    <div className="bg-web-emerald/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+                      <MapPin className="text-web-gold w-6 h-6" />
                     </div>
-                    <p className="text-xs text-muted-foreground font-medium">Search for centers to see them on the atlas map.</p>
+                    <p className="text-[10px] text-web-sage font-black uppercase tracking-widest">Search for centers to see them on the atlas map.</p>
                   </div>
                 )}
               </AnimatePresence>
@@ -265,7 +265,7 @@ function Atlas() {
               </button>
             </div>
 
-            <div className={`flex-1 relative rounded-3xl overflow-hidden gold-border shadow-2xl ${view === 'list' ? 'hidden lg:block' : 'block'}`}>
+            <div className={`flex-1 relative rounded-3xl overflow-hidden border border-web-leaf/20 shadow-2xl ${view === 'list' ? 'hidden lg:block' : 'block'}`}>
               <Suspense fallback={<div className="w-full h-full bg-muted/20 animate-pulse flex items-center justify-center"><Loader2 className="animate-spin" /></div>}>
                 <GoogleAtlasMap 
                   center={mutation.data?.center ?? null} 
@@ -298,11 +298,11 @@ function Atlas() {
 
 function StatCard({ label, value, icon, color = "text-primary" }: { label: string, value: number, icon: any, color?: string }) {
   return (
-    <div className="neo-glass-card px-3 py-1.5 flex items-center gap-3 border-white/5">
-      <div className={`bg-white/5 p-1.5 rounded-lg ${color}`}>{icon}</div>
+    <div className="web-glass px-3 py-1.5 flex items-center gap-3 border-web-leaf/10 font-[Plus Jakarta Sans]">
+      <div className={`bg-web-bg-midnight/30 p-1.5 rounded-lg ${color}`}>{icon}</div>
       <div>
-        <div className="text-[9px] uppercase font-bold text-muted-foreground leading-none">{label}</div>
-        <div className="text-sm font-display font-bold">{value}</div>
+        <div className="text-[9px] font-black uppercase tracking-widest text-web-sage leading-none">{label}</div>
+        <div className="text-sm font-[Unbounded] font-black text-web-mist">{value}</div>
       </div>
     </div>
   );
@@ -315,35 +315,35 @@ function LabListItem({ lab, index, active, onClick }: { lab: LabCenter, index: n
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05 }}
       onClick={onClick}
-      className={`w-full text-left p-4 rounded-2xl border transition-all hover-lift ${
+      className={`w-full text-left p-4 rounded-2xl border transition-all hover-lift font-[Plus Jakarta Sans] ${
         active 
-          ? "neo-glass bg-primary/10 border-primary shadow-glow" 
-          : "neo-glass-card border-white/5 hover:border-primary/30"
+          ? "web-glass bg-web-emerald/10 border-web-emerald shadow-glow" 
+          : "web-glass border-web-leaf/10 bg-web-bg-midnight/20 hover:border-web-emerald/30"
       }`}
     >
       <div className="flex justify-between items-start gap-2">
         <div className="flex-1 min-w-0">
-          <h3 className={`text-sm font-bold truncate ${active ? 'text-primary' : ''}`}>{lab.name}</h3>
-          <p className="text-[10px] text-muted-foreground truncate flex items-center gap-1 mt-1">
-            <MapPin className="w-3 h-3 text-primary/60" /> {lab.address}
+          <h3 className={`text-sm font-black uppercase tracking-tight truncate ${active ? 'text-web-gold' : 'text-web-mist'}`}>{lab.name}</h3>
+          <p className="text-[10px] text-web-sage truncate font-bold flex items-center gap-1 mt-1">
+            <MapPin className="w-3 h-3 text-web-gold" /> {lab.address}
           </p>
         </div>
         {lab.distanceMeters && (
-          <span className="text-[10px] font-bold bg-white/5 px-2 py-1 rounded-full border border-white/10 shrink-0">
+          <span className="text-[9px] font-black uppercase tracking-widest bg-web-bg-midnight/50 px-2 py-1 rounded-full border border-web-leaf/10 shrink-0 text-web-mist">
             {(lab.distanceMeters / 1000).toFixed(1)} km
           </span>
         )}
       </div>
       <div className="mt-3 flex items-center gap-3">
-        <div className={`flex items-center gap-1 text-[9px] font-bold ${lab.openNow ? 'text-emerald-400' : 'text-red-400'}`}>
-          <div className={`w-1.5 h-1.5 rounded-full ${lab.openNow ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-red-400'}`} />
+        <div className={`flex items-center gap-1 text-[9px] font-black uppercase tracking-widest ${lab.openNow ? 'text-emerald-400' : 'text-rose-400'}`}>
+          <div className={`w-1.5 h-1.5 rounded-full ${lab.openNow ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-rose-400'}`} />
           {lab.openNow ? 'OPEN' : 'CLOSED'}
         </div>
-        <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground">
-          <Star className="w-2.5 h-2.5 text-amber-500 fill-amber-500" />
+        <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-web-sage">
+          <Star className="w-2.5 h-2.5 text-web-gold fill-web-gold" />
           {lab.rating?.toFixed(1) || 'N/A'}
         </div>
-        <div className="ml-auto text-[10px] font-bold text-primary flex items-center gap-1">
+        <div className="ml-auto text-[9px] font-black uppercase tracking-widest text-web-gold flex items-center gap-1">
           Details <ChevronRight className="w-3 h-3" />
         </div>
       </div>
@@ -353,11 +353,11 @@ function LabListItem({ lab, index, active, onClick }: { lab: LabCenter, index: n
 
 function LabDetailCard({ lab, onClose }: { lab: LabCenter, onClose: () => void }) {
   return (
-    <div className="neo-glass-card p-6 lg:rounded-[2.5rem] shadow-2xl gold-border-active bg-black/90 backdrop-blur-3xl m-4 lg:m-0">
+    <div className="web-glass p-6 lg:rounded-[2.5rem] shadow-2xl border-web-gold/30 bg-black/90 backdrop-blur-3xl m-4 lg:m-0 font-[Plus Jakarta Sans]">
       <div className="flex justify-between items-start mb-6">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <span className="bg-primary/20 text-primary text-[10px] font-bold tracking-widest px-2 py-0.5 rounded uppercase">Verified Lab</span>
+            <span className="bg-web-emerald/20 text-web-emerald text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded">Verified Lab</span>
             {lab.openNow && <span className="bg-emerald-400/20 text-emerald-400 text-[10px] font-bold tracking-widest px-2 py-0.5 rounded uppercase">Open</span>}
           </div>
           <h2 className="text-xl font-display font-bold text-gradient">{lab.name}</h2>

@@ -92,7 +92,7 @@ function Field({
   return (
     <div>
       <div className="mb-1.5 flex items-baseline gap-2">
-        <label className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+        <label className="text-[10px] font-black uppercase tracking-widest text-web-gold">
           {label}
         </label>
         {hint && <span className="text-[10px] text-muted-foreground/70">{hint}</span>}
@@ -103,7 +103,7 @@ function Field({
 }
 
 const inputCls =
-  "w-full rounded-xl border border-border/60 bg-secondary/40 px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground/70 focus:border-primary/60";
+  "w-full rounded-xl border border-web-leaf/10 bg-web-bg-midnight/40 px-3 py-2.5 text-xs font-bold text-web-mist outline-none placeholder:text-web-sage/50 focus:border-web-emerald/50 transition-all";
 
 /**
  * Optional State → District → Village selector.
@@ -180,18 +180,18 @@ export function ManualLocationPicker({
   };
 
   return (
-    <div ref={rootRef} className={`${variant === 'atlas' ? 'bg-transparent' : 'glass mx-auto mt-3 max-w-5xl'} rounded-3xl`}>
+    <div ref={rootRef} className={`${variant === 'atlas' ? 'bg-transparent' : 'web-glass border-web-leaf/10 mx-auto mt-3 max-w-5xl'} rounded-3xl font-[Plus Jakarta Sans]`}>
       <button
         onClick={() => setOpen((o) => !o)}
         className={`tap flex w-full items-center gap-3 rounded-3xl ${variant === 'atlas' ? 'px-0' : 'px-4 py-3'} text-left`}
         aria-expanded={open}
       >
-        <MapPin className="h-4 w-4 shrink-0 text-primary" />
+        <MapPin className="h-4 w-4 shrink-0 text-web-gold" />
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold">
+          <div className="truncate text-sm font-black text-web-mist uppercase tracking-tight">
             {active ? active.name : "Choose location manually"}
           </div>
-          <div className="text-[11px] text-muted-foreground">
+          <div className="text-[10px] font-bold text-web-sage uppercase tracking-widest">
             {active ? "Manual override active · GPS paused" : "Optional · State / District / Village"}
           </div>
         </div>
@@ -209,16 +209,16 @@ export function ManualLocationPicker({
                 reset();
               }
             }}
-            className="tap inline-flex items-center gap-1 rounded-full bg-secondary/60 px-3 py-1 text-[11px] font-medium hover:bg-secondary"
+            className="tap inline-flex items-center gap-1 rounded-full bg-web-emerald/20 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-web-gold hover:bg-web-emerald/30 transition-all"
           >
             <X className="h-3 w-3" /> Use GPS
           </span>
         )}
-        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`h-4 w-4 text-web-sage transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
-        <div className="grid gap-4 border-t border-border/40 p-4 md:grid-cols-3">
+        <div className="grid gap-4 border-t border-web-leaf/10 p-4 md:grid-cols-3 bg-web-bg-midnight/20">
           {/* STATE */}
           <Field label="State">
             <div className="relative">
@@ -260,7 +260,7 @@ export function ManualLocationPicker({
               {dBusy && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
             </div>
             {!district && districtResults.length > 0 && (
-              <ul className="mt-2 max-h-52 overflow-y-auto rounded-xl border border-border/50 bg-background/95 p-1">
+              <ul className="mt-2 max-h-52 overflow-y-auto rounded-xl border border-web-leaf/10 bg-web-bg-midnight/95 p-1 backdrop-blur-xl">
                 {districtResults.map((h) => (
                   <li key={h.id}>
                     <button

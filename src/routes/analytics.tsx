@@ -170,27 +170,29 @@ function Analytics() {
       {/* All-India live mandi analytics */}
       <section className="mt-10 space-y-3">
         <div>
-          <h2 className="font-display text-3xl font-bold">All-India Live Market Analysis</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="font-[Unbounded] text-3xl font-black text-web-mist">All-India Live Market Analysis</h2>
+          <p className="text-sm font-[Plus Jakarta Sans] font-bold uppercase tracking-widest text-web-sage">
             Real-time mandi prices sourced from Agmarknet (data.gov.in). Search, sort and drill into every commodity, mandi and price movement.
           </p>
         </div>
-        <LiveMarketBoard title="Live Mandi Board · Nationwide" compact />
+        <div className="web-glass rounded-3xl p-2 border-web-leaf/10 overflow-hidden">
+          <LiveMarketBoard title="Live Mandi Board · Nationwide" compact />
+        </div>
       </section>
 
 
 
 
       {/* KPI DASHBOARD */}
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi icon={<Layers className="h-5 w-5" />} label="States tracked" value={KPIS.states} />
-        <Kpi icon={<MapPin className="h-5 w-5" />} label="Districts" value={KPIS.districts} />
-        <Kpi icon={<Sprout className="h-5 w-5" />} label="Distinct crops" value={KPIS.crops} />
-        <Kpi icon={<BarChart3 className="h-5 w-5" />} label="Food-grain output" value={255.13} suffix=" M-T" precision={2} />
-        <Kpi icon={<Gauge className="h-5 w-5" />} label="Avg. yield" value={KPIS.avgYield} suffix=" kg/ha" />
-        <Kpi icon={<TrendingUp className="h-5 w-5" />} label="Highest yield" value={KPIS.highest.yieldKgHa} suffix=" kg/ha" tag={`${KPIS.highest.district} · ${KPIS.highest.crop}`} />
-        <Kpi icon={<Waves className="h-5 w-5" />} label="Lowest yield" value={KPIS.lowest.yieldKgHa} suffix=" kg/ha" tag={`${KPIS.lowest.district} · ${KPIS.lowest.crop}`} />
-        <Kpi icon={<Award className="h-5 w-5" />} label="Top producer" value={KPIS.topProducer.productionMT / 1_000_000} suffix=" M-MT" precision={2} tag={KPIS.topProducer.district} />
+      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 font-[Plus Jakarta Sans]">
+        <Kpi icon={<Layers className="h-5 w-5 text-web-gold" />} label="States tracked" value={KPIS.states} />
+        <Kpi icon={<MapPin className="h-5 w-5 text-web-gold" />} label="Districts" value={KPIS.districts} />
+        <Kpi icon={<Sprout className="h-5 w-5 text-web-gold" />} label="Distinct crops" value={KPIS.crops} />
+        <Kpi icon={<BarChart3 className="h-5 w-5 text-web-gold" />} label="Food-grain output" value={255.13} suffix=" M-T" precision={2} />
+        <Kpi icon={<Gauge className="h-5 w-5 text-web-gold" />} label="Avg. yield" value={KPIS.avgYield} suffix=" kg/ha" />
+        <Kpi icon={<TrendingUp className="h-5 w-5 text-web-gold" />} label="Highest yield" value={KPIS.highest.yieldKgHa} suffix=" kg/ha" tag={`${KPIS.highest.district} · ${KPIS.highest.crop}`} />
+        <Kpi icon={<Waves className="h-5 w-5 text-web-gold" />} label="Lowest yield" value={KPIS.lowest.yieldKgHa} suffix=" kg/ha" tag={`${KPIS.lowest.district} · ${KPIS.lowest.crop}`} />
+        <Kpi icon={<Award className="h-5 w-5 text-web-gold" />} label="Top producer" value={KPIS.topProducer.productionMT / 1_000_000} suffix=" M-MT" precision={2} tag={KPIS.topProducer.district} />
       </div>
 
       {/* SELECTED DISTRICT SPOTLIGHT */}
@@ -504,15 +506,15 @@ function Analytics() {
         </div>
       </Reveal>
 
-      <div className="mt-6 card-elegant overflow-hidden">
-        <div className="flex flex-wrap items-center gap-2 border-b border-border/60 p-4">
+      <div className="web-glass mt-6 overflow-hidden rounded-3xl border-web-leaf/10 font-[Plus Jakarta Sans]">
+        <div className="flex flex-wrap items-center gap-2 border-b border-web-leaf/10 p-4 bg-web-bg-midnight/20">
           <div className="relative min-w-[220px] flex-1">
-            <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-web-sage" />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search district, crop, state…"
-              className="w-full rounded-xl border border-border/60 bg-background/40 py-2 pl-9 pr-3 text-sm outline-none focus:border-primary"
+              className="w-full rounded-xl border border-web-leaf/10 bg-web-bg-midnight/40 py-2 pl-9 pr-3 text-xs font-bold text-web-mist outline-none focus:border-web-emerald/50"
             />
           </div>
           <Select label="State" value={stateFilter} onChange={setStateFilter} options={states} />
@@ -522,7 +524,7 @@ function Analytics() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+          <div className="overflow-x-auto font-[Plus Jakarta Sans]">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border/60 text-left text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -605,15 +607,15 @@ function Kpi({ icon, label, value, suffix, tag, precision = 0 }: {
   icon: React.ReactNode; label: string; value: number; suffix?: string; tag?: string; precision?: number;
 }) {
   return (
-    <div className="card-elegant hover-lift p-5">
+    <div className="web-glass hover-lift border-web-leaf/10 p-5 font-[Plus Jakarta Sans]">
       <div className="flex items-center justify-between">
-        <div className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-primary">{icon}</div>
-        {tag && <span className="max-w-[140px] truncate text-[10px] uppercase tracking-widest text-muted-foreground">{tag}</span>}
+        <div className="grid h-9 w-9 place-items-center rounded-full bg-web-emerald/20 text-web-emerald">{icon}</div>
+        {tag && <span className="max-w-[140px] truncate text-[10px] font-black uppercase tracking-widest text-web-sage">{tag}</span>}
       </div>
-      <div className="mt-4 text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className="mt-1 font-display text-3xl font-black tabular-nums">
+      <div className="mt-4 text-[10px] font-black uppercase tracking-widest text-web-sage">{label}</div>
+      <div className="mt-1 font-[Unbounded] text-3xl font-black tabular-nums text-web-mist">
         <CountUp value={value} precision={precision} />
-        {suffix && <span className="ml-1 text-sm font-medium text-muted-foreground">{suffix}</span>}
+        {suffix && <span className="ml-1 text-sm font-bold text-web-sage">{suffix}</span>}
       </div>
     </div>
   );
@@ -621,9 +623,9 @@ function Kpi({ icon, label, value, suffix, tag, precision = 0 }: {
 
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-border/60 bg-secondary/20 p-4">
-      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className="mt-1 font-display text-2xl font-bold tabular-nums">{value}</div>
+    <div className="rounded-2xl border border-web-leaf/10 bg-web-bg-midnight/30 p-4">
+      <div className="text-[10px] font-black uppercase tracking-widest text-web-sage">{label}</div>
+      <div className="mt-1 font-[Unbounded] text-2xl font-black tabular-nums text-web-mist">{value}</div>
     </div>
   );
 }
@@ -635,7 +637,7 @@ function Th({ children, onClick, active, dir, align = "left" }: {
     <th className={`px-4 py-3 ${align === "right" ? "text-right" : "text-left"}`}>
       <button
         onClick={onClick}
-        className={`inline-flex items-center gap-1 uppercase tracking-widest ${active ? "text-primary" : "hover:text-foreground"}`}
+        className={`inline-flex items-center gap-1 font-black uppercase tracking-widest ${active ? "text-web-gold" : "text-web-sage hover:text-web-mist"}`}
       >
         {children}
         <ArrowDownUp className={`h-3 w-3 transition ${active ? "opacity-100" : "opacity-40"} ${active && dir === "asc" ? "rotate-180" : ""}`} />
@@ -649,11 +651,11 @@ function Select({ label, value, onChange, options }: {
 }) {
   return (
     <label className="flex items-center gap-2 text-xs">
-      <span className="text-muted-foreground">{label}</span>
+      <span className="font-black uppercase tracking-widest text-web-sage">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-border/60 bg-background/60 px-3 py-1.5 text-sm outline-none focus:border-primary"
+        className="rounded-xl border border-web-leaf/10 bg-web-bg-midnight/40 px-3 py-1.5 text-xs font-bold text-web-mist outline-none focus:border-web-emerald/50"
       >
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>

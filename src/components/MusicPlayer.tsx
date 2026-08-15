@@ -376,8 +376,8 @@ export function MusicPlayer() {
       />
       <div className="flex items-center gap-2">
         <label
-          className="glass grid h-10 cursor-pointer place-items-center rounded-full px-3 text-xs font-medium text-foreground shadow-elegant transition hover:scale-[1.03]"
-          style={{ boxShadow: "0 0 24px color-mix(in oklab, var(--primary) 30%, transparent)" }}
+          className="web-glass grid h-10 cursor-pointer place-items-center rounded-full px-3 text-[10px] font-black uppercase tracking-widest text-web-gold border-web-leaf/10 shadow-elegant transition hover:scale-[1.03]"
+          style={{ boxShadow: "0 0 24px color-mix(in oklab, var(--web-emerald) 30%, transparent)" }}
           title="Upload audio files"
         >
           <input
@@ -393,7 +393,7 @@ export function MusicPlayer() {
           onClick={() => setOpen((o) => !o)}
           aria-label="Music player"
           aria-expanded={open}
-          className="glass grid h-10 w-10 place-items-center rounded-full text-foreground shadow-elegant transition hover:scale-105"
+          className="web-glass grid h-10 w-10 place-items-center rounded-full text-web-gold border-web-leaf/10 shadow-elegant transition hover:scale-105"
         >
           {needsGesture ? <Play className="h-4 w-4" /> : <Music className={`h-4 w-4 ${playing && !muted ? "animate-pulse" : ""}`} />}
         </button>
@@ -404,23 +404,23 @@ export function MusicPlayer() {
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
           onDrop={onDrop}
-          className={`neo-glass relative w-[min(92vw,380px)] rounded-[2rem] p-4 border border-white/10 shadow-2xl ${dragOver ? "ring-2 ring-primary-crimson" : ""}`}
+          className={`web-glass relative w-[min(92vw,380px)] rounded-[2.5rem] p-4 border-web-leaf/10 shadow-2xl font-[Plus Jakarta Sans] ${dragOver ? "ring-2 ring-web-emerald" : ""}`}
         >
           {/* Header now-playing */}
           <div className="flex items-center gap-3">
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-primary-crimson to-bright-crimson shadow-lg shadow-primary-crimson/20">
-              <ListMusic className="h-6 w-6 text-white" />
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-web-emerald to-web-emerald/50 shadow-lg shadow-web-emerald/20">
+              <ListMusic className="h-6 w-6 text-web-mist" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-black uppercase tracking-tight text-moonlight-white">{currentTrack?.name ?? "—"}</div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-blue-gray">
+              <div className="truncate text-sm font-black uppercase tracking-tight text-web-mist">{currentTrack?.name ?? "—"}</div>
+              <div className="text-[9px] font-black uppercase tracking-[0.2em] text-web-sage">
                 {currentTrack?.format} · {fmtSize(currentTrack?.size ?? 0)} · {fmtTime(duration)}
               </div>
             </div>
             <button onClick={resetPos} aria-label="Reset player position" title="Reset position" className="text-muted-foreground hover:text-foreground">
-              <span className="text-[10px] font-semibold uppercase tracking-wider">Reset</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-web-sage">Reset</span>
             </button>
-            <button onClick={() => setOpen(false)} aria-label="Close" className="ml-1 text-muted-foreground hover:text-foreground">
+            <button onClick={() => setOpen(false)} aria-label="Close" className="ml-1 text-web-sage hover:text-web-gold transition-colors">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -438,7 +438,7 @@ export function MusicPlayer() {
                 if (audioRef.current) audioRef.current.currentTime = v;
                 setProgress(v);
               }}
-              className="h-1 w-full cursor-pointer accent-primary-crimson"
+              className="h-1 w-full cursor-pointer accent-web-emerald bg-web-bg-midnight/50"
               aria-label="Seek"
             />
             <div className="mt-0.5 flex justify-between text-[10px] tabular-nums text-muted-foreground">
@@ -449,29 +449,29 @@ export function MusicPlayer() {
           {/* Transport */}
           <div className="mt-2 flex items-center justify-between">
             <div className="flex items-center gap-1">
-              <button onClick={() => setShuffle((s) => !s)} aria-pressed={shuffle} className={`grid h-8 w-8 place-items-center rounded-full ${shuffle ? "text-primary-crimson" : "text-muted-blue-gray hover:text-moonlight-white"}`} title="Shuffle">
+              <button onClick={() => setShuffle((s) => !s)} aria-pressed={shuffle} className={`grid h-8 w-8 place-items-center rounded-full ${shuffle ? "text-web-emerald" : "text-web-sage hover:text-web-mist"}`} title="Shuffle">
                 <Shuffle className="h-4 w-4" />
               </button>
-              <button onClick={prevTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-blue-gray hover:text-moonlight-white" title="Previous">
+              <button onClick={prevTrack} className="grid h-8 w-8 place-items-center rounded-full text-web-sage hover:text-web-mist" title="Previous">
                 <SkipBack className="h-4 w-4" />
               </button>
-              <button onClick={playPause} className="grid h-10 w-10 place-items-center rounded-full bg-primary-crimson text-white hover:brightness-110 shadow-lg shadow-primary-crimson/20" title={playing ? "Pause" : "Play"}>
+              <button onClick={playPause} className="grid h-10 w-10 place-items-center rounded-full bg-web-emerald text-web-mist hover:brightness-110 shadow-lg shadow-web-emerald/20 transition-all" title={playing ? "Pause" : "Play"}>
                 {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </button>
-              <button onClick={nextTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-blue-gray hover:text-moonlight-white" title="Next">
+              <button onClick={nextTrack} className="grid h-8 w-8 place-items-center rounded-full text-web-sage hover:text-web-mist" title="Next">
                 <SkipForward className="h-4 w-4" />
               </button>
-              <button onClick={() => setLoop((l) => !l)} aria-pressed={loop} className={`grid h-8 w-8 place-items-center rounded-full ${loop ? "text-primary-crimson" : "text-muted-blue-gray hover:text-moonlight-white"}`} title="Loop">
+              <button onClick={() => setLoop((l) => !l)} aria-pressed={loop} className={`grid h-8 w-8 place-items-center rounded-full ${loop ? "text-web-emerald" : "text-web-sage hover:text-web-mist"}`} title="Loop">
                 <Repeat className="h-4 w-4" />
               </button>
             </div>
             <div className="flex items-center gap-1.5">
-              <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute" : "Mute"} className="grid h-7 w-7 place-items-center rounded-full text-muted-blue-gray hover:text-moonlight-white">
+              <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute" : "Mute"} className="grid h-7 w-7 place-items-center rounded-full text-web-sage hover:text-web-mist transition-colors">
                 {muted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               </button>
               <input
                 type="range" min={0} max={1} step={0.01}
-                className="w-20 h-1 cursor-pointer accent-primary-crimson"
+                className="w-20 h-1 cursor-pointer accent-web-emerald bg-web-bg-midnight/50"
                 value={muted ? 0 : volume}
                 onChange={(e) => { const v = parseFloat(e.target.value); setVolume(v); if (v > 0 && muted) setMuted(false); }}
                 aria-label="Volume"
@@ -488,7 +488,7 @@ export function MusicPlayer() {
                     <span className="truncate">{u.name}</span><span>{u.pct}%</span>
                   </div>
                   <div className="mt-1 h-1 overflow-hidden rounded bg-secondary">
-                    <div className="h-full bg-primary transition-all" style={{ width: `${u.pct}%` }} />
+                    <div className="h-full bg-web-emerald transition-all" style={{ width: `${u.pct}%` }} />
                   </div>
                 </div>
               ))}
@@ -498,17 +498,17 @@ export function MusicPlayer() {
           {/* Search + sort */}
           <div className="mt-3 flex items-center gap-1.5">
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-web-sage" />
               <input
                 value={query} onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search library"
-                className="w-full rounded-full border border-white/10 bg-midnight-navy/60 py-1.5 pl-7 pr-2 text-[10px] font-bold uppercase tracking-widest text-moonlight-white outline-none focus:border-primary-crimson transition-colors"
+                className="w-full rounded-full border border-web-leaf/10 bg-web-bg-midnight/60 py-1.5 pl-7 pr-2 text-[9px] font-black uppercase tracking-widest text-web-mist outline-none focus:border-web-emerald transition-colors"
               />
             </div>
             <select
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as SortKey)}
-              className="rounded-full border border-white/10 bg-midnight-navy/60 px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-moonlight-white outline-none focus:border-primary-crimson transition-colors"
+              className="rounded-full border border-web-leaf/10 bg-web-bg-midnight/60 px-2 py-1.5 text-[9px] font-black uppercase tracking-widest text-web-mist outline-none focus:border-web-emerald transition-colors"
               aria-label="Sort"
             >
               <option value="date">Date</option>
@@ -520,7 +520,7 @@ export function MusicPlayer() {
               <button
                 onClick={clearAll}
                 title="Clear all uploaded"
-                className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground hover:text-destructive"
+                className="grid h-7 w-7 place-items-center rounded-full text-web-sage hover:text-rose-500 transition-colors"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -530,15 +530,15 @@ export function MusicPlayer() {
           {/* Track list */}
           <div className="mt-2 max-h-64 space-y-1 overflow-y-auto pr-1">
             {filtered.length === 0 && (
-              <div className="rounded-md border border-dashed border-border/60 p-3 text-center text-xs text-muted-foreground">
-                No matches. Drop audio files here or press Upload.
+              <div className="rounded-2xl border border-dashed border-web-leaf/20 p-4 text-center text-[10px] font-black uppercase tracking-widest text-web-sage">
+                No matches. Drop audio files here.
               </div>
             )}
             {filtered.map((t) => {
               const isActive = t.id === currentId;
               return (
-                <div key={t.id} className={`group flex items-center gap-3 rounded-xl px-2.5 py-2 text-xs transition-all ${isActive ? "bg-primary-crimson/15 border border-primary-crimson/20" : "hover:bg-white/5 border border-transparent"}`}>
-                  <button onClick={() => goto(t.id)} className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition-all ${isActive ? "bg-primary-crimson text-white shadow-lg shadow-primary-crimson/30" : "bg-white/10 text-moonlight-white"}`}>
+                <div key={t.id} className={`group flex items-center gap-3 rounded-[1.5rem] px-2.5 py-2 text-[11px] transition-all ${isActive ? "bg-web-emerald/15 border border-web-emerald/20" : "hover:bg-web-bg-midnight/40 border border-transparent"}`}>
+                  <button onClick={() => goto(t.id)} className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition-all ${isActive ? "bg-web-emerald text-web-mist shadow-lg shadow-web-emerald/30" : "bg-web-emerald/10 text-web-mist"}`}>
                     {isActive && playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                   </button>
                   <div className="min-w-0 flex-1">
@@ -552,18 +552,18 @@ export function MusicPlayer() {
                         className="w-full rounded bg-background/60 px-1 py-0.5 text-xs outline-none"
                       />
                     ) : (
-                      <div className="truncate font-medium">{t.name}{t.isDefault && <span className="ml-1 text-[9px] uppercase text-muted-foreground">default</span>}</div>
+                      <div className="truncate font-black text-web-mist uppercase tracking-tight">{t.name}{t.isDefault && <span className="ml-1 text-[8px] font-black uppercase text-web-gold opacity-60">default</span>}</div>
                     )}
-                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                    <div className="text-[9px] font-bold uppercase tracking-widest text-web-sage">
                       {t.format} · {fmtTime(t.duration)} · {fmtSize(t.size)}
                     </div>
                   </div>
                   <div className="flex items-center gap-0.5 opacity-0 transition group-hover:opacity-100">
-                    <button onClick={() => move(t.id, -1)} title="Move up" className="grid h-6 w-6 place-items-center rounded text-muted-foreground hover:text-foreground"><ChevronUp className="h-3.5 w-3.5" /></button>
-                    <button onClick={() => move(t.id, 1)} title="Move down" className="grid h-6 w-6 place-items-center rounded text-muted-foreground hover:text-foreground"><ChevronDown className="h-3.5 w-3.5" /></button>
-                    <button onClick={() => startRename(t)} title="Rename" className="grid h-6 w-6 place-items-center rounded text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => move(t.id, -1)} title="Move up" className="grid h-6 w-6 place-items-center rounded text-web-sage hover:text-web-mist transition-colors"><ChevronUp className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => move(t.id, 1)} title="Move down" className="grid h-6 w-6 place-items-center rounded text-web-sage hover:text-web-mist transition-colors"><ChevronDown className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => startRename(t)} title="Rename" className="grid h-6 w-6 place-items-center rounded text-web-sage hover:text-web-mist transition-colors"><Pencil className="h-3.5 w-3.5" /></button>
                     {!t.isDefault && (
-                      <button onClick={() => removeTrack(t.id)} title="Remove" className="grid h-6 w-6 place-items-center rounded text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
+                      <button onClick={() => removeTrack(t.id)} title="Remove" className="grid h-6 w-6 place-items-center rounded text-web-sage hover:text-rose-500 transition-colors"><Trash2 className="h-3.5 w-3.5" /></button>
                     )}
                   </div>
                 </div>
@@ -571,8 +571,8 @@ export function MusicPlayer() {
             })}
           </div>
 
-          <div className="mt-2 text-center text-[10px] text-muted-foreground">
-            Drop MP3 · WAV · FLAC · AAC · OGG · M4A anywhere on this panel
+          <div className="mt-2 text-center text-[9px] font-black uppercase tracking-widest text-web-sage opacity-60">
+            Drop MP3 · WAV · FLAC · AAC · OGG · M4A
           </div>
         </div>
       )}

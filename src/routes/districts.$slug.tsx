@@ -70,19 +70,19 @@ function DistrictPage() {
   }, [allCrops]);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12">
-      <Link to="/districts" className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
+    <div className="relative min-h-screen bg-web-bg-midnight font-[Plus Jakarta Sans] mx-auto max-w-7xl px-6 py-12">
+      <Link to="/districts" className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-web-sage hover:text-web-gold transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> All districts
       </Link>
 
       <Reveal>
         <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">{district.region} · Andhra Pradesh</span>
-            <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-6xl">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-web-emerald">{district.region} · Andhra Pradesh</span>
+            <h1 className="mt-2 font-[Unbounded] text-5xl font-black tracking-tight text-web-mist md:text-7xl">
               {district.name}
             </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-3 text-[11px] font-bold uppercase tracking-widest text-web-sage opacity-70">
               HQ: {district.headquarters}. {allCrops.length} crops indexed for this district.
             </p>
           </div>
@@ -90,19 +90,21 @@ function DistrictPage() {
       </Reveal>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
-        <Stat icon={<Layers className="h-4 w-4" />} label="Soil" value={district.soil} />
-        <Stat icon={<Sun className="h-4 w-4" />} label="Climate" value={district.climate} />
-        <Stat icon={<Sprout className="h-4 w-4" />} label="Crops indexed" value={`${allCrops.length}`} />
+        <Stat icon={<Layers className="h-4 w-4" />} label="Soil Profile" value={district.soil} />
+        <Stat icon={<Sun className="h-4 w-4" />} label="Climate Profile" value={district.climate} />
+        <Stat icon={<Sprout className="h-4 w-4" />} label="Crops Indexed" value={`${allCrops.length}`} />
       </div>
 
       {/* Filters */}
       <div className="mt-10 flex flex-wrap items-center gap-3">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={`Search crops in ${district.name}…`}
-          className="flex-1 min-w-[220px] rounded-full border border-border/60 bg-card/60 px-4 py-2 text-sm outline-none focus:border-primary"
-        />
+        <div className="relative flex-1 min-w-[280px]">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={`Search crops in ${district.name}…`}
+            className="w-full rounded-2xl border border-web-leaf/10 bg-web-bg-midnight/40 px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-web-mist outline-none focus:border-web-emerald transition-all"
+          />
+        </div>
         <Chips label="Season" value={season} onChange={(v) => setSeason(v as any)} options={SEASONS as unknown as string[]} />
         <Chips
           label="Category"
@@ -112,7 +114,7 @@ function DistrictPage() {
         />
       </div>
 
-      <div className="mt-6 text-xs text-muted-foreground">{filtered.length} of {allCrops.length} crops</div>
+      <div className="mt-6 text-[9px] font-black uppercase tracking-[0.2em] text-web-sage opacity-60">{filtered.length} of {allCrops.length} commodities displayed</div>
 
       <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {filtered.map((c, i) => (
@@ -130,25 +132,25 @@ function DistrictPage() {
 
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="card-elegant p-4">
-      <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-        <span className="text-primary">{icon}</span> {label}
+    <div className="web-glass p-5 border-web-leaf/10">
+      <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-web-gold">
+        <span className="text-web-emerald">{icon}</span> {label}
       </div>
-      <div className="mt-1 text-sm font-medium">{value}</div>
+      <div className="mt-2 text-xs font-black text-web-mist uppercase tracking-tight">{value}</div>
     </div>
   );
 }
 
 function Chips({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
   return (
-    <div className="flex flex-wrap items-center gap-1 rounded-full border border-border/60 bg-card/40 p-1">
-      <span className="px-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{label}</span>
+    <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-web-leaf/10 bg-web-bg-midnight/40 p-1.5">
+      <span className="px-3 text-[9px] font-black uppercase tracking-widest text-web-gold">{label}</span>
       {options.map((o) => (
         <button
           key={o}
           onClick={() => onChange(o)}
-          className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-            value === o ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+          className={`rounded-xl px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-all ${
+            value === o ? "bg-web-emerald text-web-mist shadow-lg shadow-web-emerald/20" : "text-web-sage hover:bg-web-emerald/10 hover:text-web-gold"
           }`}
         >
           {o}
