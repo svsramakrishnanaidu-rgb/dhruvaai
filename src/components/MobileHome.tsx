@@ -65,13 +65,13 @@ export function MobileHome() {
         <img
           src={bgAsset.url}
           alt=""
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover scale-105"
           style={{ 
-            filter: 'contrast(1.1) brightness(0.8) saturate(1.1)' 
+            filter: 'contrast(1.2) brightness(0.65) saturate(1.2)' 
           }}
         />
         {/* Cinematic gradient overlay for maximum readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/10 to-black/90 backdrop-blur-[0.5px]" />
       </div>
 
 

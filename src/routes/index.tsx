@@ -86,9 +86,9 @@ function HeroSection({ loc, p, featured }: any) {
         {/* Left column */}
         <div className="lg:col-span-7">
           <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.3em] backdrop-blur-md text-moonlight-white/80">
+            <span className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-5 py-2 text-[10px] font-black uppercase tracking-[0.4em] backdrop-blur-2xl text-moonlight-white shadow-2xl">
               <Sparkles className="h-3.5 w-3.5 text-primary-crimson" />
-              Advisory reimagined · v2026
+              Agritech Reimagined · v2026
             </span>
           </Reveal>
 

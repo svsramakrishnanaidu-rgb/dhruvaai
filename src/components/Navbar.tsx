@@ -88,10 +88,10 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
     >
       <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-3 sm:px-4">
         <div
-          className={`flex min-w-0 flex-1 items-center gap-1 rounded-full border px-2 py-1.5 transition-all sm:px-3 sm:py-2 ${
-            scrolled ? "neo-glass border-white/10" : "neo-glass border-white/5"
+          className={`flex min-w-0 flex-1 items-center gap-1 rounded-[2rem] border px-2 py-1.5 transition-all sm:px-3 sm:py-2 ${
+            scrolled ? "neo-glass border-white/15" : "bg-white/5 border-white/5"
           }`}
-          style={{ boxShadow: scrolled ? "var(--neo-glass-shadow)" : undefined }}
+          style={{ boxShadow: scrolled ? "var(--neo-glass-shadow)" : undefined, backdropFilter: scrolled ? 'blur(20px)' : 'none' }}
         >
           <Link to="/" aria-label="Krish Sense home" className="flex shrink-0 items-center gap-2 pr-1 sm:pr-2">
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-crimson to-bright-crimson shadow-lg shadow-primary-crimson/20">
