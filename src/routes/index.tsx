@@ -299,17 +299,17 @@ function FeatureGrid() {
 
 function SectionHeader({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle?: string }) {
   return (
-    <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+    <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end mb-12">
       <div>
         <Reveal>
-          <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-primary">{eyebrow}</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-crimson">{eyebrow}</span>
         </Reveal>
         <Reveal delay={60}>
-          <h2 className="mt-2 max-w-2xl font-display text-3xl font-black tracking-tight md:text-5xl">{title}</h2>
+          <h2 className="mt-4 max-w-2xl font-display text-4xl font-black tracking-tighter text-moonlight-white md:text-6xl">{title}</h2>
         </Reveal>
         {subtitle && (
           <Reveal delay={120}>
-            <p className="mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">{subtitle}</p>
+            <p className="mt-6 max-w-2xl text-base text-muted-blue-gray font-medium leading-relaxed md:text-lg">{subtitle}</p>
           </Reveal>
         )}
       </div>
