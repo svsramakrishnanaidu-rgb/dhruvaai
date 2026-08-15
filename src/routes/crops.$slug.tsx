@@ -235,15 +235,15 @@ function CropDetail() {
             <div className="grid gap-5 md:grid-cols-2">
               {extras.diseases.map((d, i) => (
                 <Reveal key={d.name} delay={i * 60}>
-                  <article className="card-elegant overflow-hidden p-0">
-                    <div className="grid md:grid-cols-2">
-                      <img src={d.image} alt={d.name} loading="lazy" className="h-full max-h-64 w-full object-cover" />
-                      <div className="p-5">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-display text-lg font-bold"><T>{d.name}</T></h3>
-                          <span className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-widest">{d.category}</span>
-                        </div>
-                        <p className="mt-1 text-xs italic text-muted-foreground">{d.scientific}</p>
+                <article className="web-glass border-web-leaf/10 hover:border-web-emerald/30 transition-all duration-500 rounded-[2rem] overflow-hidden">
+                  <div className="grid md:grid-cols-2">
+                    <img src={d.image} alt={d.name} loading="lazy" className="h-full max-h-64 w-full object-cover border-r border-web-leaf/10" />
+                    <div className="p-6">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-[Unbounded] text-lg font-black text-web-mist uppercase tracking-tight"><T>{d.name}</T></h3>
+                        <span className="rounded-full border border-web-emerald/40 bg-web-emerald/10 px-3 py-1 text-[8px] font-black uppercase tracking-widest text-web-emerald">{d.category}</span>
+                      </div>
+                      <p className="mt-1 text-[9px] font-black italic uppercase tracking-widest text-web-gold opacity-70">{d.scientific}</p>
                         <dl className="mt-3 space-y-2 text-xs">
                           <Row k="Stages" v={d.stages} />
                           <Row k="Spread" v={d.spread} />
@@ -270,15 +270,15 @@ function CropDetail() {
             <div className="grid gap-5 md:grid-cols-2">
               {extras.weeds.map((w, i) => (
                 <Reveal key={w.name} delay={i * 60}>
-                  <article className="card-elegant overflow-hidden p-0">
-                    <div className="grid md:grid-cols-[220px_1fr]">
-                      <img src={w.image} alt={w.name} loading="lazy" className="h-full max-h-64 w-full object-cover md:max-h-none" />
-                      <div className="p-5">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-display text-lg font-bold"><T>{w.name}</T></h3>
-                          <SeverityMeter n={w.severity} />
-                        </div>
-                        <p className="mt-1 text-xs italic text-muted-foreground">{w.scientific} · {w.lifeCycle}</p>
+                <article className="web-glass border-web-leaf/10 hover:border-web-emerald/30 transition-all duration-500 rounded-[2rem] overflow-hidden">
+                  <div className="grid md:grid-cols-[220px_1fr]">
+                    <img src={w.image} alt={w.name} loading="lazy" className="h-full max-h-64 w-full object-cover md:max-h-none border-r border-web-leaf/10" />
+                    <div className="p-6">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-[Unbounded] text-lg font-black text-web-mist uppercase tracking-tight"><T>{w.name}</T></h3>
+                        <SeverityMeter n={w.severity} />
+                      </div>
+                      <p className="mt-1 text-[9px] font-black italic uppercase tracking-widest text-web-gold opacity-70">{w.scientific} · {w.lifeCycle}</p>
                         <dl className="mt-3 space-y-2 text-xs">
                           <Row k="Identify" v={w.identify} />
                           <Row k="Cultural" v={w.cultural} />
@@ -302,15 +302,15 @@ function CropDetail() {
             <div className="grid gap-5 md:grid-cols-2">
               {extras.pests.map((p, i) => (
                 <Reveal key={p.name} delay={i * 60}>
-                  <article className="card-elegant overflow-hidden p-0">
-                    <div className="grid md:grid-cols-[220px_1fr]">
-                      <img src={p.image} alt={p.name} loading="lazy" className="h-full max-h-64 w-full object-cover md:max-h-none" />
-                      <div className="p-5">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-display text-lg font-bold"><T>{p.name}</T></h3>
-                          <SeverityMeter n={p.severity} />
-                        </div>
-                        <p className="mt-1 text-xs italic text-muted-foreground">{p.scientific}</p>
+                <article className="web-glass border-web-leaf/10 hover:border-web-emerald/30 transition-all duration-500 rounded-[2rem] overflow-hidden">
+                  <div className="grid md:grid-cols-[220px_1fr]">
+                    <img src={p.image} alt={p.name} loading="lazy" className="h-full max-h-64 w-full object-cover md:max-h-none border-r border-web-leaf/10" />
+                    <div className="p-6">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-[Unbounded] text-lg font-black text-web-mist uppercase tracking-tight"><T>{p.name}</T></h3>
+                        <SeverityMeter n={p.severity} />
+                      </div>
+                      <p className="mt-1 text-[9px] font-black italic uppercase tracking-widest text-web-gold opacity-70">{p.scientific}</p>
                         <dl className="mt-3 space-y-2 text-xs">
                           <Row k="Damage" v={p.damage} />
                           <Row k="Life cycle" v={p.lifecycle} />
@@ -334,44 +334,44 @@ function CropDetail() {
           <div className="grid gap-4 md:grid-cols-3">
             {c.rotation.map((r, i) => (
               <Reveal key={r.crop} delay={i * 60}>
-                <div className="card-elegant p-6">
-                  <div className="text-xs uppercase tracking-widest text-muted-foreground"><T>After</T> {c.name} →</div>
-                  <h3 className="mt-1 font-display text-2xl font-bold"><T>{r.crop}</T></h3>
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                    <span className="rounded-full border border-border/60 px-2 py-0.5"><T>{r.season}</T></span>
-                    <span className="rounded-full border border-border/60 px-2 py-0.5">{r.gapDays}d gap</span>
+                <div className="web-glass p-6 border-web-leaf/10 hover:border-web-emerald/30 transition-all duration-300 rounded-[2rem]">
+                  <div className="text-[9px] font-black uppercase tracking-[0.2em] text-web-sage opacity-60"><T>After</T> {c.name} →</div>
+                  <h3 className="mt-2 font-[Unbounded] text-2xl font-black text-web-mist uppercase tracking-tight"><T>{r.crop}</T></h3>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-web-leaf/20 bg-web-bg-midnight/60 px-2 py-1 text-[8px] font-black uppercase tracking-widest text-web-emerald"><T>{r.season}</T></span>
+                    <span className="rounded-full border border-web-leaf/20 bg-web-bg-midnight/60 px-2 py-1 text-[8px] font-black uppercase tracking-widest text-web-gold">{r.gapDays}D GAP</span>
                   </div>
-                  <p className="mt-3 text-sm text-muted-foreground"><T>{r.benefit}</T></p>
+                  <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-web-sage leading-relaxed opacity-80"><T>{r.benefit}</T></p>
                 </div>
               </Reveal>
             ))}
           </div>
-          <Link to="/rotation" className="mt-4 inline-flex items-center gap-1 story-link text-primary"><T>Open rotation wheel</T> →</Link>
+          <Link to="/rotation" className="mt-6 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-web-gold hover:text-web-emerald transition-colors"><T>Open rotation wheel</T> →</Link>
         </Section>
 
         {/* Market */}
         <Section id="market" eyebrow="Economics" title="Market Price & MSP" icon={<TrendingUp />}>
           <div className="grid gap-4 lg:grid-cols-3">
-            <div className="card-elegant p-6">
-              <div className="text-xs uppercase tracking-widest text-muted-foreground"><T>Today's price</T></div>
-              <div className="mt-2 font-display text-5xl font-black">₹{c.marketPrice.price.toLocaleString()}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{c.marketPrice.unit}</div>
-              <div className="mt-4 inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs text-primary">
-                MSP ₹{c.marketPrice.msp.toLocaleString()}
+            <div className="web-glass p-8 border-web-leaf/10 rounded-[2.5rem] flex flex-col justify-center">
+              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-web-sage opacity-60"><T>Live Market Rate</T></div>
+              <div className="mt-3 font-[Unbounded] text-5xl font-black text-web-mist">₹{c.marketPrice.price.toLocaleString()}</div>
+              <div className="mt-2 text-[9px] font-black uppercase tracking-widest text-web-gold">{c.marketPrice.unit}</div>
+              <div className="mt-6 w-fit rounded-full border border-web-emerald/40 bg-web-emerald/10 px-4 py-1.5 text-[9px] font-black uppercase tracking-widest text-web-emerald">
+                GOVT MSP ₹{c.marketPrice.msp.toLocaleString()}
               </div>
             </div>
-            <div className="card-elegant p-6 lg:col-span-2">
-              <div className="text-xs uppercase tracking-widest text-muted-foreground"><T>7-day trend</T></div>
+            <div className="web-glass p-8 border-web-leaf/10 rounded-[2.5rem] lg:col-span-2">
+              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-web-sage opacity-60"><T>Volatility Analysis (7-Day Trend)</T></div>
               <div className="mt-3 h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={c.marketPrice.trend}>
-                    <XAxis dataKey="day" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} domain={["auto", "auto"]} />
+                    <XAxis dataKey="day" stroke="rgba(164, 180, 148, 0.4)" fontSize={9} fontWeight={900} tickLine={false} axisLine={false} />
+                    <YAxis stroke="rgba(164, 180, 148, 0.4)" fontSize={9} fontWeight={900} tickLine={false} axisLine={false} domain={["auto", "auto"]} />
                     <Tooltip
-                      contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }}
-                      labelStyle={{ color: "var(--muted-foreground)" }}
+                      contentStyle={{ background: "#060805", border: "1px solid rgba(45, 90, 39, 0.2)", borderRadius: 16, fontSize: 9, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                      itemStyle={{ color: "#d4af37" }}
                     />
-                    <Line type="monotone" dataKey="price" stroke="var(--primary)" strokeWidth={3} dot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="price" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: "#10b981", strokeWidth: 0 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -390,16 +390,16 @@ function CropDetail() {
         {/* Tips & precautions */}
         <Section id="tips" eyebrow="Wisdom" title="Expert Tips & Precautions">
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="card-elegant p-6">
-              <div className="mb-2 flex items-center gap-2 text-primary"><Lightbulb className="h-4 w-4" /><span className="text-xs font-semibold uppercase tracking-widest"><T>Tips</T></span></div>
-              <ul className="space-y-2 text-sm">
-                {c.tips.map((t) => <li key={t} className="flex gap-2"><span className="text-primary">•</span><T>{t}</T></li>)}
+            <div className="web-glass p-8 border-web-leaf/10 rounded-[2.5rem]">
+              <div className="mb-4 flex items-center gap-3 text-web-emerald"><Lightbulb className="h-5 w-5" /><span className="text-[10px] font-black uppercase tracking-[0.2em]"><T>Cultivation Strategies</T></span></div>
+              <ul className="space-y-3">
+                {c.tips.map((t) => <li key={t} className="flex gap-3 text-[11px] font-bold uppercase tracking-widest text-web-sage leading-relaxed"><span className="text-web-emerald">•</span><T>{t}</T></li>)}
               </ul>
             </div>
-            <div className="card-elegant p-6">
-              <div className="mb-2 flex items-center gap-2 text-accent"><ShieldAlert className="h-4 w-4" /><span className="text-xs font-semibold uppercase tracking-widest"><T>Precautions</T></span></div>
-              <ul className="space-y-2 text-sm">
-                {c.precautions.map((t) => <li key={t} className="flex gap-2"><span className="text-accent">•</span><T>{t}</T></li>)}
+            <div className="web-glass p-8 border-web-leaf/10 rounded-[2.5rem]">
+              <div className="mb-4 flex items-center gap-3 text-red-500/80"><ShieldAlert className="h-5 w-5" /><span className="text-[10px] font-black uppercase tracking-[0.2em]"><T>Risk Mitigation</T></span></div>
+              <ul className="space-y-3">
+                {c.precautions.map((t) => <li key={t} className="flex gap-3 text-[11px] font-bold uppercase tracking-widest text-web-sage leading-relaxed"><span className="text-red-500/80">•</span><T>{t}</T></li>)}
               </ul>
             </div>
           </div>
@@ -414,10 +414,10 @@ function CropDetail() {
                 href={r.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass hover-lift flex items-center justify-between rounded-2xl p-5 text-sm"
+                className="web-glass border-web-leaf/10 hover:border-web-emerald/30 hover:-translate-x-1 transition-all duration-300 flex items-center justify-between rounded-[2rem] p-6"
               >
-                <span><T>{r.label}</T></span>
-                <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-web-mist"><T>{r.label}</T></span>
+                <ExternalLink className="h-4 w-4 text-web-gold" />
               </a>
             ))}
           </div>
