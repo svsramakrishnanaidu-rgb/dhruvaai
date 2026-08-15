@@ -102,20 +102,20 @@ function CropLibrary() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
+    <div className="relative min-h-screen bg-web-bg-midnight font-[Plus Jakarta Sans] mx-auto max-w-7xl px-6 py-16">
       <Reveal>
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">{t("lib.eyebrow")}</span>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight md:text-6xl">{t("lib.title")}</h1>
-        <p className="mt-3 max-w-2xl text-muted-foreground">{t("lib.sub")}</p>
+        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-web-emerald">{t("lib.eyebrow")}</span>
+        <h1 className="mt-2 font-[Unbounded] text-5xl font-black tracking-tight text-web-mist md:text-7xl">{t("lib.title")}</h1>
+        <p className="mt-4 max-w-2xl text-[11px] font-bold uppercase tracking-widest text-web-sage leading-relaxed opacity-80">{t("lib.sub")}</p>
       </Reveal>
 
       {localCrops.length > 0 && district === "All" && (
         <Reveal>
-          <div className="mt-10 rounded-3xl border border-primary/30 bg-primary/5 p-6">
-            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-              <MapPin className="h-4 w-4" /> {t("lib.recommended")} {loc.district}
+          <div className="mt-10 rounded-[3rem] border border-web-emerald/30 bg-web-emerald/5 p-8">
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-web-emerald">
+              <MapPin className="h-4 w-4 text-web-gold" /> {t("lib.recommended")} {loc.district}
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-2 text-[9px] font-black uppercase tracking-widest text-web-sage">
               {localCrops.length} {t("lib.recSub")}
             </p>
             <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -128,32 +128,34 @@ function CropLibrary() {
       )}
 
       <div className="mt-10 flex flex-wrap items-center gap-3">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={t("lib.searchPh")}
-          aria-label={t("lib.searchPh")}
-          className="flex-1 min-w-[240px] rounded-full border border-border/60 bg-card/60 px-4 py-2 text-sm outline-none focus:border-primary"
-        />
+        <div className="relative flex-1 min-w-[280px]">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={t("lib.searchPh")}
+            aria-label={t("lib.searchPh")}
+            className="w-full rounded-2xl border border-web-leaf/10 bg-web-bg-midnight/40 px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-web-mist outline-none focus:border-web-emerald transition-all"
+          />
+        </div>
         <button
           onClick={() => setShowFilters((v) => !v)}
           aria-expanded={showFilters}
-          className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-4 py-2 text-sm hover:border-primary"
+          className="inline-flex items-center gap-2 rounded-2xl border border-web-leaf/10 bg-web-bg-midnight/40 px-5 py-3 text-[10px] font-black uppercase tracking-widest text-web-sage hover:border-web-emerald/30 hover:text-web-gold transition-all"
         >
           <Filter className="h-4 w-4" /> {t("lib.filters")}
           {activeCount > 0 && (
-            <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">{activeCount}</span>
+            <span className="rounded-full bg-web-emerald px-2 py-0.5 text-[9px] font-black text-web-mist shadow-lg shadow-web-emerald/20">{activeCount}</span>
           )}
         </button>
         {activeCount > 0 && (
-          <button onClick={reset} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
-            <X className="h-3 w-3" /> {t("lib.reset")}
+          <button onClick={reset} className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-web-sage hover:text-web-gold transition-colors">
+            <X className="h-4 w-4" /> {t("lib.reset")}
           </button>
         )}
       </div>
 
       {showFilters && (
-        <div className="mt-4 grid gap-3 rounded-3xl border border-white/10 bg-black/70 p-4 shadow-2xl backdrop-blur-xl md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid gap-3 rounded-[2rem] border border-web-leaf/10 bg-web-bg-midnight/90 p-6 shadow-2xl backdrop-blur-2xl md:grid-cols-2 lg:grid-cols-3">
           <Select label={t("filter.district")} value={district} onChange={setDistrict} options={allDistricts} tKey={(v) => (v === "All" ? t("opt.All") : v)} />
           <Select label={t("filter.category")} value={category} onChange={(v) => setCategory(v as any)} options={["All", ...CROP_CATEGORIES]} tKey={(v) => (v === "All" ? t("opt.All") : v)} />
           <Select label={t("filter.season")} value={season} onChange={setSeason} options={SEASONS as unknown as string[]} tKey={(v) => t(`opt.${v}`) || v} />
@@ -174,13 +176,13 @@ function CropLibrary() {
         </div>
       )}
 
-      <div className="mt-8 text-xs text-muted-foreground">{filtered.length} {t("lib.count")} {CROP_LIST.length} {t("lib.crops")}</div>
+      <div className="mt-8 text-[9px] font-black uppercase tracking-[0.2em] text-web-sage opacity-60">{filtered.length} {t("lib.count")} {CROP_LIST.length} {t("lib.crops")}</div>
       <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {filtered.map((c, i) => (
           <CropCard key={c.slug} crop={c} index={i} />
         ))}
         {filtered.length === 0 && (
-          <div className="col-span-full py-24 text-center text-muted-foreground">{t("lib.noMatch")}</div>
+          <div className="col-span-full py-24 text-center text-[11px] font-black uppercase tracking-widest text-web-sage">{t("lib.noMatch")}</div>
         )}
       </div>
     </div>
@@ -200,21 +202,21 @@ function Select({
   const fmt = tKey ?? ((v: string) => v);
   return (
     <label
-      className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs transition ${
+      className={`flex items-center gap-2 rounded-2xl border px-3 py-2.5 text-[10px] transition-all duration-300 ${
         active
-          ? "border-primary/60 bg-primary/15 shadow-[0_0_0_1px_color-mix(in_oklab,var(--primary)_45%,transparent)]"
-          : "border-white/10 bg-black/60 hover:border-white/25"
+          ? "border-web-emerald/60 bg-web-emerald/15 shadow-[0_0_24px_rgba(16,185,129,0.1)]"
+          : "border-web-leaf/10 bg-web-bg-midnight/60 hover:border-web-leaf/30"
       }`}
     >
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-white/60">{label}</span>
+      <span className="text-[9px] font-black uppercase tracking-widest text-web-gold/60">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
         aria-label={label}
-        className={`flex-1 bg-transparent text-sm outline-none ${active ? "font-semibold text-primary" : "text-white"}`}
+        className={`flex-1 bg-transparent text-[10px] font-black uppercase tracking-widest outline-none ${active ? "text-web-emerald" : "text-web-mist"}`}
       >
         {options.map((o) => (
-          <option key={o} value={o}>{fmt(o)}</option>
+          <option key={o} value={o} className="bg-web-bg-midnight">{fmt(o)}</option>
         ))}
       </select>
     </label>
