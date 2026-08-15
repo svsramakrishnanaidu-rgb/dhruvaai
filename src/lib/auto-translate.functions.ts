@@ -7,7 +7,7 @@ import { resolveAiEndpoint } from "@/lib/ai-endpoint.server";
 
 const In = z.object({
   lang: z.enum(["te", "hi"]),
-  texts: z.array(z.string().min(1).max(500)).min(1).max(60),
+  texts: z.array(z.string().min(1)).min(1).max(100),
 });
 
 const LANG_NAME: Record<"te" | "hi", string> = {
