@@ -193,7 +193,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                     <span
                       aria-hidden
                       className="h-px flex-1"
-                      style={{ background: "linear-gradient(270deg, color-mix(in oklab, var(--accent) 40%, transparent), transparent)" }}
+                      style={{ background: "linear-gradient(270deg, rgba(227, 25, 55, 0.4), transparent)" }}
                     />
                   </div>
                   <nav aria-label={group.label} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
