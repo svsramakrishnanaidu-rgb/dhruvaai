@@ -12,7 +12,7 @@ export function MiniPlayer() {
       style={{ bottom: "calc(env(safe-area-inset-bottom) + var(--mini-bottom, 76px))" }}
     >
       <div className="pointer-events-auto mx-auto max-w-4xl px-3">
-        <div className="card-elegant relative flex items-center gap-3 overflow-hidden rounded-2xl p-2 pr-3 backdrop-blur-xl">
+        <div className="neo-glass relative flex items-center gap-3 overflow-hidden rounded-[2rem] p-2 pr-3 border border-white/10 shadow-2xl">
           {/* Cover + title */}
           <Link to="/music" className="flex min-w-0 flex-1 items-center gap-3">
             <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
