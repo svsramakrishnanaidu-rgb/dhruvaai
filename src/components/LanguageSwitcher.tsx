@@ -38,7 +38,7 @@ export function LanguageSwitcher() {
         <span className="hidden sm:inline">'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
                                         
                                             
-                                            remove every modification today done</span>
+                                            remove today mofication</span>
       </button>
       {open && (
         <ul
