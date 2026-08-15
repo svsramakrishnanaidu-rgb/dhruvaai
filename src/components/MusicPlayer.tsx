@@ -458,15 +458,15 @@ export function MusicPlayer() {
               <button onClick={playPause} className="grid h-10 w-10 place-items-center rounded-full bg-primary-crimson text-white hover:brightness-110 shadow-lg shadow-primary-crimson/20" title={playing ? "Pause" : "Play"}>
                 {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </button>
-              <button onClick={nextTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:text-foreground" title="Next">
+              <button onClick={nextTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-blue-gray hover:text-moonlight-white" title="Next">
                 <SkipForward className="h-4 w-4" />
               </button>
-              <button onClick={() => setLoop((l) => !l)} aria-pressed={loop} className={`grid h-8 w-8 place-items-center rounded-full ${loop ? "text-primary" : "text-muted-foreground hover:text-foreground"}`} title="Loop">
+              <button onClick={() => setLoop((l) => !l)} aria-pressed={loop} className={`grid h-8 w-8 place-items-center rounded-full ${loop ? "text-primary-crimson" : "text-muted-blue-gray hover:text-moonlight-white"}`} title="Loop">
                 <Repeat className="h-4 w-4" />
               </button>
             </div>
             <div className="flex items-center gap-1.5">
-              <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute" : "Mute"} className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground hover:text-foreground">
+              <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute" : "Mute"} className="grid h-7 w-7 place-items-center rounded-full text-muted-blue-gray hover:text-moonlight-white">
                 {muted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               </button>
               <input
