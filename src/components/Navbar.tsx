@@ -160,7 +160,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
               aria-label={t("aria.toggleMenu")}
               aria-expanded={open}
               aria-controls="mobile-nav"
-              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground xl:hidden"
+              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
             >
               {open ? <X className="h-4 w-4" aria-hidden /> : <Menu className="h-4 w-4" aria-hidden />}
             </button>
@@ -169,7 +169,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
       </div>
 
       {open && (
-        <div id="mobile-nav" className="mx-auto mt-2 max-w-7xl px-3 sm:px-4 xl:hidden">
+        <div id="mobile-nav" className="mx-auto mt-2 max-w-7xl px-3 sm:px-4">
           <div className="card-elegant rounded-3xl p-4">
             <div className="mb-3 sm:hidden">
               <DistrictPicker />
