@@ -1,37 +1,27 @@
-# Krish Sense — Midnight Forest Redesign (Website Only)
+# Plan: Resolve Agmarknet Server Function 500 Errors
 
-Reconstruct the desktop/tablet interface with a premium "Midnight Forest" Glassmorphism theme while keeping the mobile version untouched.
-
-## Visual Language
-- **Theme:** Midnight Forest (Emerald, Leaf, Harvest Gold, Deep Forest).
-- **Glassmorphism:** Enhanced depth (40px blur), saturated backgrounds (180%), and metallic accents.
-- **Typography:** "Unbounded" for statements (Hero), "Plus Jakarta Sans" for UI/Navigation, "Instrument Sans" for body.
+The application is experiencing `500 Internal Server Error` when calling `fetchAgmarknet` and `fetchAgmarknetPaged` via TanStack Start server functions. The dev server logs indicate `Error: Invalid server function ID`, which typically happens when the server function split transform fails or the environment is unstable during a hot reload.
 
 ## Proposed Changes
 
-### 1. Global Styles (`src/styles.css`)
-- Define website-specific CSS variables (isolated from mobile tokens).
-- Add "Japan Ramen" / "Unbounded" font stack.
-- Implement high-performance glass effects with GPU acceleration.
+### 1. Refactor Agmarknet Server Functions
+Move the actual logic from `src/lib/agmarknet.functions.ts` into `src/lib/agmarknet.server.ts` or similar to ensure a clean boundary and stable ID generation. I will also wrap the handlers in try-catch blocks to prevent 500s from propagating if the upstream API fails.
 
-### 2. Desktop Navigation (`src/components/Navbar.tsx`)
-- Branch the desktop view to a floating glass navbar.
-- Enhanced hover states with magnetic effects and golden highlights.
+### 2. Fix Input Validation
+The server logs show payloads like `{"state": "Andhra Pradesh", "limit": 1500}`. I will ensure the `validator` in `createServerFn` explicitly parses this using Zod to avoid runtime type mismatches that might lead to internal errors.
 
-### 3. Hero Section & Background (`src/routes/index.tsx`)
-- Redesign the desktop-only `HeroSection`.
-- Implement a scroll-controlled cinematic background (trees, light rays, moving leaves).
-- Update typography to "Japan Ramen" for the main statement.
-
-### 4. Component Redesign (Website Version)
-- **Market & Analytics:** Transition to heavy glass panels with saturated emerald/gold tints.
-- **Weather:** Enhance the AI dashboard with futuristic soil/AQI visuals.
-- **Footer:** Metallic gold gradients for links and logos.
-
-### 5. AI Interface
-- Reposition the AI experience as a central, high-visibility glass panel on the website.
+### 3. Stabilize Development Environment
+The "Invalid server function ID" error is often cleared by a fresh build or dev server restart. I will trigger a dev server restart after the code changes to ensure the Vite transform cache is clean.
 
 ## Technical Details
-- **Website Isolation:** Use the existing `useIsDesktop()` hook and `lg:` / `xl:` Tailwind breakpoints to ensure zero impact on mobile.
-- **Typography:** Adding Google Fonts for "Unbounded" and "Plus Jakarta Sans" in `src/routes/__root.tsx`.
-- **Performance:** Using CSS containment and `backdrop-filter` optimizations for 60fps scrolling on desktop.
+
+- **Files affected**:
+    - `src/lib/agmarknet.functions.ts`: Update to be a thin wrapper.
+    - `src/lib/agmarknet.server.ts`: Ensure robust handling of the `DATA_GOV_IN_API_KEY`.
+    - `src/lib/agmarknet.schema.ts`: (Verify) Ensure schemas match the actual data.
+
+- **Checklist**:
+    - [ ] Move logic to `.server.ts`.
+    - [ ] Add Zod validation to `createServerFn`.
+    - [ ] Restart dev server.
+    - [ ] Verify functionality via preview.
