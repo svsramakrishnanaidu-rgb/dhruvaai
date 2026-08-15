@@ -412,8 +412,8 @@ export function MusicPlayer() {
               <ListMusic className="h-6 w-6 text-white" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-semibold">{currentTrack?.name ?? "—"}</div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <div className="truncate text-sm font-black uppercase tracking-tight text-moonlight-white">{currentTrack?.name ?? "—"}</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-blue-gray">
                 {currentTrack?.format} · {fmtSize(currentTrack?.size ?? 0)} · {fmtTime(duration)}
               </div>
             </div>
