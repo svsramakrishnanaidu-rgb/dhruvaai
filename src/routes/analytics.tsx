@@ -336,8 +336,8 @@ function Analytics() {
         </div>
       </div>
 
-      <div className="mt-6 card-elegant p-6">
-        <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+      <div className="mt-6 neo-glass p-8 rounded-[2rem] border border-white/10 shadow-2xl">
+        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-crimson">
           Area vs Output — normalized radar
         </div>
         <div className="mt-4 h-80">
