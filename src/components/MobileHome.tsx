@@ -165,7 +165,7 @@ function HeaderIcon({
         )}
         {badge && (
           <span className="font-display absolute -bottom-0.5 right-0.5 rounded-[4px] bg-background/80 px-1 text-[7px] font-bold leading-none tracking-widest text-accent">
-            {badge === "EN" ? "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            will you remove today entire modifications like text addings" : badge}
+            {badge}
           </span>
         )}
       </span>
