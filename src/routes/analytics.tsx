@@ -40,8 +40,8 @@ export const Route = createFileRoute("/analytics")({
 });
 
 const CHART_COLORS = [
-  "var(--primary-crimson)", "var(--bright-crimson)", "rgba(227, 25, 55, 0.6)", "rgba(227, 25, 55, 0.4)", "rgba(227, 25, 55, 0.2)",
-  "#1A2B48", "#2C3E50", "#34495E", "#E67E22",
+  "var(--leaf)", "var(--sunrise)", "var(--sky)", "var(--monsoon)", "var(--loam)",
+  "oklch(0.7 0.18 320)", "oklch(0.75 0.16 15)", "oklch(0.72 0.15 190)", "oklch(0.68 0.18 45)",
 ];
 
 function fmt(n: number) { return n.toLocaleString("en-IN"); }
@@ -170,8 +170,8 @@ function Analytics() {
       {/* All-India live mandi analytics */}
       <section className="mt-10 space-y-3">
         <div>
-          <h2 className="font-display text-3xl font-black uppercase tracking-tight text-moonlight-white">All-India Live Market Analysis</h2>
-          <p className="text-sm font-bold uppercase tracking-widest text-muted-blue-gray">
+          <h2 className="font-display text-3xl font-bold">All-India Live Market Analysis</h2>
+          <p className="text-sm text-muted-foreground">
             Real-time mandi prices sourced from Agmarknet (data.gov.in). Search, sort and drill into every commodity, mandi and price movement.
           </p>
         </div>
@@ -196,17 +196,17 @@ function Analytics() {
       {/* SELECTED DISTRICT SPOTLIGHT */}
       {selectedRow && (
         <Reveal>
-          <div className="mt-10 neo-glass p-8 rounded-[2rem] border border-white/10 shadow-2xl">
+          <div className="mt-10 card-elegant p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-crimson">
+                <div className="text-[10px] font-semibold uppercase tracking-widest text-primary">
                   Your district · live spotlight
                 </div>
-                <h2 className="mt-2 font-display text-4xl font-black uppercase tracking-tighter text-moonlight-white">
-                  {selectedRow.district} <span className="text-muted-blue-gray">· {selectedRow.state}</span>
+                <h2 className="mt-1 font-display text-3xl font-bold">
+                  {selectedRow.district} <span className="text-muted-foreground">· {selectedRow.state}</span>
                 </h2>
               </div>
-              <span className="rounded-full bg-primary-crimson/20 border border-primary-crimson/30 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary-crimson shadow-[0_0_15px_rgba(227,25,55,0.1)]">
+              <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
                 {selectedRow.crop} · {selectedRow.season}
               </span>
             </div>
@@ -222,26 +222,26 @@ function Analytics() {
       {/* EXECUTIVE SUMMARY + FORMULA */}
       <div className="mt-14 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <Reveal>
-          <div className="neo-glass p-8 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden group">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-crimson">Executive Summary</div>
-            <p className="mt-6 font-bold text-sm text-moonlight-white/80 leading-relaxed uppercase tracking-wider">
+          <div className="card-elegant p-8">
+            <div className="text-[10px] font-semibold uppercase tracking-widest text-primary">Executive Summary</div>
+            <p className="mt-4 leading-relaxed text-muted-foreground">
               Agriculture remains a fundamental pillar of the Indian economy, driving
               livelihoods for over half of the nation's populace. For the current
               agricultural calendar year, overall food-grain production in India is
               projected at{" "}
-              <span className="text-primary-crimson font-black">255.13 × 10⁶ Metric Tonnes</span>.
+              <span className="font-semibold text-foreground">255.13 × 10⁶ Metric Tonnes</span>.
               While traditional grain baskets like Punjab, Haryana, and Western Uttar
               Pradesh continue to anchor national buffer stocks, high-performing
               agro-ecological zones across Central, Western, and Southern India have
               rapidly transformed into specialized hubs.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/5 bg-white/5 p-5 group-hover:border-primary-crimson/20 transition-colors">
-                <div className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-blue-gray">Data Scope</div>
+              <div className="rounded-2xl border border-border/60 p-4">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Data Scope</div>
                 <div className="mt-1 text-sm">{EXECUTIVE.scope}</div>
               </div>
-              <div className="rounded-2xl border border-white/5 bg-white/5 p-5 group-hover:border-primary-crimson/20 transition-colors">
-                <div className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-blue-gray">Analytical Indexing</div>
+              <div className="rounded-2xl border border-border/60 p-4">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Analytical Indexing</div>
                 <div className="mt-1 text-sm">{EXECUTIVE.indexing}</div>
               </div>
             </div>
@@ -249,27 +249,28 @@ function Analytics() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="neo-glass relative overflow-hidden p-8 rounded-[2rem] border border-white/10 shadow-2xl group">
+          <div className="card-elegant relative overflow-hidden p-8">
             <div
-              className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full opacity-20 blur-3xl bg-primary-crimson/30 group-hover:opacity-40 transition-opacity"
+              className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full opacity-30 blur-3xl"
+              style={{ background: "var(--gradient-primary)" }}
             />
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-crimson">Key Yield Formulation</div>
+            <div className="text-[10px] font-semibold uppercase tracking-widest text-primary">Key Yield Formulation</div>
             <div className="mt-6 flex items-center justify-center">
               <div className="font-display text-6xl font-black tracking-tight md:text-7xl">
-                <span className="text-primary-crimson">Y</span>
-                <span className="mx-3 text-muted-blue-gray/40">=</span>
-                <span className="text-moonlight-white">P</span>
-                <span className="mx-2 text-muted-blue-gray/40">/</span>
-                <span className="text-moonlight-white">A</span>
+                <span className="text-gradient">Y</span>
+                <span className="mx-3 text-muted-foreground">=</span>
+                <span className="text-gradient">P</span>
+                <span className="mx-2 text-muted-foreground">/</span>
+                <span className="text-gradient">A</span>
               </div>
             </div>
             <div className="mt-6 space-y-2">
               {EXECUTIVE.formulaLegend.map((l) => (
                 <div key={l.symbol} className="flex items-center gap-3 text-sm">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary-crimson/20 font-display text-xl font-black text-primary-crimson shadow-lg shadow-primary-crimson/10 border border-primary-crimson/20">
+                  <span className="grid h-8 w-8 place-items-center rounded-full bg-primary/15 font-display text-lg font-bold text-primary">
                     {l.symbol}
                   </span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-blue-gray">{l.meaning}</span>
+                  <span className="text-muted-foreground">{l.meaning}</span>
                 </div>
               ))}
             </div>
@@ -279,10 +280,10 @@ function Analytics() {
 
       {/* MACRO CATEGORY TABLE + PIE + RADAR */}
       <Reveal>
-        <h2 className="mt-16 font-display text-4xl font-black uppercase tracking-tighter text-moonlight-white">
+        <h2 className="mt-16 font-display text-3xl font-bold md:text-4xl">
           Macro Crop Categories
         </h2>
-        <p className="mt-3 max-w-2xl text-[10px] font-bold uppercase tracking-[0.2em] text-muted-blue-gray">
+        <p className="mt-2 max-w-2xl text-muted-foreground">
           National composition for the 2025-26 cycle — area (Lakh Ha) and estimated
           output (Lakh Tonnes) across the five core groups plus the consolidated
           food-grain aggregate.
@@ -290,11 +291,11 @@ function Analytics() {
       </Reveal>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        <div className="neo-glass overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl">
+        <div className="card-elegant overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/5 text-left text-[9px] font-black uppercase tracking-[0.2em] text-primary-crimson">
+                <tr className="border-b border-border/60 text-left text-[10px] uppercase tracking-widest text-muted-foreground">
                   <th className="px-4 py-3">Category</th>
                   <th className="px-4 py-3">Season</th>
                   <th className="px-4 py-3 text-right">Area (Lakh Ha)</th>
@@ -306,12 +307,12 @@ function Analytics() {
                 {MACRO.map((m) => {
                   const total = m.category === "Total Food Grains Group";
                   return (
-                    <tr key={m.category} className={`border-b border-white/5 last:border-none transition-colors hover:bg-white/5 ${total ? "bg-primary-crimson/10 font-black text-primary-crimson" : "text-moonlight-white"}`}>
+                    <tr key={m.category} className={`border-b border-border/40 last:border-none ${total ? "bg-primary/5 font-semibold" : ""}`}>
                       <td className="px-4 py-3">{m.category}</td>
-                      <td className={`px-4 py-3 ${total ? "text-primary-crimson/80" : "text-muted-blue-gray"}`}>{m.season}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{m.season}</td>
                       <td className="px-4 py-3 text-right tabular-nums">{m.areaLakhHa.toLocaleString("en-IN")}</td>
                       <td className="px-4 py-3 text-right tabular-nums">{m.outputLakhTonnes.toLocaleString("en-IN")}</td>
-                      <td className={`px-4 py-3 text-[10px] font-bold uppercase tracking-widest ${total ? "text-primary-crimson/60" : "text-muted-blue-gray/60"}`}>{m.zones}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">{m.zones}</td>
                     </tr>
                   );
                 })}
@@ -320,8 +321,8 @@ function Analytics() {
           </div>
         </div>
 
-        <div className="neo-glass p-8 rounded-[2rem] border border-white/10 shadow-2xl">
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-crimson">Output share</div>
+        <div className="card-elegant p-6">
+          <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Output share</div>
           <div className="mt-2 h-64">
             <ResponsiveContainer>
               <PieChart>
@@ -336,17 +337,17 @@ function Analytics() {
         </div>
       </div>
 
-      <div className="mt-6 neo-glass p-8 rounded-[2rem] border border-white/10 shadow-2xl">
-        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-crimson">
+      <div className="mt-6 card-elegant p-6">
+        <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
           Area vs Output — normalized radar
         </div>
         <div className="mt-4 h-80">
           <ResponsiveContainer>
             <RadarChart data={macroRadar}>
-              <PolarGrid stroke="rgba(255,255,255,0.05)" />
-              <PolarAngleAxis dataKey="category" tick={{ fill: "var(--muted-blue-gray)", fontSize: 10, fontWeight: "bold" }} />
-              <PolarRadiusAxis tick={{ fill: "var(--muted-blue-gray)", fontSize: 9 }} />
-              <Radar name="Area (Lakh Ha)" dataKey="Area" stroke="var(--primary-crimson)" fill="var(--primary-crimson)" fillOpacity={0.3} />
+              <PolarGrid stroke="var(--border)" />
+              <PolarAngleAxis dataKey="category" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
+              <PolarRadiusAxis tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} />
+              <Radar name="Area (Lakh Ha)" dataKey="Area" stroke="var(--leaf)" fill="var(--leaf)" fillOpacity={0.35} />
               <Radar name="Output (÷5)" dataKey="Output" stroke="var(--sunrise)" fill="var(--sunrise)" fillOpacity={0.35} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }} />
