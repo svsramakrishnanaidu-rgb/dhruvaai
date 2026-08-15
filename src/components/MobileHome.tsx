@@ -116,7 +116,7 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
           {loc.state} · {loc.district}
         </span>
       </div>
-      <div className="neo-glass flex shrink-0 items-center gap-1 rounded-2xl p-2 px-3 border border-white/10 shadow-2xl">
+      <div className="neo-glass flex shrink-0 items-center gap-1 rounded-2xl p-2 px-3 border border-white/15 shadow-2xl backdrop-blur-3xl">
         <HeaderIcon to="/districts" label="Change district" icon={<MapPin className="h-[18px] w-[18px]" />} />
         <HeaderDivider />
         <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[18px] w-[18px]" />} />
@@ -178,7 +178,7 @@ function HeaderIcon({
    ============================================================ */
 function HeroTile() {
   return (
-    <div className="neo-glass-card relative col-span-2 overflow-hidden px-8 py-10 border border-white/10">
+    <div className="neo-glass-card relative col-span-2 overflow-hidden px-8 py-12 border border-white/20 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.8)]">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full blur-[80px]"
@@ -192,7 +192,7 @@ function HeroTile() {
       </p>
       <Link
         to="/crops"
-        className="group inline-flex items-center gap-3 rounded-2xl bg-primary-crimson px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-white active:scale-95 transition-all shadow-[0_10px_30px_-10px_rgba(227,25,55,0.4)]"
+        className="group inline-flex items-center gap-3 rounded-[1.25rem] bg-primary-crimson px-10 py-5 text-[10px] font-black uppercase tracking-[0.25em] text-white active:scale-95 transition-all shadow-[0_20px_50px_-10px_rgba(227,25,55,0.6)]"
       >
         Explore Crops
         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -224,7 +224,7 @@ function WeatherTile({ district }: { district: string }) {
   const sky = wx ? codeToSky(wx.weatherCode) : "—";
 
   return (
-    <div className="neo-glass-card p-6 border border-white/10">
+    <div className="neo-glass-card p-6 border border-white/20 shadow-2xl backdrop-blur-3xl">
       <div className="mb-6 flex items-start justify-between">
         <div
           className="grid h-12 w-12 place-items-center rounded-2xl bg-white/5 border border-white/10 shadow-inner"
