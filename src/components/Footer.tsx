@@ -64,8 +64,8 @@ export function Footer() {
 function FooterCol({ title, links }: { title: string; links: { to: string; label: string }[] }) {
   return (
     <div>
-      <h4 className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{title}</h4>
-      <ul className="space-y-2 text-sm">
+      <h4 className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary-crimson">{title}</h4>
+      <ul className="space-y-3 text-xs">
         {links.map((l) => (
           <li key={l.to}>
             <Link to={l.to} className="story-link text-foreground/80 hover:text-foreground">
