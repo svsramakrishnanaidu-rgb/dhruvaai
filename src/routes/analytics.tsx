@@ -308,10 +308,10 @@ function Analytics() {
                   return (
                     <tr key={m.category} className={`border-b border-white/5 last:border-none transition-colors hover:bg-white/5 ${total ? "bg-primary-crimson/10 font-black text-primary-crimson" : "text-moonlight-white"}`}>
                       <td className="px-4 py-3">{m.category}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{m.season}</td>
+                      <td className={`px-4 py-3 ${total ? "text-primary-crimson/80" : "text-muted-blue-gray"}`}>{m.season}</td>
                       <td className="px-4 py-3 text-right tabular-nums">{m.areaLakhHa.toLocaleString("en-IN")}</td>
                       <td className="px-4 py-3 text-right tabular-nums">{m.outputLakhTonnes.toLocaleString("en-IN")}</td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground">{m.zones}</td>
+                      <td className={`px-4 py-3 text-[10px] font-bold uppercase tracking-widest ${total ? "text-primary-crimson/60" : "text-muted-blue-gray/60"}`}>{m.zones}</td>
                     </tr>
                   );
                 })}
