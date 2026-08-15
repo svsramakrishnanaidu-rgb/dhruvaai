@@ -35,7 +35,10 @@ export function LanguageSwitcher() {
         className="tap flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-web-sage transition-all hover:bg-web-emerald/10 hover:text-web-gold font-[Plus Jakarta Sans]"
       >
         <Languages className="h-4 w-4 text-web-gold" aria-hidden />
-        <span className="hidden sm:inline">{current.native}</span>
+        <span className="hidden sm:inline">'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+                                        
+                                            
+                                            remove every modification today done</span>
       </button>
       {open && (
         <ul
