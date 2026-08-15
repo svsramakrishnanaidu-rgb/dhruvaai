@@ -185,9 +185,9 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                     <span
                       aria-hidden
                       className="h-px flex-1"
-                      style={{ background: "linear-gradient(90deg, color-mix(in oklab, var(--accent) 40%, transparent), transparent)" }}
+                      style={{ background: "linear-gradient(90deg, rgba(227, 25, 55, 0.4), transparent)" }}
                     />
-                    <h3 className="font-display text-[10px] font-bold uppercase tracking-[0.28em] text-accent/80">
+                    <h3 className="font-display text-[10px] font-black uppercase tracking-[0.2em] text-primary-crimson">
                       {group.label}
                     </h3>
                     <span
