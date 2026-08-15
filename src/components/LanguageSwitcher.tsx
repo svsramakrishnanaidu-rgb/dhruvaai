@@ -52,15 +52,15 @@ export function LanguageSwitcher() {
                   role="option"
                   aria-selected={selected}
                   onClick={() => { setLang(l.code); setOpen(false); }}
-                  className={`flex w-full items-center justify-between gap-2 px-3 py-2.5 text-sm transition hover:bg-secondary/60 ${
-                    selected ? "text-foreground" : "text-muted-foreground"
+                  className={`flex w-full items-center justify-between gap-2 px-3 py-2.5 text-xs font-bold uppercase tracking-widest transition-all hover:bg-white/5 ${
+                    selected ? "text-primary-crimson" : "text-muted-blue-gray hover:text-moonlight-white"
                   }`}
                 >
                   <span>
-                    <span className="font-medium">{l.native}</span>
-                    <span className="ml-2 text-[10px] uppercase tracking-widest text-muted-foreground">{l.code}</span>
+                    <span>{l.native}</span>
+                    <span className="ml-2 text-[9px] opacity-40">{l.code}</span>
                   </span>
-                  {selected && <Check className="h-3.5 w-3.5 text-primary" aria-hidden />}
+                  {selected && <Check className="h-3.5 w-3.5" aria-hidden />}
                 </button>
               </li>
             );
