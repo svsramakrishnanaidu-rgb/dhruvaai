@@ -141,11 +141,11 @@ function CropDetail() {
 
         {/* Irrigation */}
         <Section id="irrigation" eyebrow="Step 3" title="Irrigation Schedule" icon={<Droplets />} banner={irrigationImg}>
-          <ul className="grid gap-3 md:grid-cols-3">
+          <ul className="grid gap-4 md:grid-cols-3">
             {c.irrigation.map((i, idx) => (
-              <li key={idx} className="glass rounded-2xl p-5 text-sm">
-                <span className="mr-2 inline-block rounded-full bg-primary/20 px-2 py-0.5 text-xs font-semibold text-primary">{idx + 1}</span>
-                <T>{i}</T>
+              <li key={idx} className="web-glass rounded-[1.5rem] p-6 border-web-leaf/10 hover:border-web-emerald/30 transition-all duration-300">
+                <span className="mb-3 block w-fit rounded-full bg-web-emerald/10 px-3 py-1 text-[9px] font-black text-web-emerald uppercase tracking-widest border border-web-emerald/20">IRRIGATION {idx + 1}</span>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-web-sage leading-relaxed"><T>{i}</T></p>
               </li>
             ))}
           </ul>
@@ -153,14 +153,14 @@ function CropDetail() {
 
         {/* Fertilizer */}
         <Section id="fertilizer" eyebrow="Step 4" title="Fertilizer Schedule" icon={<Beaker />}>
-          <div className="overflow-hidden rounded-3xl border border-border/60 bg-card/40">
-            <table className="w-full text-sm">
-              <thead className="bg-secondary/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <div className="overflow-hidden rounded-[2.5rem] border border-web-leaf/20 web-glass shadow-2xl">
+            <table className="w-full text-[10px] font-black uppercase tracking-widest">
+              <thead className="bg-web-bg-midnight/60 text-left text-web-gold/80 border-b border-web-leaf/10">
                 <tr>
-                  <th className="p-4">Nutrient / Input</th>
-                  <th className="p-4">Per Acre</th>
-                  <th className="p-4">Stage</th>
-                  <th className="p-4">Intensity</th>
+                  <th className="p-6"><T>Nutrient Input</T></th>
+                  <th className="p-6"><T>Dosage (Per Acre)</T></th>
+                  <th className="p-6"><T>Application Stage</T></th>
+                  <th className="p-6"><T>Impact</T></th>
                 </tr>
               </thead>
               <tbody>
@@ -168,15 +168,15 @@ function CropDetail() {
                   const max = Math.max(...c.fertilizer.map((x) => x.perAcreKg));
                   const pct = (f.perAcreKg / max) * 100;
                   return (
-                    <tr key={f.name} className="border-t border-border/40">
-                      <td className="p-4 font-semibold">{f.name}</td>
-                      <td className="p-4 tabular-nums">{f.perAcreKg} kg</td>
-                      <td className="p-4 text-muted-foreground"><T>{f.stage}</T></td>
-                      <td className="p-4">
-                        <div className="h-2 w-40 overflow-hidden rounded-full bg-secondary/40">
+                    <tr key={f.name} className="border-t border-web-leaf/5 hover:bg-web-emerald/5 transition-colors">
+                      <td className="p-6 font-black text-web-mist">{f.name}</td>
+                      <td className="p-6 tabular-nums text-web-gold">{f.perAcreKg} KG</td>
+                      <td className="p-6 text-web-sage opacity-80"><T>{f.stage}</T></td>
+                      <td className="p-6">
+                        <div className="h-1.5 w-40 overflow-hidden rounded-full bg-web-bg-midnight/80 border border-web-leaf/10">
                           <div
-                            className="h-full rounded-full"
-                            style={{ width: `${pct}%`, background: "var(--gradient-primary)" }}
+                            className="h-full rounded-full bg-gradient-to-r from-web-emerald to-web-gold shadow-[0_0_10px_rgba(16,185,129,0.4)]"
+                            style={{ width: `${pct}%` }}
                           />
                         </div>
                       </td>
@@ -186,9 +186,9 @@ function CropDetail() {
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">
-            <T>Need calculations for your exact land size?</T>{" "}
-            <Link to="/calculators" search={{ crop: c.slug } as any} className="story-link text-primary"><T>Open Calculators</T></Link>
+          <p className="mt-5 text-[9px] font-black uppercase tracking-widest text-web-sage opacity-60">
+            <T>Land-specific calculations required?</T>{" "}
+            <Link to="/calculators" search={{ crop: c.slug } as any} className="text-web-gold hover:text-web-emerald transition-colors"><T>ACCESS ANALYTICS</T> →</Link>
           </p>
         </Section>
 
@@ -197,8 +197,8 @@ function CropDetail() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {c.diseases.map((d, i) => (
               <Reveal key={d.name} delay={i * 60}>
-                <article className="card-elegant hover-lift overflow-hidden p-0">
-                  <div className="relative aspect-[16/10] overflow-hidden">
+                <article className="web-glass border-web-leaf/10 hover:border-web-emerald/30 hover:-translate-y-2 transition-all duration-500 rounded-[2.5rem] overflow-hidden">
+                  <div className="relative aspect-[16/10] overflow-hidden border-b border-web-leaf/10">
                     <img
                       src={diseaseImage(d.name)}
                       alt={`${d.name} symptoms on ${c.name}`}
