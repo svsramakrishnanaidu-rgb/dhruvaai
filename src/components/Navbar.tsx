@@ -89,20 +89,20 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
       <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-3 sm:px-4">
         <div
           className={`flex min-w-0 flex-1 items-center gap-1 rounded-full border px-2 py-1.5 transition-all sm:px-3 sm:py-2 ${
-            scrolled ? "glass shadow-elegant" : "glass"
+            scrolled ? "neo-glass border-white/10" : "neo-glass border-white/5"
           }`}
-          style={{ boxShadow: scrolled ? "var(--shadow-elegant)" : undefined }}
+          style={{ boxShadow: scrolled ? "var(--neo-glass-shadow)" : undefined }}
         >
           <Link to="/" aria-label="Krish Sense home" className="flex shrink-0 items-center gap-2 pr-1 sm:pr-2">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-accent shadow-lg">
-              <Sprout className="h-5 w-5 text-primary-foreground" aria-hidden />
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-crimson to-bright-crimson shadow-lg shadow-primary-crimson/20">
+              <Sprout className="h-5 w-5 text-white" aria-hidden />
             </div>
-            <span className="hidden font-display text-lg font-bold tracking-tight xs:inline sm:inline">
-              Krish <span className="text-gradient">Sense</span>
+            <span className="hidden font-display text-lg font-black tracking-tighter xs:inline sm:inline text-moonlight-white">
+              KRISH <span className="text-primary-crimson">SENSE</span>
             </span>
           </Link>
 
-          <nav aria-label="Primary" className="ml-2 hidden min-w-0 flex-1 items-center gap-1 overflow-hidden xl:flex">
+          <nav aria-label="Primary" className="ml-4 hidden min-w-0 flex-1 items-center gap-1 overflow-hidden xl:flex">
             {NAV.map((item) => {
               const active =
                 item.to === "/"
@@ -113,10 +113,10 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                   key={item.to}
                   to={item.to}
                   aria-current={active ? "page" : undefined}
-                  className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                  className={`relative rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-all ${
                     active
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "text-white"
+                      : "text-muted-blue-gray hover:text-moonlight-white"
                   }`}
                 >
                   {active && (
@@ -124,8 +124,8 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                       aria-hidden
                       className="absolute inset-0 -z-10 rounded-full"
                       style={{
-                        background: "color-mix(in oklab, var(--primary) 22%, transparent)",
-                        boxShadow: "inset 0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent)",
+                        background: "rgba(227, 25, 55, 0.15)",
+                        boxShadow: "inset 0 0 0 1px rgba(227, 25, 55, 0.3)",
                       }}
                     />
                   )}
@@ -142,7 +142,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
             <button
               onClick={onSearchOpen}
               aria-label={t("aria.openSearch")}
-              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
+              className="tap grid place-items-center rounded-full text-muted-blue-gray transition-all hover:bg-white/5 hover:text-moonlight-white"
             >
               <Search className="h-4 w-4" aria-hidden />
             </button>
@@ -151,7 +151,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
               onClick={toggle}
               aria-label={t("aria.toggleTheme")}
               aria-pressed={theme === "dark"}
-              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
+              className="tap grid place-items-center rounded-full text-muted-blue-gray transition-all hover:bg-white/5 hover:text-moonlight-white"
             >
               {theme === "dark" ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
             </button>
@@ -160,7 +160,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
               aria-label={t("aria.toggleMenu")}
               aria-expanded={open}
               aria-controls="mobile-nav"
-              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
+              className="tap grid place-items-center rounded-full text-muted-blue-gray transition-all hover:bg-white/5 hover:text-moonlight-white"
             >
               {open ? <X className="h-4 w-4" aria-hidden /> : <Menu className="h-4 w-4" aria-hidden />}
             </button>

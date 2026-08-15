@@ -5,19 +5,19 @@ import { useT } from "@/lib/i18n";
 export function Footer() {
   const t = useT();
   return (
-    <footer className="mt-24 border-t border-border/50 pt-16 pb-10">
+    <footer className="mt-24 border-t border-white/5 pt-16 pb-10 neo-glass bg-midnight-navy/40">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <div className="flex items-center gap-2">
-              <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-primary to-accent">
-                <Sprout className="h-5 w-5 text-primary-foreground" />
+              <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-primary-crimson to-bright-crimson shadow-lg shadow-primary-crimson/20">
+                <Sprout className="h-5 w-5 text-white" />
               </div>
-              <span className="font-display text-lg font-bold">
-                Krish <span className="text-gradient">Sense</span>
+              <span className="font-display text-lg font-black tracking-tighter text-moonlight-white">
+                KRISH <span className="text-primary-crimson">SENSE</span>
               </span>
             </div>
-            <p className="mt-3 max-w-xs text-sm text-muted-foreground">
+            <p className="mt-4 max-w-xs text-sm text-muted-blue-gray leading-relaxed">
               {t("footer.tagline")}
             </p>
           </div>
@@ -48,8 +48,8 @@ export function Footer() {
             ]}
           />
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border/40 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} Krish Sense. Created by Mr. SRK.</p>
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-6 text-xs text-muted-blue-gray sm:flex-row">
+          <p>© {new Date().getFullYear()} KRISH SENSE. Premium Cinematic Agritech.</p>
           <div className="flex items-center gap-3">
             <a href="#" aria-label="GitHub" className="hover:text-foreground"><Github className="h-4 w-4" /></a>
             <a href="#" aria-label="Twitter" className="hover:text-foreground"><Twitter className="h-4 w-4" /></a>

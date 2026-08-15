@@ -79,39 +79,28 @@ function Home() {
 /* ============================================================
    HERO
    ============================================================ */
-function HeroSection({ loc, p, featured, heroImg }: any) {
+function HeroSection({ loc, p, featured }: any) {
   return (
-    <section className="relative isolate overflow-hidden">
-      {/* Decorative image + light layers */}
-      <div className="absolute inset-0 -z-10">
-        <img src={heroImg} alt="" className="h-full w-full object-cover opacity-30" />
-        <div className="absolute inset-0" style={{
-          background: "radial-gradient(1000px 600px at 15% 0%, color-mix(in oklab, var(--primary) 20%, transparent), transparent 60%), radial-gradient(900px 500px at 90% 20%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 60%), linear-gradient(180deg, transparent, var(--background) 85%)",
-        }}/>
-        {/* Floating orbs */}
-        <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full opacity-40 blur-3xl" style={{ background: "var(--primary)", animation: "float-y 9s ease-in-out infinite" }}/>
-        <div className="absolute top-40 right-10 h-64 w-64 rounded-full opacity-30 blur-3xl" style={{ background: "var(--accent)", animation: "float-y 11s ease-in-out infinite" }}/>
-      </div>
-
+    <section className="relative isolate overflow-hidden min-h-[90vh] flex items-center">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 pb-16 pt-14 sm:px-6 md:pt-20 lg:grid-cols-12 lg:pb-24">
         {/* Left column */}
         <div className="lg:col-span-7">
           <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary-crimson/30 bg-midnight-navy/50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] backdrop-blur">
+              <Sparkles className="h-3.5 w-3.5 text-primary-crimson" />
               Advisory reimagined · v2026
             </span>
           </Reveal>
 
           <Reveal delay={80}>
-            <h1 className="mt-5 font-display text-5xl font-black leading-[1.02] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+            <h1 className="mt-5 font-display text-5xl font-black leading-[1.02] tracking-tight sm:text-6xl md:text-7xl lg:text-[6.5rem] text-moonlight-white">
               Farm with{" "}
-              <span className="text-gradient">foresight,</span>
+              <span className="text-primary-crimson drop-shadow-[0_0_15px_rgba(227,25,55,0.4)]">foresight,</span>
               <br className="hidden sm:block" />
               grow with{" "}
               <span className="relative inline-block">
                 clarity.
-                <svg className="absolute -bottom-2 left-0 h-3 w-full text-primary/70" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden>
+                <svg className="absolute -bottom-2 left-0 h-3 w-full text-primary-crimson/70" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden>
                   <path d="M0 8 Q 50 0 100 6 T 200 4" stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round"/>
                 </svg>
               </span>
@@ -119,9 +108,9 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
           </Reveal>
 
           <Reveal delay={160}>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-blue-gray md:text-lg">
               A cinematic, science-backed playbook — from soil to mandi — tuned live to{" "}
-              <b className="font-semibold text-foreground">{loc.district}, {loc.state}</b>.
+              <b className="font-semibold text-moonlight-white">{loc.district}, {loc.state}</b>.
               Trusted by a growing community of Indian growers.
             </p>
           </Reveal>
@@ -130,7 +119,7 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 to="/crops"
-                className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:brightness-110 tap"
+                className="group inline-flex items-center gap-2 rounded-full bg-primary-crimson px-8 py-4 text-sm font-semibold text-white transition-all hover:brightness-110 hover:scale-105 tap"
                 style={{ boxShadow: "var(--shadow-glow)" }}
               >
                 Explore crops
@@ -138,20 +127,20 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
               </Link>
               <Link
                 to="/analytics"
-                className="group inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/50 px-6 py-3 text-sm font-semibold backdrop-blur transition hover:bg-secondary tap"
+                className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-midnight-navy/40 px-8 py-4 text-sm font-semibold backdrop-blur-xl transition-all hover:bg-steel-blue/30 tap"
               >
-                <PlayCircle className="h-4 w-4 text-primary" />
+                <PlayCircle className="h-4 w-4 text-primary-crimson" />
                 See the India atlas
               </Link>
-              <Link to="/districts" className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground tap">
-                <MapPin className="h-3.5 w-3.5 text-primary" /> Change district
+              <Link to="/districts" className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs text-muted-blue-gray hover:text-moonlight-white transition-colors tap">
+                <MapPin className="h-3.5 w-3.5 text-primary-crimson" /> Change district
               </Link>
             </div>
           </Reveal>
 
           {/* Live mini-stats */}
           <Reveal delay={320}>
-            <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
               <MiniStat icon={<Sun className="h-4 w-4" />} label="Season" value={p.season?.split(" ")[0] ?? "Kharif"} />
               <MiniStat icon={<Leaf className="h-4 w-4" />} label="Soil" value={p.soil?.split(" ")[0] ?? "Loam"} />
               <MiniStat icon={<Droplets className="h-4 w-4" />} label="Rain YTD" value={`${p.rainfallYtdMm} mm`} />
@@ -160,47 +149,47 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
           </Reveal>
         </div>
 
-        {/* Right column — featured card */}
-        <div className="lg:col-span-5">
+        {/* Right column — featured card (Floating Dossier) */}
+        <div className="lg:col-span-5 flex items-center justify-center">
           <Reveal delay={160}>
-            <div className="relative">
-              {/* glow ring */}
-              <div aria-hidden className="absolute -inset-4 rounded-[2rem] opacity-60 blur-2xl" style={{ background: "var(--gradient-primary)" }}/>
+            <div className="relative group">
+              {/* Crimson aura */}
+              <div aria-hidden className="absolute -inset-10 rounded-full opacity-30 blur-[80px] bg-primary-crimson/40 animate-pulse" />
+              
               <Link
                 to="/crops/$slug"
                 params={{ slug: featured.slug }}
-                className="group relative block overflow-hidden rounded-[2rem] border border-white/10"
-                style={{ boxShadow: "var(--shadow-elegant)" }}
+                className="relative block w-full max-w-[380px] aspect-[3/4] overflow-hidden rounded-[2.5rem] border border-white/10 neo-glass transition-all duration-700 group-hover:scale-[1.02] group-hover:-translate-y-2"
+                style={{ boxShadow: "var(--neo-glass-shadow)" }}
               >
-                <img src={featured.image} alt={featured.name} className="h-[520px] w-full object-cover transition-transform duration-[1400ms] group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                <img src={featured.image} alt={featured.name} className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-midnight-navy via-midnight-navy/20 to-transparent" />
 
                 {/* top chips */}
-                <div className="absolute inset-x-5 top-5 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground">
-                    <Star className="h-3 w-3" /> Featured today
+                <div className="absolute inset-x-6 top-6 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-crimson/80 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur">
+                    <Star className="h-3 w-3" /> Featured
                   </span>
-                  <div className="grid h-10 w-10 place-items-center rounded-full glass text-xl">{featured.emoji}</div>
+                  <div className="grid h-12 w-12 place-items-center rounded-full glass border border-white/10 text-2xl">{featured.emoji}</div>
                 </div>
 
                 {/* bottom info */}
-                <div className="absolute inset-x-0 bottom-0 p-6">
-                  <div className="text-[11px] uppercase tracking-[0.28em] text-primary">Crop dossier</div>
-                  <h3 className="mt-1 font-display text-3xl font-black tracking-tight md:text-4xl">{featured.name}</h3>
-                  <p className="text-xs italic text-muted-foreground">{featured.scientificName}</p>
+                <div className="absolute inset-x-0 bottom-0 p-8">
+                  <div className="text-[11px] uppercase tracking-[0.28em] text-primary-crimson font-bold">Crop Dossier</div>
+                  <h3 className="mt-2 font-display text-4xl font-black tracking-tight text-moonlight-white">{featured.name}</h3>
+                  <p className="text-xs italic text-muted-blue-gray mt-1">{featured.scientificName}</p>
 
-                  <div className="mt-4 grid grid-cols-3 gap-2">
+                  <div className="mt-6 grid grid-cols-3 gap-3">
                     <MiniBadge label="Profit" value={`+${featured.profitPct}%`} accent />
                     <MiniBadge label="Water" value={featured.waterNeed} />
                     <MiniBadge label="Season" value={String(featured.season).split(" ")[0]} />
                   </div>
 
-                  <div className="mt-5 inline-flex items-center gap-2 text-xs font-semibold text-primary">
-                    Open dossier <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  <div className="mt-8 inline-flex items-center gap-2 text-xs font-bold text-primary-crimson group-hover:gap-3 transition-all">
+                    OPEN DOSSIER <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
                   </div>
                 </div>
               </Link>
-
             </div>
           </Reveal>
         </div>
@@ -211,11 +200,11 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
 
 function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="glass flex items-center gap-3 rounded-2xl px-3 py-3">
-      <div className="grid h-8 w-8 place-items-center rounded-full bg-primary/15 text-primary">{icon}</div>
+    <div className="neo-glass flex items-center gap-3 rounded-[1.5rem] px-4 py-4 border border-white/5">
+      <div className="grid h-10 w-10 place-items-center rounded-full bg-primary-crimson/10 text-primary-crimson border border-primary-crimson/20">{icon}</div>
       <div className="min-w-0">
-        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
-        <div className="truncate text-sm font-semibold">{value}</div>
+        <div className="text-[10px] uppercase tracking-widest text-muted-blue-gray font-bold">{label}</div>
+        <div className="truncate text-sm font-semibold text-moonlight-white">{value}</div>
       </div>
     </div>
   );
@@ -223,9 +212,9 @@ function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string
 
 function MiniBadge({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className={`rounded-xl border px-3 py-2 backdrop-blur ${accent ? "border-primary/50 bg-primary/15" : "border-border/60 bg-background/50"}`}>
-      <div className="text-[9px] uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className={`text-sm font-bold ${accent ? "text-primary" : ""}`}>{value}</div>
+    <div className={`rounded-2xl border px-3 py-3 backdrop-blur-md transition-colors ${accent ? "border-primary-crimson/40 bg-primary-crimson/10" : "border-white/5 bg-white/5"}`}>
+      <div className="text-[9px] uppercase tracking-widest text-muted-blue-gray font-bold">{label}</div>
+      <div className={`text-sm font-black mt-0.5 ${accent ? "text-primary-crimson" : "text-moonlight-white"}`}>{value}</div>
     </div>
   );
 }
@@ -240,12 +229,12 @@ function MarqueeStrip() {
     "Open-Meteo backed weather", "MSP & scheme intelligence",
   ];
   return (
-    <div className="border-y border-border/40 bg-background/40 py-4 backdrop-blur">
+    <div className="border-y border-white/5 bg-midnight-navy/40 py-6 backdrop-blur-xl">
       <div className="mx-auto max-w-[100vw] overflow-hidden">
-        <div className="flex gap-10 whitespace-nowrap will-change-transform" style={{ animation: "marquee 40s linear infinite" }}>
+        <div className="flex gap-12 whitespace-nowrap will-change-transform" style={{ animation: "marquee 40s linear infinite" }}>
           {[...items, ...items, ...items].map((t, i) => (
-            <span key={i} className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.28em] text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span key={i} className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-muted-blue-gray">
+              <span className="h-2 w-2 rounded-full bg-primary-crimson shadow-[0_0_8px_rgba(227,25,55,0.6)]" />
               {t}
             </span>
           ))}
@@ -262,33 +251,33 @@ function MarqueeStrip() {
 function FeatureGrid() {
   const features = [
     { to: "/analytics", image: analyticsImg, tag: "Atlas", title: "India Crop Atlas", copy: "Nine-state production intelligence, 2025-26 estimates.", icon: <BarChart3 className="h-4 w-4"/>, size: "lg" },
-    { to: "/weather", image: weatherImg, tag: "Live", title: "Weather intelligence", copy: "Radar, AQI, soil moisture and agri advisories.", icon: <CloudRain className="h-4 w-4"/>, size: "md" },
-    { to: "/market", image: marketImg, tag: "Mandi", title: "Market prices", copy: "Daily trends, MSP and profit estimator.", icon: <TrendingUp className="h-4 w-4"/>, size: "md" },
-    { to: "/rotation", image: rotationImg, tag: "Wheel", title: "Rotation planner", copy: "Sequences that rebuild soil and profit.", icon: <Compass className="h-4 w-4"/>, size: "md" },
-    { to: "/schemes", image: schemesImg, tag: "Govt", title: "Schemes & subsidies", copy: "Central + state programs, eligibility & links.", icon: <ShieldCheck className="h-4 w-4"/>, size: "lg" },
+    { to: "/weather", image: weatherImg, tag: "Live", title: "Weather Intelligence", copy: "Radar, AQI, soil moisture and agri advisories.", icon: <CloudRain className="h-4 w-4"/>, size: "md" },
+    { to: "/market", image: marketImg, tag: "Mandi", title: "Market Prices", copy: "Daily trends, MSP and profit estimator.", icon: <TrendingUp className="h-4 w-4"/>, size: "md" },
+    { to: "/rotation", image: rotationImg, tag: "Wheel", title: "Rotation Planner", copy: "Sequences that rebuild soil and profit.", icon: <Compass className="h-4 w-4"/>, size: "md" },
+    { to: "/schemes", image: schemesImg, tag: "Govt", title: "Schemes & Subsidies", copy: "Central + state programs, eligibility & links.", icon: <ShieldCheck className="h-4 w-4"/>, size: "lg" },
   ];
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
-      <SectionHeader eyebrow="Services" title="Everything an acre needs." subtitle="A modular platform. Each surface is beautifully image-first and tuned to your district." />
+    <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-32">
+      <SectionHeader eyebrow="Intelligence" title="Everything an acre needs." subtitle="A modular agritech ecosystem. Each surface is beautifully image-first and tuned to your district." />
 
-      <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-6">
+      <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-6">
         {features.map((f, i) => (
           <Reveal key={f.to} delay={i * 60} className={`${f.size === "lg" ? "md:col-span-3" : "md:col-span-2"}`}>
             <Link
               to={f.to}
-              className="group relative block h-full min-h-[240px] overflow-hidden rounded-3xl border border-border/60"
-              style={{ boxShadow: "var(--shadow-elegant)" }}
+              className="group relative block h-full min-h-[300px] overflow-hidden rounded-[2rem] border border-white/5 neo-glass"
+              style={{ boxShadow: "var(--neo-glass-shadow)" }}
             >
-              <img src={f.image} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/10" />
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/15 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <img src={f.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-[1400ms] group-hover:scale-105 group-hover:opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-midnight-navy via-midnight-navy/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary-crimson/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-              <div className="relative flex h-full flex-col justify-between p-6">
+              <div className="relative flex h-full flex-col justify-between p-8">
                 <div className="flex items-center justify-between">
-                  <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground">
+                  <div className="grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-primary-crimson to-bright-crimson text-white shadow-lg shadow-primary-crimson/20">
                     {f.icon}
                   </div>
-                  <span className="rounded-full border border-border/60 bg-background/50 px-2.5 py-1 text-[10px] uppercase tracking-widest text-muted-foreground backdrop-blur">
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-muted-blue-gray backdrop-blur transition-colors group-hover:text-moonlight-white">
                     {f.tag}
                   </span>
                 </div>
