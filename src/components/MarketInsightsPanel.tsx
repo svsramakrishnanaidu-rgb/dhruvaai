@@ -53,7 +53,7 @@ export function MarketInsightsPanel() {
           <div>
             <h3 className="font-display text-2xl font-bold">AI Market Intelligence</h3>
             <p className="text-xs text-muted-foreground">
-              Gemini 3.5 Flash reads the live Agmarknet snapshot and drafts a farmer-facing brief.
+              AI-driven insights for the live Agmarknet snapshot and farmer-facing market briefs.
             </p>
           </div>
         </div>
