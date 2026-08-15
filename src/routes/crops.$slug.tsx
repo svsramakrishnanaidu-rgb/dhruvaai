@@ -490,15 +490,16 @@ function Row({ k, v }: { k: string; v: string }) {
 
 function SeverityMeter({ n }: { n: number }) {
   return (
-    <div className="flex gap-0.5" aria-label={`Severity ${n}/5`}>
+    <div className="flex gap-1" aria-label={`Severity ${n}/5`}>
       {[1, 2, 3, 4, 5].map((i) => (
         <span
           key={i}
-          className="h-1.5 w-4 rounded-full"
+          className="h-1.5 w-6 rounded-full transition-all duration-500"
           style={{
             background: i <= n
-              ? `linear-gradient(90deg, var(--primary), ${n >= 4 ? "var(--destructive)" : "var(--accent)"})`
-              : "var(--muted)",
+              ? `linear-gradient(90deg, #10b981, #f59e0b)`
+              : "rgba(255,255,255,0.05)",
+            boxShadow: i <= n ? '0 0 10px rgba(16, 185, 129, 0.3)' : 'none'
           }}
         />
       ))}
