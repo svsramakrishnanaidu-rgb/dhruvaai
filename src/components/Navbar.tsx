@@ -218,7 +218,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                             >
                             <Icon className="h-4 w-4" aria-hidden />
                           </span>
-                          <span className="font-display truncate text-[12px] uppercase tracking-wide">
+                          <span className="font-display truncate text-[11px] font-black uppercase tracking-[0.15em]">
                             {t(key)}
                           </span>
                           {active && (
