@@ -106,7 +106,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
   }, [lang, translateFn]);
 
   const queue = useCallback((text: string) => {
-    if (!text || text.length > 400 || lang === "en") return;
+    if (!text || lang === "en") return;
     const key = `${lang}::${text}`;
     if (cache[key] || inflight.current.has(key)) return;
     pendingRef.current.add(text);

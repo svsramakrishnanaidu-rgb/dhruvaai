@@ -31,7 +31,7 @@ Rules:
 - Keep leading/trailing whitespace when present.
 - Output STRICT JSON: {"t":[...]} with the same number of strings, in the same order.`;
 
-    const user = `Translate each string. Return {"t":[...]} in order.\nInput: ${JSON.stringify(data.texts)}`;
+    const user = `Translate each string. Return {"t":[...]} in order.\nInput: ${JSON.stringify(data.texts.map(t => t.length > 500 ? t.slice(0, 500) + "..." : t))}`;
 
     try {
       const res = await fetch(endpoint.url, {
