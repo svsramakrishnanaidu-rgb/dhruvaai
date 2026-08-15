@@ -471,6 +471,7 @@ export function MusicPlayer() {
               </button>
               <input
                 type="range" min={0} max={1} step={0.01}
+                className="w-16 h-1 cursor-pointer accent-primary-crimson"
                 value={muted ? 0 : volume}
                 onChange={(e) => { const v = parseFloat(e.target.value); setVolume(v); if (v > 0 && muted) setMuted(false); }}
                 className="h-1 w-20 cursor-pointer accent-primary" aria-label="Volume"
