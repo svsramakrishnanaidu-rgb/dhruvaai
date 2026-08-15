@@ -170,7 +170,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
 
       {open && (
         <div id="mobile-nav" className="mx-auto mt-2 max-w-7xl px-3 sm:px-4">
-          <div className="card-elegant rounded-3xl p-4">
+          <div className="neo-glass rounded-[2rem] p-4 border border-white/10 shadow-2xl">
             <div className="mb-3 sm:hidden">
               <DistrictPicker />
             </div>
