@@ -359,22 +359,22 @@ function TrendingSection({ trending }: { trending: any[] }) {
   }, [liveMap, trending]);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
-      <div className="flex items-end justify-between">
-        <SectionHeader eyebrow="Trending" title="Crops moving this season." />
-        <div className="hidden shrink-0 flex-col items-end gap-2 md:flex">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
-            <span className={`h-1.5 w-1.5 rounded-full bg-primary ${loading ? "animate-ping" : "animate-pulse"}`} />
-            {loading ? "Syncing mandis" : "Live · Agmarknet"}
+    <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-32">
+      <div className="flex items-end justify-between mb-12">
+        <SectionHeader eyebrow="Momentum" title="Crops moving this season." />
+        <div className="hidden shrink-0 flex-col items-end gap-3 md:flex">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-crimson/30 bg-primary-crimson/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary-crimson backdrop-blur">
+            <span className={`h-2 w-2 rounded-full bg-primary-crimson ${loading ? "animate-ping" : "animate-pulse"}`} />
+            {loading ? "Syncing Mandis" : "Live · Agmarknet"}
             {updated ? ` · ${updated}` : ""}
           </span>
-          <Link to="/crops" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80">
-            Browse library <ArrowRight className="h-4 w-4" />
+          <Link to="/crops" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary-crimson hover:brightness-110 transition-all group">
+            BROWSE LIBRARY <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+      <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {cards.map(({ crop: c, live: l }, i) => {
           const up = (l?.deltaPct ?? 0) >= 0;
           return (
@@ -382,18 +382,19 @@ function TrendingSection({ trending }: { trending: any[] }) {
               <Link
                 to="/crops/$slug"
                 params={{ slug: c.slug }}
-                className="group relative block aspect-[4/5] overflow-hidden rounded-3xl border border-border/60"
-                style={{ boxShadow: "var(--shadow-elegant)" }}
+                className="group relative block aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/5 neo-glass transition-all duration-700 hover:scale-[1.03] hover:-translate-y-1"
+                style={{ boxShadow: "var(--neo-glass-shadow)" }}
               >
-                <img src={c.image} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
+                <img src={c.image} alt={c.name} loading="lazy" className="h-full w-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-midnight-navy via-midnight-navy/40 to-transparent" />
+                
                 <span
-                  className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest ${
+                  className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-widest backdrop-blur shadow-lg ${
                     l
                       ? up
-                        ? "bg-primary/90 text-primary-foreground"
-                        : "bg-destructive/90 text-destructive-foreground"
-                      : "bg-primary/90 text-primary-foreground"
+                        ? "bg-primary-crimson/90 text-white"
+                        : "bg-steel-blue/90 text-moonlight-white"
+                      : "bg-primary-crimson/90 text-white"
                   }`}
                 >
                   {l ? (
@@ -405,17 +406,18 @@ function TrendingSection({ trending }: { trending: any[] }) {
                     <>+{c.profitPct}%</>
                   )}
                 </span>
-                <div className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full glass text-base">{c.emoji}</div>
-                <div className="absolute inset-x-0 bottom-0 p-4">
-                  <div className="text-[10px] uppercase tracking-widest text-primary">{String(c.season).split(" ")[0]}</div>
-                  <div className="mt-0.5 truncate font-display text-lg font-bold">{c.name}</div>
+                <div className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full glass border border-white/10 text-xl">{c.emoji}</div>
+                
+                <div className="absolute inset-x-0 bottom-0 p-5">
+                  <div className="text-[9px] font-black uppercase tracking-[0.2em] text-primary-crimson">{String(c.season).split(" ")[0]}</div>
+                  <div className="mt-1 truncate font-display text-lg font-black text-moonlight-white tracking-tight">{c.name}</div>
                   {l ? (
-                    <div className="mt-1 truncate text-[10px] text-muted-foreground">
-                      <span className="font-semibold text-foreground">₹{l.modal.toLocaleString("en-IN")}</span>/qtl · {l.markets} mandis
+                    <div className="mt-2 truncate text-[10px] text-muted-blue-gray font-bold">
+                      <span className="text-moonlight-white">₹{l.modal.toLocaleString("en-IN")}</span>/qtl · {l.markets} mandis
                     </div>
                   ) : (
-                    <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
-                      <Droplets className="h-3 w-3" /> {c.waterNeed}
+                    <div className="mt-2 flex items-center gap-2 text-[10px] text-muted-blue-gray font-bold">
+                      <Droplets className="h-3.5 w-3.5 text-primary-crimson" /> {c.waterNeed}
                     </div>
                   )}
                 </div>
