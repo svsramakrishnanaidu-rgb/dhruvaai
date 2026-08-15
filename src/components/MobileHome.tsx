@@ -116,15 +116,14 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
           {loc.state} · {loc.district}
         </span>
       </div>
-      <div className="neo-glass flex shrink-0 items-center gap-0.5 rounded-2xl p-1.5 px-2">
-
-        <HeaderIcon to="/districts" label="Change district" icon={<MapPin className="h-[15px] w-[15px]" />} />
+      <div className="neo-glass flex shrink-0 items-center gap-1 rounded-2xl p-2 px-3 border border-white/10 shadow-2xl">
+        <HeaderIcon to="/districts" label="Change district" icon={<MapPin className="h-[18px] w-[18px]" />} />
         <HeaderDivider />
-        <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[15px] w-[15px]" />} />
+        <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[18px] w-[18px]" />} />
         <HeaderDivider />
-        <HeaderIcon label="Language" icon={<Languages className="h-[15px] w-[15px]" />} badge="EN" />
+        <HeaderIcon label="Language" icon={<Languages className="h-[18px] w-[18px]" />} badge="EN" />
         <HeaderDivider />
-        <HeaderIcon label="Notifications" icon={<Bell className="h-[15px] w-[15px]" />} dot />
+        <HeaderIcon label="Notifications" icon={<Bell className="h-[18px] w-[18px]" />} dot />
       </div>
     </header>
   );
