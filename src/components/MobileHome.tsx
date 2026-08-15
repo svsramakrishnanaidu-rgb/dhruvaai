@@ -7,7 +7,7 @@ import {
 import { CROP_LIST } from "@/data/crops";
 import { useLocation } from "@/lib/location-store";
 import { haptic } from "@/lib/haptics";
-import videoAsset from "@/assets/background_video.mp4.asset.json";
+import bgAsset from "@/assets/bg-moonlit-crimson.jpg.asset.json";
 
 
 
@@ -60,23 +60,17 @@ export function MobileHome() {
 
   return (
     <div className="relative min-h-screen w-full overflow-x-clip pb-24 text-foreground lg:hidden">
-      {/* Background Video - Fixed and Stationary */}
+      {/* Background Image - Fixed and Stationary */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="h-full w-full object-cover scale-[1.02]"
-          poster="/placeholder.svg"
+        <img
+          src={bgAsset.url}
+          alt=""
+          className="h-full w-full object-cover"
           style={{ 
-            imageRendering: 'crisp-edges',
-            filter: 'contrast(1.1) brightness(0.9)' 
+            filter: 'contrast(1.1) brightness(0.8) saturate(1.1)' 
           }}
-        >
-          <source src={videoAsset.url} type="video/mp4" />
-        </video>
-        {/* Cinematic gradient overlay for maximum readability and 16K feel */}
+        />
+        {/* Cinematic gradient overlay for maximum readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 backdrop-blur-[1px]" />
       </div>
 
@@ -191,7 +185,7 @@ function HeroTile() {
         className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
         style={{ background: "color-mix(in oklab, var(--accent) 35%, transparent)" }}
       />
-      <h1 className="font-display mb-3 text-[42px] uppercase leading-[0.9] tracking-tighter">
+      <h1 className="font-display mb-3 text-[36px] uppercase leading-[0.95] tracking-tighter">
         <span className="text-white">KRISH</span><br /><span className="text-gradient">SENSE</span>
       </h1>
       <p className="mb-5 max-w-[220px] text-xs leading-relaxed text-muted-foreground">
