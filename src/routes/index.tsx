@@ -81,19 +81,19 @@ function Home() {
    ============================================================ */
 function HeroSection({ loc, p, featured }: any) {
   return (
-    <section className="relative isolate overflow-hidden min-h-[90vh] flex items-center">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 pb-16 pt-14 sm:px-6 md:pt-20 lg:grid-cols-12 lg:pb-24">
+    <section className="relative isolate overflow-hidden min-h-screen flex items-center pt-20">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 pb-24 pt-10 lg:grid-cols-12">
         {/* Left column */}
         <div className="lg:col-span-7">
           <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary-crimson/30 bg-midnight-navy/50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] backdrop-blur">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.3em] backdrop-blur-md text-moonlight-white/80">
               <Sparkles className="h-3.5 w-3.5 text-primary-crimson" />
               Advisory reimagined · v2026
             </span>
           </Reveal>
 
           <Reveal delay={80}>
-            <h1 className="mt-5 font-display text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-[5.5rem] text-moonlight-white">
+            <h1 className="mt-8 font-display text-6xl font-black leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[7.5rem] text-moonlight-white">
               Farm with{" "}
               <span className="text-primary-crimson drop-shadow-[0_0_15px_rgba(227,25,55,0.4)]">foresight,</span>
               <br className="hidden sm:block" />
@@ -108,9 +108,9 @@ function HeroSection({ loc, p, featured }: any) {
           </Reveal>
 
           <Reveal delay={160}>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-blue-gray md:text-lg">
-              A cinematic, science-backed playbook — from soil to mandi — tuned live to{" "}
-              <b className="font-semibold text-moonlight-white">{loc.district}, {loc.state}</b>.
+            <p className="mt-10 max-w-xl text-lg leading-relaxed text-muted-blue-gray/90 md:text-xl font-medium">
+              A cinematic, science-backed playbook — from soil to mandi — <br className="hidden md:block"/>
+              tuned live to <span className="text-primary-crimson font-bold">{loc.district}, {loc.state}</span>.
               Trusted by a growing community of Indian growers.
             </p>
           </Reveal>
@@ -119,7 +119,7 @@ function HeroSection({ loc, p, featured }: any) {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 to="/crops"
-                className="group inline-flex items-center gap-2 rounded-full bg-primary-crimson px-8 py-4 text-sm font-semibold text-white transition-all hover:brightness-110 hover:scale-105 tap"
+                className="group inline-flex items-center gap-3 rounded-2xl bg-primary-crimson px-10 py-5 text-sm font-bold text-white transition-all hover:brightness-110 hover:scale-105 hover:shadow-[0_0_40px_rgba(227,25,55,0.4)] tap"
                 style={{ boxShadow: "var(--shadow-glow)" }}
               >
                 Explore crops
@@ -127,7 +127,7 @@ function HeroSection({ loc, p, featured }: any) {
               </Link>
               <Link
                 to="/analytics"
-                className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-midnight-navy/40 px-8 py-4 text-sm font-semibold backdrop-blur-xl transition-all hover:bg-steel-blue/30 tap"
+                className="group inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-10 py-5 text-sm font-bold backdrop-blur-xl transition-all hover:bg-white/10 tap"
               >
                 <PlayCircle className="h-4 w-4 text-primary-crimson" />
                 See the India atlas
@@ -140,7 +140,7 @@ function HeroSection({ loc, p, featured }: any) {
 
           {/* Live mini-stats */}
           <Reveal delay={320}>
-            <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="mt-16 flex flex-wrap gap-4">
               <MiniStat icon={<Sun className="h-4 w-4" />} label="Season" value={p.season?.split(" ")[0] ?? "Kharif"} />
               <MiniStat icon={<Leaf className="h-4 w-4" />} label="Soil" value={p.soil?.split(" ")[0] ?? "Loam"} />
               <MiniStat icon={<Droplets className="h-4 w-4" />} label="Rain YTD" value={`${p.rainfallYtdMm} mm`} />
@@ -149,44 +149,42 @@ function HeroSection({ loc, p, featured }: any) {
           </Reveal>
         </div>
 
-        {/* Right column — featured card (Floating Dossier) */}
-        <div className="lg:col-span-5 flex items-center justify-center">
+        <div className="lg:col-span-5 flex items-center justify-center lg:justify-end">
           <Reveal delay={160}>
-            <div className="relative group">
+            <div className="relative group w-full max-w-[500px]">
               {/* Crimson aura */}
-              <div aria-hidden className="absolute -inset-10 rounded-full opacity-30 blur-[80px] bg-primary-crimson/40 animate-pulse" />
+              <div aria-hidden className="absolute -inset-10 rounded-full opacity-20 blur-[100px] bg-primary-crimson/30 animate-pulse" />
               
               <Link
                 to="/crops/$slug"
                 params={{ slug: featured.slug }}
-                className="relative block w-full max-w-[380px] aspect-[3/4] overflow-hidden rounded-[2.5rem] border border-white/10 neo-glass transition-all duration-700 group-hover:scale-[1.02] group-hover:-translate-y-2"
-                style={{ boxShadow: "var(--neo-glass-shadow)" }}
+                className="relative block w-full aspect-video overflow-hidden rounded-[2.5rem] border border-white/10 neo-glass transition-all duration-700 group-hover:scale-[1.02] group-hover:-translate-y-2 group-hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]"
               >
-                <img src={featured.image} alt={featured.name} className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
-                <div className="absolute inset-0 bg-gradient-to-t from-midnight-navy via-midnight-navy/20 to-transparent" />
+                <img src={featured.image} alt={featured.name} className="h-full w-full object-cover opacity-90 transition-transform duration-[2000ms] group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-midnight-navy/90 via-midnight-navy/20 to-transparent" />
 
                 {/* top chips */}
-                <div className="absolute inset-x-6 top-6 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-crimson/80 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur">
-                    <Star className="h-3 w-3" /> Featured
+                <div className="absolute inset-x-8 top-8 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white border border-white/10 backdrop-blur-md">
+                    <Star className="h-3 w-3 text-primary-crimson" /> Featured Today
                   </span>
-                  <div className="grid h-12 w-12 place-items-center rounded-full glass border border-white/10 text-2xl">{featured.emoji}</div>
+                  <div className="grid h-12 w-12 place-items-center rounded-full glass border border-white/10 text-2xl shadow-2xl">{featured.emoji}</div>
                 </div>
 
                 {/* bottom info */}
-                <div className="absolute inset-x-0 bottom-0 p-8">
-                  <div className="text-[11px] uppercase tracking-[0.28em] text-primary-crimson font-bold">Crop Dossier</div>
-                  <h3 className="mt-2 font-display text-4xl font-black tracking-tight text-moonlight-white">{featured.name}</h3>
-                  <p className="text-xs italic text-muted-blue-gray mt-1">{featured.scientificName}</p>
+                <div className="absolute inset-x-0 bottom-0 p-10">
+                  <div className="text-[10px] uppercase tracking-[0.3em] text-primary-crimson font-black">Crop Dossier</div>
+                  <h3 className="mt-3 font-display text-5xl font-black tracking-tighter text-moonlight-white">{featured.name}</h3>
+                  <p className="text-sm italic text-muted-blue-gray/80 mt-2 font-medium">{featured.scientificName}</p>
 
-                  <div className="mt-6 grid grid-cols-3 gap-3">
+                  <div className="mt-8 flex gap-4">
                     <MiniBadge label="Profit" value={`+${featured.profitPct}%`} accent />
                     <MiniBadge label="Water" value={featured.waterNeed} />
                     <MiniBadge label="Season" value={String(featured.season).split(" ")[0]} />
                   </div>
 
-                  <div className="mt-8 inline-flex items-center gap-2 text-xs font-bold text-primary-crimson group-hover:gap-3 transition-all">
-                    OPEN DOSSIER <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                  <div className="mt-10 inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em] text-primary-crimson group-hover:gap-5 transition-all">
+                    Open dossier <ArrowUpRight className="h-4 w-4" />
                   </div>
                 </div>
               </Link>
@@ -200,8 +198,8 @@ function HeroSection({ loc, p, featured }: any) {
 
 function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="neo-glass flex items-center gap-3 rounded-[1.5rem] px-4 py-4 border border-white/5">
-      <div className="grid h-10 w-10 place-items-center rounded-full bg-primary-crimson/10 text-primary-crimson border border-primary-crimson/20">{icon}</div>
+    <div className="neo-glass flex items-center gap-4 rounded-[1.25rem] px-6 py-4 border border-white/10">
+      <div className="grid h-10 w-10 place-items-center rounded-full bg-white/5 text-primary-crimson border border-white/10">{icon}</div>
       <div className="min-w-0">
         <div className="text-[10px] uppercase tracking-widest text-muted-blue-gray font-bold">{label}</div>
         <div className="truncate text-sm font-semibold text-moonlight-white">{value}</div>

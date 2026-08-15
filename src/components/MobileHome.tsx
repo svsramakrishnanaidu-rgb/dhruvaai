@@ -116,15 +116,14 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
           {loc.state} · {loc.district}
         </span>
       </div>
-      <div className="neo-glass flex shrink-0 items-center gap-0.5 rounded-2xl p-1.5 px-2">
-
-        <HeaderIcon to="/districts" label="Change district" icon={<MapPin className="h-[15px] w-[15px]" />} />
+      <div className="neo-glass flex shrink-0 items-center gap-1 rounded-2xl p-2 px-3 border border-white/10 shadow-2xl">
+        <HeaderIcon to="/districts" label="Change district" icon={<MapPin className="h-[18px] w-[18px]" />} />
         <HeaderDivider />
-        <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[15px] w-[15px]" />} />
+        <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[18px] w-[18px]" />} />
         <HeaderDivider />
-        <HeaderIcon label="Language" icon={<Languages className="h-[15px] w-[15px]" />} badge="EN" />
+        <HeaderIcon label="Language" icon={<Languages className="h-[18px] w-[18px]" />} badge="EN" />
         <HeaderDivider />
-        <HeaderIcon label="Notifications" icon={<Bell className="h-[15px] w-[15px]" />} dot />
+        <HeaderIcon label="Notifications" icon={<Bell className="h-[18px] w-[18px]" />} dot />
       </div>
     </header>
   );
@@ -179,24 +178,24 @@ function HeaderIcon({
    ============================================================ */
 function HeroTile() {
   return (
-    <div className="neo-glass-card relative col-span-2 overflow-hidden px-7 py-8">
+    <div className="neo-glass-card relative col-span-2 overflow-hidden px-8 py-10 border border-white/10">
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
-        style={{ background: "color-mix(in oklab, var(--accent) 35%, transparent)" }}
+        className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full blur-[80px]"
+        style={{ background: "rgba(227, 25, 55, 0.15)" }}
       />
-      <h1 className="font-display mb-3 text-[36px] uppercase leading-[0.95] tracking-tighter">
-        <span className="text-white">KRISH</span><br /><span className="text-gradient">SENSE</span>
+      <h1 className="font-display mb-6 text-6xl font-black uppercase leading-[0.9] tracking-tighter">
+        <span className="text-white">KRISH</span><br /><span className="text-primary-crimson">SENSE</span>
       </h1>
-      <p className="mb-5 max-w-[220px] text-xs leading-relaxed text-muted-foreground">
+      <p className="mb-8 max-w-[240px] text-sm font-medium leading-relaxed text-muted-blue-gray/90">
         Precision agricultural intelligence, forged for the modern Indian farmer.
       </p>
       <Link
         to="/crops"
-        className="btn-gold font-display inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-[12px] uppercase tracking-widest active:scale-95"
+        className="group inline-flex items-center gap-3 rounded-2xl bg-primary-crimson px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-white active:scale-95 transition-all shadow-[0_10px_30px_-10px_rgba(227,25,55,0.4)]"
       >
         Explore Crops
-        <ArrowRight className="h-4 w-4" />
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
       </Link>
 
     </div>
@@ -225,22 +224,21 @@ function WeatherTile({ district }: { district: string }) {
   const sky = wx ? codeToSky(wx.weatherCode) : "—";
 
   return (
-    <div className="neo-glass-card p-5 px-6">
-      <div className="mb-4 flex items-start justify-between">
+    <div className="neo-glass-card p-6 border border-white/10">
+      <div className="mb-6 flex items-start justify-between">
         <div
-          className="grid h-10 w-10 place-items-center rounded-full gold-border"
-          style={{ background: "linear-gradient(135deg, color-mix(in oklab, var(--accent) 35%, transparent), transparent)" }}
+          className="grid h-12 w-12 place-items-center rounded-2xl bg-white/5 border border-white/10 shadow-inner"
         >
-          <Sun className="h-5 w-5 text-accent" />
+          <Sun className="h-6 w-6 text-primary-crimson" />
         </div>
-        <span className="font-display text-[10px] font-bold uppercase tracking-widest text-accent/70">
+        <span className="font-display text-[9px] font-black uppercase tracking-[0.3em] text-primary-crimson/80 bg-primary-crimson/10 px-2 py-0.5 rounded-full">
           Live
         </span>
       </div>
-      <div className="font-display text-2xl font-bold tracking-tight text-foreground">
+      <div className="font-display text-3xl font-black tracking-tighter text-white">
         {temp != null ? `${temp}°C` : "—"}
       </div>
-      <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
+      <div className="mt-2 truncate text-[10px] font-black uppercase tracking-widest text-muted-blue-gray/80">
         {sky} · {district}
       </div>
     </div>
