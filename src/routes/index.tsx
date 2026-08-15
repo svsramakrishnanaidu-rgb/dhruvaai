@@ -282,10 +282,10 @@ function FeatureGrid() {
                   </span>
                 </div>
                 <div>
-                  <h3 className="font-display text-2xl font-black tracking-tight md:text-3xl">{f.title}</h3>
-                  <p className="mt-1.5 max-w-md text-sm text-muted-foreground">{f.copy}</p>
-                  <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
-                    Open <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  <h3 className="font-display text-2xl font-black tracking-tight text-moonlight-white md:text-3xl">{f.title}</h3>
+                  <p className="mt-2 max-w-md text-sm text-muted-blue-gray font-medium leading-relaxed">{f.copy}</p>
+                  <div className="mt-6 inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary-crimson group-hover:gap-3 transition-all">
+                    ENTER MODULE <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
                   </div>
                 </div>
               </div>
