@@ -37,13 +37,13 @@ export function MiniPlayer() {
 
           {/* Controls */}
           <div className="flex items-center gap-1">
-            <button onClick={prev} aria-label="Previous" className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground transition hover:text-accent">
+            <button onClick={prev} aria-label="Previous" className="grid h-9 w-9 place-items-center rounded-lg text-muted-blue-gray transition hover:text-moonlight-white">
               <SkipBack className="h-4 w-4" />
             </button>
-            <button onClick={toggle} aria-label={isPlaying ? "Pause" : "Play"} className="btn-gold grid h-10 w-10 place-items-center rounded-xl">
+            <button onClick={toggle} aria-label={isPlaying ? "Pause" : "Play"} className="grid h-10 w-10 place-items-center rounded-2xl bg-primary-crimson text-white shadow-lg shadow-primary-crimson/20">
               {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-[1px]" />}
             </button>
-            <button onClick={next} aria-label="Next" className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground transition hover:text-accent">
+            <button onClick={next} aria-label="Next" className="grid h-9 w-9 place-items-center rounded-lg text-muted-blue-gray transition hover:text-moonlight-white">
               <SkipForward className="h-4 w-4" />
             </button>
           </div>
