@@ -205,17 +205,17 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                           key={to}
                           to={to}
                           aria-current={active ? "page" : undefined}
-                          className={`group relative flex items-center gap-2.5 overflow-hidden rounded-xl border px-3 py-2.5 text-sm font-medium transition active:scale-[.98] ${
-                            active
-                              ? "border-accent/50 bg-accent/10 text-foreground"
-                              : "border-border/40 bg-background/40 text-muted-foreground hover:border-accent/30 hover:text-foreground"
-                          }`}
-                        >
-                          <span
-                            className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg transition ${
-                              active ? "bg-accent/20 text-accent" : "bg-secondary/50 text-muted-foreground group-hover:text-accent"
+                            className={`group relative flex items-center gap-3 overflow-hidden rounded-2xl border px-3 py-3 transition-all active:scale-[.98] ${
+                              active
+                                ? "border-primary-crimson/50 bg-primary-crimson/10 text-moonlight-white shadow-[0_0_20px_rgba(227,25,55,0.1)]"
+                                : "border-white/5 bg-white/5 text-muted-blue-gray hover:border-primary-crimson/30 hover:text-moonlight-white"
                             }`}
                           >
+                            <span
+                              className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl transition-all ${
+                                active ? "bg-primary-crimson text-white shadow-lg shadow-primary-crimson/20" : "bg-white/10 text-muted-blue-gray group-hover:text-primary-crimson"
+                              }`}
+                            >
                             <Icon className="h-4 w-4" aria-hidden />
                           </span>
                           <span className="font-display truncate text-[12px] uppercase tracking-wide">
