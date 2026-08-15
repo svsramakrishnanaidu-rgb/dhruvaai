@@ -508,7 +508,7 @@ export function MusicPlayer() {
             <select
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as SortKey)}
-              className="rounded-full border border-border/60 bg-background/60 px-2 py-1.5 text-xs outline-none focus:border-primary"
+              className="rounded-full border border-white/10 bg-midnight-navy/60 px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-moonlight-white outline-none focus:border-primary-crimson transition-colors"
               aria-label="Sort"
             >
               <option value="date">Date</option>
