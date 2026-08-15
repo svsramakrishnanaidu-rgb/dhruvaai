@@ -1,52 +1,43 @@
-# Plan - Market & Analytics Enterprise Performance Upgrade
+# Plan - Website-Only Cinematic Moonlit Crimson Redesigns
 
-Optimize the Market and Analytics sections for speed, reliability, and accuracy through a multi-layer optimization of the data pipeline, caching, and AI integration.
+Redesign the website Home Page using the uploaded Japanese moonlit landscape as the primary visual reference, applying a cinematic crimson and navy palette exclusively to the desktop version.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> The AI insights currently use a deterministic heuristic on the client and a server function for deeper analysis. I will preserve this structure but optimize the server-side AI calls to be more efficient and strictly validated.
+> The redesign targets **website users only**. The mobile app, Android, and iOS native interfaces will remain exactly as they are currently to maintain their specialized KGF/Crimson theme.
 
-- **Data Privacy**: Market data is sourced from public government APIs (Agmarknet). AI analysis only processes anonymized, aggregated market statistics.
-- **Accuracy**: AI is used strictly for trend analysis and natural language summaries. Numerical price data is never "hallucinated" or overwritten by AI.
+- **Background Animation**: The static image will be transformed into a subtle 30s animated loop with drifting clouds, mist, and flickering lanterns.
+- **Parallax**: Background depth will react dynamically to mouse-wheel scrolling for immersion.
+- **Typography**: The custom "Japan Ramen" font will be used for the main hero headline: *"Farm with foresight, grow with clarity."*
 
 ## Proposed Changes
 
-### Data Pipeline & Backend (`src/lib/agmarknet.server.ts`, `src/lib/agmarknet.functions.ts`)
+### Assets & Styling
+- **Background Asset**: Create a CDN asset for `moonlit-japan.png` (uploaded file-6).
+- **Fonts**: Integrate `Japan Ramen` (hero) and `Space Grotesk`/`Inter` (supporting) into `src/styles.css`.
+- **Palette**: Define a new Midnight Navy (`#050B16`) and Crimson Red (`#E31937`) color system in `@theme`.
+- **Glassmorphism**: Update `--neo-glass` tokens for deeper navy surfaces and crimson edge lighting.
 
-- Implement server-side response caching (TTL: 5 minutes) for common market queries.
-- Add Zod-based validation to the Agmarknet response normalization layer.
-- Optimize the paged fetcher to use adaptive concurrency and better error recovery (exponential backoff).
-- Implement request deduplication at the server level for identical concurrent queries.
+### Home Page Redesign (`src/routes/index.tsx`)
+- **Cinematic Background**: Replace the current hero image/video with the new animated moonlit landscape.
+- **Hero Section**: 
+  - Left-aligned headline in Japan Ramen font with character-reveal animations.
+  - Supporting description and CTA buttons with crimson gradients and glow.
+  - Compact stats cards (Season, Soil, Rain) with dark glass styling.
+- **Featured Crop Card**: Upper-right floating glass card with Rice (Paddy) dossier info and photorealistic imagery.
+- **Scroll Parallax**: Implement GPU-accelerated parallax motion for background layers using GSAP or CSS transforms.
 
-### Caching & State Management (`src/lib/market-intel.ts`)
+### Global Website UI
+- **Navbar**: Midnight navy glass surface with moonlight-white text and crimson active states.
+- **Typography Multi-font System**: Apply Space Grotesk for headings and IBM Plex Mono for data points.
+- **Contrast Zones**: Automatically apply dark gradient overlays and blur behind content to ensure perfect readability over the detailed background.
 
-- Enhance `useMarketFeed` with a more robust client-side cache (using `localStorage` for offline persistence and in-memory for session speed).
-- Add background pre-fetching for frequently visited crops/states.
-- Implement request cancellation (AbortController) to stop obsolete fetches when filters change rapidly.
-
-### AI Intelligence Layer (`src/lib/market-insights.functions.ts`)
-
-- Optimize the prompt to use smaller, pre-aggregated data snapshots to reduce latency and token usage.
-- Add a strictly validated JSON output schema check.
-- Ensure multilingual support (English, Telugu, Hindi) for generated insights.
-
-### UI Performance (`src/routes/market.tsx`, `src/components/MarketCommandCenter.tsx`)
-
-- Implement virtualization for long lists of mandi rates.
-- Add skeleton loaders and progressive rendering for charts.
-- Debounce search and filter inputs (300ms) to prevent excessive API calls.
-- Add "Last Updated" and "Source" metadata badges to every data point.
+### Performance & Accessibility
+- **Optimization**: Use optimized WebP fallback for the background and GPU-accelerated transitions to maintain 60FPS.
+- **Reduced Motion**: Respect `prefers-reduced-motion` by disabling parallax and replacing the animated background with the static image.
 
 ## Verification Plan
-
-### Automated Tests
-
-- Run `vitest` to verify data normalization and validation logic.
-- Verify `agmarknet.server.ts` handles API failures and retries correctly.
-
-### Manual Verification
-
-- Test mobile responsiveness and scrolling smoothness on a simulated low-end device.
-- Verify that toggling filters quickly does not result in "stale" data landing over "fresh" data (race condition check).
-- Check the console for unnecessary re-renders in `MarketCommandCenter`.
+- **Device Checks**: Verify that `isDesktop` (from `use-viewport`) correctly applies the new design ONLY to screens >1024px.
+- **Animation Performance**: Monitor frame rates during scrolling to ensure no lag on 4K displays.
+- **Visual Contrast**: Verify WCAG readability of white/crimson text against the moonlit background.
