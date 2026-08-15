@@ -40,8 +40,8 @@ export const Route = createFileRoute("/analytics")({
 });
 
 const CHART_COLORS = [
-  "var(--leaf)", "var(--sunrise)", "var(--sky)", "var(--monsoon)", "var(--loam)",
-  "oklch(0.7 0.18 320)", "oklch(0.75 0.16 15)", "oklch(0.72 0.15 190)", "oklch(0.68 0.18 45)",
+  "var(--primary-crimson)", "var(--bright-crimson)", "rgba(227, 25, 55, 0.6)", "rgba(227, 25, 55, 0.4)", "rgba(227, 25, 55, 0.2)",
+  "#1A2B48", "#2C3E50", "#34495E", "#E67E22",
 ];
 
 function fmt(n: number) { return n.toLocaleString("en-IN"); }
