@@ -42,7 +42,7 @@ export function LanguageSwitcher() {
           role="listbox"
           aria-label={t("aria.changeLanguage")}
           style={{ animation: "scale-in .18s var(--ease-out-expo) both" }}
-          className="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-2xl border bg-popover py-1 shadow-elegant z-50"
+          className="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-2xl border border-white/10 bg-midnight-navy py-1 shadow-2xl z-50"
         >
           {LANGS.map((l) => {
             const selected = l.code === lang;
