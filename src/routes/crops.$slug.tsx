@@ -207,20 +207,20 @@ function CropDetail() {
                       height={640}
                       className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-                    <span className="absolute left-3 top-3 rounded-full bg-background/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider backdrop-blur">
+                    <div className="absolute inset-0 bg-gradient-to-t from-web-bg-midnight via-transparent to-transparent opacity-80" />
+                    <span className="absolute left-4 top-4 rounded-full web-glass border-web-leaf/20 bg-web-bg-midnight/60 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-web-mist shadow-xl backdrop-blur-md">
                       {c.emoji} {c.name}
                     </span>
-                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-4">
-                      <h3 className="font-display text-lg font-bold drop-shadow"><T>{d.name}</T></h3>
+                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-6">
+                      <h3 className="font-[Unbounded] text-xl font-black text-web-mist uppercase tracking-tight drop-shadow-lg"><T>{d.name}</T></h3>
                       <SeverityMeter n={d.severity} />
                     </div>
                   </div>
-                  <dl className="space-y-3 p-5 text-sm">
-                    <Row k="Symptoms" v={d.symptoms} />
-                    <Row k="Cause" v={d.cause} />
-                    <Row k="Organic" v={d.organic} />
-                    <Row k="Chemical" v={d.chemical} />
+                  <dl className="space-y-4 p-6">
+                    <Row k="Pathology Symptoms" v={d.symptoms} />
+                    <Row k="Primary Etiology" v={d.cause} />
+                    <Row k="Bio-Remediation" v={d.organic} />
+                    <Row k="Chemical Protocol" v={d.chemical} />
                   </dl>
                 </article>
               </Reveal>
