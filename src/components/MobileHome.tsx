@@ -7,7 +7,7 @@ import {
 import { CROP_LIST } from "@/data/crops";
 import { useLocation } from "@/lib/location-store";
 import { haptic } from "@/lib/haptics";
-import bgAsset from "@/assets/bg-moonlit-crimson.jpg.asset.json";
+import videoAsset from "@/assets/background_video.mp4.asset.json";
 
 
 
@@ -60,18 +60,24 @@ export function MobileHome() {
 
   return (
     <div className="relative min-h-screen w-full overflow-x-clip pb-24 text-foreground lg:hidden">
-      {/* Background Image - Fixed and Stationary */}
+      {/* Background Video - Fixed and Stationary */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <img
-          src={bgAsset.url}
-          alt=""
-          className="h-full w-full object-cover scale-105"
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="h-full w-full object-cover scale-[1.02]"
+          poster="/placeholder.svg"
           style={{ 
-            filter: 'contrast(1.2) brightness(0.65) saturate(1.2)' 
+            imageRendering: 'crisp-edges',
+            filter: 'contrast(1.1) brightness(0.9)' 
           }}
-        />
-        {/* Cinematic gradient overlay for maximum readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/10 to-black/90 backdrop-blur-[0.5px]" />
+        >
+          <source src={videoAsset.url} type="video/mp4" />
+        </video>
+        {/* Cinematic gradient overlay for maximum readability and 16K feel */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 backdrop-blur-[1px]" />
       </div>
 
 
@@ -116,14 +122,15 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
           {loc.state} · {loc.district}
         </span>
       </div>
-      <div className="neo-glass flex shrink-0 items-center gap-1 rounded-2xl p-2 px-3 border border-white/15 shadow-2xl backdrop-blur-3xl">
-        <HeaderIcon to="/districts" label="Change district" icon={<MapPin className="h-[18px] w-[18px]" />} />
+      <div className="neo-glass flex shrink-0 items-center gap-0.5 rounded-2xl p-1.5 px-2">
+
+        <HeaderIcon to="/districts" label="Change district" icon={<MapPin className="h-[15px] w-[15px]" />} />
         <HeaderDivider />
-        <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[18px] w-[18px]" />} />
+        <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[15px] w-[15px]" />} />
         <HeaderDivider />
-        <HeaderIcon label="Language" icon={<Languages className="h-[18px] w-[18px]" />} badge="EN" />
+        <HeaderIcon label="Language" icon={<Languages className="h-[15px] w-[15px]" />} badge="EN" />
         <HeaderDivider />
-        <HeaderIcon label="Notifications" icon={<Bell className="h-[18px] w-[18px]" />} dot />
+        <HeaderIcon label="Notifications" icon={<Bell className="h-[15px] w-[15px]" />} dot />
       </div>
     </header>
   );
@@ -178,24 +185,24 @@ function HeaderIcon({
    ============================================================ */
 function HeroTile() {
   return (
-    <div className="neo-glass-card relative col-span-2 overflow-hidden px-8 py-16 border border-white/15 shadow-[0_40px_120px_-30px_rgba(0,0,0,0.9)]">
+    <div className="neo-glass-card relative col-span-2 overflow-hidden px-7 py-8">
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full blur-[80px]"
-        style={{ background: "rgba(227, 25, 55, 0.15)" }}
+        className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
+        style={{ background: "color-mix(in oklab, var(--accent) 35%, transparent)" }}
       />
-      <h1 className="font-display mb-6 text-6xl font-black uppercase leading-[0.9] tracking-tighter">
-        <span className="text-white">KRISH</span><br /><span className="text-primary-crimson">SENSE</span>
+      <h1 className="font-display mb-3 text-[42px] uppercase leading-[0.9] tracking-tighter">
+        <span className="text-white">KRISH</span><br /><span className="text-gradient">SENSE</span>
       </h1>
-      <p className="mb-8 max-w-[240px] text-sm font-medium leading-relaxed text-muted-blue-gray/90">
+      <p className="mb-5 max-w-[220px] text-xs leading-relaxed text-muted-foreground">
         Precision agricultural intelligence, forged for the modern Indian farmer.
       </p>
       <Link
         to="/crops"
-        className="group inline-flex items-center gap-4 rounded-[2rem] bg-primary-crimson px-12 py-6 text-[11px] font-black uppercase tracking-[0.3em] text-white active:scale-95 transition-all shadow-[0_25px_60px_-15px_rgba(227,25,55,0.7)]"
+        className="btn-gold font-display inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-[12px] uppercase tracking-widest active:scale-95"
       >
         Explore Crops
-        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        <ArrowRight className="h-4 w-4" />
       </Link>
 
     </div>
@@ -224,21 +231,22 @@ function WeatherTile({ district }: { district: string }) {
   const sky = wx ? codeToSky(wx.weatherCode) : "—";
 
   return (
-    <div className="neo-glass-card p-6 border border-white/20 shadow-2xl backdrop-blur-3xl">
-      <div className="mb-6 flex items-start justify-between">
+    <div className="neo-glass-card p-5 px-6">
+      <div className="mb-4 flex items-start justify-between">
         <div
-          className="grid h-12 w-12 place-items-center rounded-2xl bg-white/5 border border-white/10 shadow-inner"
+          className="grid h-10 w-10 place-items-center rounded-full gold-border"
+          style={{ background: "linear-gradient(135deg, color-mix(in oklab, var(--accent) 35%, transparent), transparent)" }}
         >
-          <Sun className="h-6 w-6 text-primary-crimson" />
+          <Sun className="h-5 w-5 text-accent" />
         </div>
-        <span className="font-display text-[9px] font-black uppercase tracking-[0.3em] text-primary-crimson/80 bg-primary-crimson/10 px-2 py-0.5 rounded-full">
+        <span className="font-display text-[10px] font-bold uppercase tracking-widest text-accent/70">
           Live
         </span>
       </div>
-      <div className="font-display text-3xl font-black tracking-tighter text-white">
+      <div className="font-display text-2xl font-bold tracking-tight text-foreground">
         {temp != null ? `${temp}°C` : "—"}
       </div>
-      <div className="mt-2 truncate text-[10px] font-black uppercase tracking-widest text-muted-blue-gray/80">
+      <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
         {sky} · {district}
       </div>
     </div>
