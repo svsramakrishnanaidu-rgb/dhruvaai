@@ -429,18 +429,21 @@ function CropDetail() {
 
 function Fact({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="glass rounded-2xl p-4">
-      <div className="flex items-center gap-2 text-primary">{icon}<span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground"><T>{label}</T></span></div>
-      <div className="mt-1.5 text-sm font-semibold"><T>{value}</T></div>
+    <div className="web-glass rounded-[1.5rem] p-4 border-web-leaf/10">
+      <div className="flex items-center gap-2 text-web-gold">
+        {icon}
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-web-sage opacity-60"><T>{label}</T></span>
+      </div>
+      <div className="mt-1 text-[11px] font-black uppercase tracking-widest text-web-mist"><T>{value}</T></div>
     </div>
   );
 }
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="card-elegant p-5">
-      <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground"><T>{label}</T></div>
-      <div className="mt-1.5 text-sm"><T>{value}</T></div>
+    <div className="web-glass p-5 border-web-leaf/10 rounded-[2rem]">
+      <div className="text-[9px] font-black uppercase tracking-[0.2em] text-web-sage opacity-60"><T>{label}</T></div>
+      <div className="mt-1 text-[11px] font-black uppercase tracking-widest text-web-mist leading-relaxed"><T>{value}</T></div>
     </div>
   );
 }
@@ -449,38 +452,38 @@ function Section({ id, eyebrow, title, icon, banner, children }: { id?: string; 
   return (
     <section id={id} className="scroll-mt-28">
       <Reveal>
-        <div className="flex items-center gap-3">
-          {icon && <span className="grid h-10 w-10 place-items-center rounded-full bg-primary/15 text-primary">{icon}</span>}
+        <div className="flex items-center gap-4">
+          {icon && <span className="grid h-12 w-12 place-items-center rounded-2xl web-glass border-web-leaf/20 text-web-gold shadow-lg">{icon}</span>}
           <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary"><T>{eyebrow}</T></span>
-            <h2 className="font-display text-3xl font-black tracking-tight md:text-4xl"><T>{title}</T></h2>
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-web-emerald"><T>{eyebrow}</T></span>
+            <h2 className="font-[Unbounded] text-3xl font-black tracking-tight text-web-mist md:text-4xl uppercase"><T>{title}</T></h2>
           </div>
         </div>
       </Reveal>
       {banner && (
         <Reveal delay={80}>
-          <div className="mt-6 overflow-hidden rounded-3xl border border-border/60">
+          <div className="mt-8 overflow-hidden rounded-[3rem] border border-web-leaf/20 shadow-2xl">
             <img
               src={banner}
               alt=""
               loading="lazy"
               width={1600}
               height={520}
-              className="h-52 w-full object-cover md:h-64"
+              className="h-52 w-full object-cover md:h-72 grayscale-[30%] brightness-[80%] hover:grayscale-0 transition-all duration-700"
             />
           </div>
         </Reveal>
       )}
-      <div className="mt-8">{children}</div>
+      <div className="mt-10">{children}</div>
     </section>
   );
 }
 
 function Row({ k, v }: { k: string; v: string }) {
   return (
-    <div>
-      <dt className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground"><T>{k}</T></dt>
-      <dd className="mt-0.5"><T>{v}</T></dd>
+    <div className="py-1">
+      <dt className="text-[9px] font-black uppercase tracking-[0.2em] text-web-gold/70"><T>{k}</T></dt>
+      <dd className="mt-0.5 text-[11px] font-bold text-web-sage leading-relaxed"><T>{v}</T></dd>
     </div>
   );
 }
