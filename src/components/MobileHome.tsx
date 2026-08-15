@@ -178,7 +178,7 @@ function HeaderIcon({
    ============================================================ */
 function HeroTile() {
   return (
-    <div className="neo-glass-card relative col-span-2 overflow-hidden px-8 py-12 border border-white/20 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.8)]">
+    <div className="neo-glass-card relative col-span-2 overflow-hidden px-8 py-16 border border-white/15 shadow-[0_40px_120px_-30px_rgba(0,0,0,0.9)]">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full blur-[80px]"
@@ -192,7 +192,7 @@ function HeroTile() {
       </p>
       <Link
         to="/crops"
-        className="group inline-flex items-center gap-3 rounded-[1.25rem] bg-primary-crimson px-10 py-5 text-[10px] font-black uppercase tracking-[0.25em] text-white active:scale-95 transition-all shadow-[0_20px_50px_-10px_rgba(227,25,55,0.6)]"
+        className="group inline-flex items-center gap-4 rounded-[2rem] bg-primary-crimson px-12 py-6 text-[11px] font-black uppercase tracking-[0.3em] text-white active:scale-95 transition-all shadow-[0_25px_60px_-15px_rgba(227,25,55,0.7)]"
       >
         Explore Crops
         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

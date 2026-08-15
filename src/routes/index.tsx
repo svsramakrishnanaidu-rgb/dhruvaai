@@ -86,8 +86,8 @@ function HeroSection({ loc, p, featured }: any) {
         {/* Left column */}
         <div className="lg:col-span-7">
           <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-5 py-2 text-[10px] font-black uppercase tracking-[0.4em] backdrop-blur-2xl text-moonlight-white shadow-2xl">
-              <Sparkles className="h-3.5 w-3.5 text-primary-crimson" />
+            <span className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.5em] backdrop-blur-3xl text-moonlight-white/90 shadow-2xl">
+              <Sparkles className="h-4 w-4 text-primary-crimson animate-pulse" />
               Agritech Reimagined · v2026
             </span>
           </Reveal>
@@ -119,8 +119,8 @@ function HeroSection({ loc, p, featured }: any) {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 to="/crops"
-                className="group inline-flex items-center gap-3 rounded-[1.75rem] bg-primary-crimson px-10 py-5 text-xs font-black uppercase tracking-[0.2em] text-white transition-all hover:brightness-110 hover:scale-[1.03] hover:shadow-[0_20px_50px_-10px_rgba(227,25,55,0.5)] active:scale-95 tap"
-                style={{ boxShadow: "0 10px 40px -10px rgba(227,25,55,0.4)" }}
+                className="group inline-flex items-center gap-4 rounded-3xl bg-primary-crimson px-12 py-6 text-xs font-black uppercase tracking-[0.3em] text-white transition-all hover:brightness-125 hover:scale-[1.05] hover:shadow-[0_20px_60px_-10px_rgba(227,25,55,0.7)] active:scale-95 tap"
+                style={{ boxShadow: "0 15px 50px -10px rgba(227,25,55,0.5)" }}
               >
                 Explore crops
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
