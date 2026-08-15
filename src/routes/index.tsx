@@ -93,7 +93,7 @@ function HeroSection({ loc, p, featured }: any) {
           </Reveal>
 
           <Reveal delay={80}>
-            <h1 className="mt-5 font-display text-5xl font-black leading-[1.02] tracking-tight sm:text-6xl md:text-7xl lg:text-[6.5rem] text-moonlight-white">
+            <h1 className="mt-5 font-display text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-[5.5rem] text-moonlight-white">
               Farm with{" "}
               <span className="text-primary-crimson drop-shadow-[0_0_15px_rgba(227,25,55,0.4)]">foresight,</span>
               <br className="hidden sm:block" />

@@ -60,23 +60,17 @@ export function MobileHome() {
 
   return (
     <div className="relative min-h-screen w-full overflow-x-clip pb-24 text-foreground lg:hidden">
-      {/* Background Video - Fixed and Stationary */}
+      {/* Background Image - Fixed and Stationary */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="h-full w-full object-cover scale-[1.02]"
-          poster="/placeholder.svg"
+        <img
+          src="/__l5e/assets-v1/8cd9f6a7-ab65-42c5-9944-fca0d60e646b/bg-moonlit-crimson.jpg"
+          alt=""
+          className="h-full w-full object-cover"
           style={{ 
-            imageRendering: 'crisp-edges',
-            filter: 'contrast(1.1) brightness(0.9)' 
+            filter: 'contrast(1.1) brightness(0.8) saturate(1.1)' 
           }}
-        >
-          <source src={videoAsset.url} type="video/mp4" />
-        </video>
-        {/* Cinematic gradient overlay for maximum readability and 16K feel */}
+        />
+        {/* Cinematic gradient overlay for maximum readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 backdrop-blur-[1px]" />
       </div>
 
