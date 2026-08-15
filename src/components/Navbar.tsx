@@ -88,21 +88,21 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
     >
       <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-3 sm:px-4">
         <div
-          className={`flex min-w-0 flex-1 items-center gap-1 rounded-[2rem] border px-2 py-1.5 transition-all sm:px-3 sm:py-2 ${
-            scrolled ? "neo-glass border-white/15" : "bg-white/5 border-white/5"
+          className={`flex min-w-0 flex-1 items-center gap-1 rounded-full border px-2 py-1.5 transition-all sm:px-3 sm:py-2 ${
+            scrolled ? "glass shadow-elegant" : "glass"
           }`}
-          style={{ boxShadow: scrolled ? "var(--neo-glass-shadow)" : undefined, backdropFilter: scrolled ? 'blur(20px)' : 'none' }}
+          style={{ boxShadow: scrolled ? "var(--shadow-elegant)" : undefined }}
         >
           <Link to="/" aria-label="Krish Sense home" className="flex shrink-0 items-center gap-2 pr-1 sm:pr-2">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-crimson to-bright-crimson shadow-lg shadow-primary-crimson/20">
-              <Sprout className="h-5 w-5 text-white" aria-hidden />
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-accent shadow-lg">
+              <Sprout className="h-5 w-5 text-primary-foreground" aria-hidden />
             </div>
-            <span className="hidden font-display text-lg font-black tracking-tighter xs:inline sm:inline text-moonlight-white">
-              KRISH <span className="text-primary-crimson">SENSE</span>
+            <span className="hidden font-display text-lg font-bold tracking-tight xs:inline sm:inline">
+              Krish <span className="text-gradient">Sense</span>
             </span>
           </Link>
 
-          <nav aria-label="Primary" className="ml-4 hidden min-w-0 flex-1 items-center gap-1 overflow-hidden xl:flex">
+          <nav aria-label="Primary" className="ml-2 hidden min-w-0 flex-1 items-center gap-1 overflow-hidden xl:flex">
             {NAV.map((item) => {
               const active =
                 item.to === "/"
@@ -113,10 +113,10 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                   key={item.to}
                   to={item.to}
                   aria-current={active ? "page" : undefined}
-                  className={`relative rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-all ${
+                  className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
                     active
-                      ? "text-white"
-                      : "text-muted-blue-gray hover:text-moonlight-white"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {active && (
@@ -124,8 +124,8 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                       aria-hidden
                       className="absolute inset-0 -z-10 rounded-full"
                       style={{
-                        background: "rgba(227, 25, 55, 0.15)",
-                        boxShadow: "inset 0 0 0 1px rgba(227, 25, 55, 0.3)",
+                        background: "color-mix(in oklab, var(--primary) 22%, transparent)",
+                        boxShadow: "inset 0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent)",
                       }}
                     />
                   )}
@@ -142,7 +142,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
             <button
               onClick={onSearchOpen}
               aria-label={t("aria.openSearch")}
-              className="tap grid place-items-center rounded-full text-muted-blue-gray transition-all hover:bg-white/5 hover:text-moonlight-white"
+              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
             >
               <Search className="h-4 w-4" aria-hidden />
             </button>
@@ -151,7 +151,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
               onClick={toggle}
               aria-label={t("aria.toggleTheme")}
               aria-pressed={theme === "dark"}
-              className="tap grid place-items-center rounded-full text-muted-blue-gray transition-all hover:bg-white/5 hover:text-moonlight-white"
+              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
             >
               {theme === "dark" ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
             </button>
@@ -160,7 +160,7 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
               aria-label={t("aria.toggleMenu")}
               aria-expanded={open}
               aria-controls="mobile-nav"
-              className="tap grid place-items-center rounded-full text-muted-blue-gray transition-all hover:bg-white/5 hover:text-moonlight-white"
+              className="tap grid place-items-center rounded-full text-muted-foreground transition-all hover:bg-secondary/60 hover:text-foreground"
             >
               {open ? <X className="h-4 w-4" aria-hidden /> : <Menu className="h-4 w-4" aria-hidden />}
             </button>
@@ -169,8 +169,8 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
       </div>
 
       {open && (
-        <div id="mobile-nav" className="mx-auto mt-2 max-w-7xl px-3 sm:px-4">
-          <div className="neo-glass rounded-[2rem] p-4 border border-white/10 shadow-2xl">
+        <div id="mobile-nav" className="mx-auto mt-2 max-w-7xl px-3 sm:px-4 xl:hidden">
+          <div className="card-elegant rounded-3xl p-4">
             <div className="mb-3 sm:hidden">
               <DistrictPicker />
             </div>
@@ -185,15 +185,15 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                     <span
                       aria-hidden
                       className="h-px flex-1"
-                      style={{ background: "linear-gradient(90deg, rgba(227, 25, 55, 0.4), transparent)" }}
+                      style={{ background: "linear-gradient(90deg, color-mix(in oklab, var(--accent) 40%, transparent), transparent)" }}
                     />
-                    <h3 className="font-display text-[10px] font-black uppercase tracking-[0.2em] text-primary-crimson">
+                    <h3 className="font-display text-[10px] font-bold uppercase tracking-[0.28em] text-accent/80">
                       {group.label}
                     </h3>
                     <span
                       aria-hidden
                       className="h-px flex-1"
-                      style={{ background: "linear-gradient(270deg, rgba(227, 25, 55, 0.4), transparent)" }}
+                      style={{ background: "linear-gradient(270deg, color-mix(in oklab, var(--accent) 40%, transparent), transparent)" }}
                     />
                   </div>
                   <nav aria-label={group.label} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -205,27 +205,27 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                           key={to}
                           to={to}
                           aria-current={active ? "page" : undefined}
-                            className={`group relative flex items-center gap-3 overflow-hidden rounded-2xl border px-3 py-3 transition-all active:scale-[.98] ${
-                              active
-                                ? "border-primary-crimson/50 bg-primary-crimson/10 text-moonlight-white shadow-[0_0_20px_rgba(227,25,55,0.1)]"
-                                : "border-white/5 bg-white/5 text-muted-blue-gray hover:border-primary-crimson/30 hover:text-moonlight-white"
+                          className={`group relative flex items-center gap-2.5 overflow-hidden rounded-xl border px-3 py-2.5 text-sm font-medium transition active:scale-[.98] ${
+                            active
+                              ? "border-accent/50 bg-accent/10 text-foreground"
+                              : "border-border/40 bg-background/40 text-muted-foreground hover:border-accent/30 hover:text-foreground"
+                          }`}
+                        >
+                          <span
+                            className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg transition ${
+                              active ? "bg-accent/20 text-accent" : "bg-secondary/50 text-muted-foreground group-hover:text-accent"
                             }`}
                           >
-                            <span
-                              className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl transition-all ${
-                                active ? "bg-primary-crimson text-white shadow-lg shadow-primary-crimson/20" : "bg-white/10 text-muted-blue-gray group-hover:text-primary-crimson"
-                              }`}
-                            >
                             <Icon className="h-4 w-4" aria-hidden />
                           </span>
-                          <span className="font-display truncate text-[11px] font-black uppercase tracking-[0.15em]">
+                          <span className="font-display truncate text-[12px] uppercase tracking-wide">
                             {t(key)}
                           </span>
                           {active && (
                             <span
                               aria-hidden
-                              className="absolute inset-y-2 right-2 w-1 rounded-full shadow-[0_0_10px_rgba(227,25,55,0.5)]"
-                              style={{ background: "linear-gradient(180deg, transparent, var(--primary-crimson), transparent)" }}
+                              className="absolute inset-y-1 right-1 w-[3px] rounded-full"
+                              style={{ background: "linear-gradient(180deg, transparent, var(--accent), transparent)" }}
                             />
                           )}
                         </Link>

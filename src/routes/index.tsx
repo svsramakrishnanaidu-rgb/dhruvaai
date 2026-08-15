@@ -79,28 +79,39 @@ function Home() {
 /* ============================================================
    HERO
    ============================================================ */
-function HeroSection({ loc, p, featured }: any) {
+function HeroSection({ loc, p, featured, heroImg }: any) {
   return (
-    <section className="relative isolate overflow-hidden min-h-screen flex items-center pt-20">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 pb-24 pt-10 lg:grid-cols-12">
+    <section className="relative isolate overflow-hidden">
+      {/* Decorative image + light layers */}
+      <div className="absolute inset-0 -z-10">
+        <img src={heroImg} alt="" className="h-full w-full object-cover opacity-30" />
+        <div className="absolute inset-0" style={{
+          background: "radial-gradient(1000px 600px at 15% 0%, color-mix(in oklab, var(--primary) 20%, transparent), transparent 60%), radial-gradient(900px 500px at 90% 20%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 60%), linear-gradient(180deg, transparent, var(--background) 85%)",
+        }}/>
+        {/* Floating orbs */}
+        <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full opacity-40 blur-3xl" style={{ background: "var(--primary)", animation: "float-y 9s ease-in-out infinite" }}/>
+        <div className="absolute top-40 right-10 h-64 w-64 rounded-full opacity-30 blur-3xl" style={{ background: "var(--accent)", animation: "float-y 11s ease-in-out infinite" }}/>
+      </div>
+
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 pb-16 pt-14 sm:px-6 md:pt-20 lg:grid-cols-12 lg:pb-24">
         {/* Left column */}
         <div className="lg:col-span-7">
           <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.5em] backdrop-blur-3xl text-moonlight-white/90 shadow-2xl">
-              <Sparkles className="h-4 w-4 text-primary-crimson animate-pulse" />
-              Agritech Reimagined · v2026
+            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] backdrop-blur">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              Advisory reimagined · v2026
             </span>
           </Reveal>
 
           <Reveal delay={80}>
-            <h1 className="mt-8 font-display text-6xl font-black leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[7.5rem] text-moonlight-white">
+            <h1 className="mt-5 font-display text-5xl font-black leading-[1.02] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem]">
               Farm with{" "}
-              <span className="text-primary-crimson drop-shadow-[0_0_15px_rgba(227,25,55,0.4)]">foresight,</span>
+              <span className="text-gradient">foresight,</span>
               <br className="hidden sm:block" />
               grow with{" "}
               <span className="relative inline-block">
                 clarity.
-                <svg className="absolute -bottom-2 left-0 h-3 w-full text-primary-crimson/70" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden>
+                <svg className="absolute -bottom-2 left-0 h-3 w-full text-primary/70" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden>
                   <path d="M0 8 Q 50 0 100 6 T 200 4" stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round"/>
                 </svg>
               </span>
@@ -108,9 +119,9 @@ function HeroSection({ loc, p, featured }: any) {
           </Reveal>
 
           <Reveal delay={160}>
-            <p className="mt-10 max-w-xl text-lg leading-relaxed text-muted-blue-gray/90 md:text-xl font-medium">
-              A cinematic, science-backed playbook — from soil to mandi — <br className="hidden md:block"/>
-              tuned live to <span className="text-primary-crimson font-bold">{loc.district}, {loc.state}</span>.
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
+              A cinematic, science-backed playbook — from soil to mandi — tuned live to{" "}
+              <b className="font-semibold text-foreground">{loc.district}, {loc.state}</b>.
               Trusted by a growing community of Indian growers.
             </p>
           </Reveal>
@@ -119,28 +130,28 @@ function HeroSection({ loc, p, featured }: any) {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 to="/crops"
-                className="group inline-flex items-center gap-4 rounded-3xl bg-primary-crimson px-12 py-6 text-xs font-black uppercase tracking-[0.3em] text-white transition-all hover:brightness-125 hover:scale-[1.05] hover:shadow-[0_20px_60px_-10px_rgba(227,25,55,0.7)] active:scale-95 tap"
-                style={{ boxShadow: "0 15px 50px -10px rgba(227,25,55,0.5)" }}
+                className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:brightness-110 tap"
+                style={{ boxShadow: "var(--shadow-glow)" }}
               >
                 Explore crops
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/analytics"
-                className="group inline-flex items-center gap-3 rounded-[1.75rem] border border-white/15 bg-white/10 px-10 py-5 text-xs font-black uppercase tracking-[0.2em] text-moonlight-white backdrop-blur-2xl transition-all hover:bg-white/20 active:scale-95 tap"
+                className="group inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/50 px-6 py-3 text-sm font-semibold backdrop-blur transition hover:bg-secondary tap"
               >
-                <PlayCircle className="h-4 w-4 text-primary-crimson" />
+                <PlayCircle className="h-4 w-4 text-primary" />
                 See the India atlas
               </Link>
-              <Link to="/districts" className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs text-muted-blue-gray hover:text-moonlight-white transition-colors tap">
-                <MapPin className="h-3.5 w-3.5 text-primary-crimson" /> Change district
+              <Link to="/districts" className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground tap">
+                <MapPin className="h-3.5 w-3.5 text-primary" /> Change district
               </Link>
             </div>
           </Reveal>
 
           {/* Live mini-stats */}
           <Reveal delay={320}>
-            <div className="mt-16 flex flex-wrap gap-4">
+            <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
               <MiniStat icon={<Sun className="h-4 w-4" />} label="Season" value={p.season?.split(" ")[0] ?? "Kharif"} />
               <MiniStat icon={<Leaf className="h-4 w-4" />} label="Soil" value={p.soil?.split(" ")[0] ?? "Loam"} />
               <MiniStat icon={<Droplets className="h-4 w-4" />} label="Rain YTD" value={`${p.rainfallYtdMm} mm`} />
@@ -149,45 +160,47 @@ function HeroSection({ loc, p, featured }: any) {
           </Reveal>
         </div>
 
-        <div className="lg:col-span-5 flex items-center justify-center lg:justify-end">
+        {/* Right column — featured card */}
+        <div className="lg:col-span-5">
           <Reveal delay={160}>
-            <div className="relative group w-full max-w-[500px]">
-              {/* Crimson aura */}
-              <div aria-hidden className="absolute -inset-10 rounded-full opacity-20 blur-[100px] bg-primary-crimson/30 animate-pulse" />
-              
+            <div className="relative">
+              {/* glow ring */}
+              <div aria-hidden className="absolute -inset-4 rounded-[2rem] opacity-60 blur-2xl" style={{ background: "var(--gradient-primary)" }}/>
               <Link
                 to="/crops/$slug"
                 params={{ slug: featured.slug }}
-                className="relative block w-full aspect-video overflow-hidden rounded-[2.5rem] border border-white/10 neo-glass transition-all duration-700 group-hover:scale-[1.02] group-hover:-translate-y-2 group-hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]"
+                className="group relative block overflow-hidden rounded-[2rem] border border-white/10"
+                style={{ boxShadow: "var(--shadow-elegant)" }}
               >
-                <img src={featured.image} alt={featured.name} className="h-full w-full object-cover opacity-90 transition-transform duration-[2000ms] group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-midnight-navy/90 via-midnight-navy/20 to-transparent" />
+                <img src={featured.image} alt={featured.name} className="h-[520px] w-full object-cover transition-transform duration-[1400ms] group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
                 {/* top chips */}
-                <div className="absolute inset-x-8 top-8 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white border border-white/10 backdrop-blur-md">
-                    <Star className="h-3 w-3 text-primary-crimson" /> Featured Today
+                <div className="absolute inset-x-5 top-5 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground">
+                    <Star className="h-3 w-3" /> Featured today
                   </span>
-                  <div className="grid h-12 w-12 place-items-center rounded-full glass border border-white/10 text-2xl shadow-2xl">{featured.emoji}</div>
+                  <div className="grid h-10 w-10 place-items-center rounded-full glass text-xl">{featured.emoji}</div>
                 </div>
 
                 {/* bottom info */}
-                <div className="absolute inset-x-0 bottom-0 p-10">
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-primary-crimson font-black">Crop Dossier</div>
-                  <h3 className="mt-3 font-display text-5xl font-black tracking-tighter text-moonlight-white">{featured.name}</h3>
-                  <p className="text-sm italic text-muted-blue-gray/80 mt-2 font-medium">{featured.scientificName}</p>
+                <div className="absolute inset-x-0 bottom-0 p-6">
+                  <div className="text-[11px] uppercase tracking-[0.28em] text-primary">Crop dossier</div>
+                  <h3 className="mt-1 font-display text-3xl font-black tracking-tight md:text-4xl">{featured.name}</h3>
+                  <p className="text-xs italic text-muted-foreground">{featured.scientificName}</p>
 
-                  <div className="mt-8 flex gap-4">
+                  <div className="mt-4 grid grid-cols-3 gap-2">
                     <MiniBadge label="Profit" value={`+${featured.profitPct}%`} accent />
                     <MiniBadge label="Water" value={featured.waterNeed} />
                     <MiniBadge label="Season" value={String(featured.season).split(" ")[0]} />
                   </div>
 
-                  <div className="mt-10 inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em] text-primary-crimson group-hover:gap-5 transition-all">
-                    Open dossier <ArrowUpRight className="h-4 w-4" />
+                  <div className="mt-5 inline-flex items-center gap-2 text-xs font-semibold text-primary">
+                    Open dossier <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </div>
                 </div>
               </Link>
+
             </div>
           </Reveal>
         </div>
@@ -198,11 +211,11 @@ function HeroSection({ loc, p, featured }: any) {
 
 function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="neo-glass flex items-center gap-4 rounded-[1.75rem] px-7 py-5 border border-white/15 shadow-2xl">
-      <div className="grid h-10 w-10 place-items-center rounded-full bg-white/5 text-primary-crimson border border-white/10">{icon}</div>
+    <div className="glass flex items-center gap-3 rounded-2xl px-3 py-3">
+      <div className="grid h-8 w-8 place-items-center rounded-full bg-primary/15 text-primary">{icon}</div>
       <div className="min-w-0">
-        <div className="text-[10px] uppercase tracking-widest text-muted-blue-gray font-bold">{label}</div>
-        <div className="truncate text-sm font-semibold text-moonlight-white">{value}</div>
+        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+        <div className="truncate text-sm font-semibold">{value}</div>
       </div>
     </div>
   );
@@ -210,9 +223,9 @@ function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string
 
 function MiniBadge({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className={`rounded-[1.25rem] border px-4 py-4 backdrop-blur-2xl transition-all ${accent ? "border-primary-crimson/40 bg-primary-crimson/15" : "border-white/15 bg-white/10 shadow-xl"}`}>
-      <div className="text-[9px] uppercase tracking-widest text-muted-blue-gray font-bold">{label}</div>
-      <div className={`text-sm font-black mt-0.5 ${accent ? "text-primary-crimson" : "text-moonlight-white"}`}>{value}</div>
+    <div className={`rounded-xl border px-3 py-2 backdrop-blur ${accent ? "border-primary/50 bg-primary/15" : "border-border/60 bg-background/50"}`}>
+      <div className="text-[9px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      <div className={`text-sm font-bold ${accent ? "text-primary" : ""}`}>{value}</div>
     </div>
   );
 }
@@ -227,12 +240,12 @@ function MarqueeStrip() {
     "Open-Meteo backed weather", "MSP & scheme intelligence",
   ];
   return (
-    <div className="border-y border-white/5 bg-midnight-navy/40 py-6 backdrop-blur-xl">
+    <div className="border-y border-border/40 bg-background/40 py-4 backdrop-blur">
       <div className="mx-auto max-w-[100vw] overflow-hidden">
-        <div className="flex gap-12 whitespace-nowrap will-change-transform" style={{ animation: "marquee 40s linear infinite" }}>
+        <div className="flex gap-10 whitespace-nowrap will-change-transform" style={{ animation: "marquee 40s linear infinite" }}>
           {[...items, ...items, ...items].map((t, i) => (
-            <span key={i} className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-muted-blue-gray">
-              <span className="h-2 w-2 rounded-full bg-primary-crimson shadow-[0_0_8px_rgba(227,25,55,0.6)]" />
+            <span key={i} className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.28em] text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
               {t}
             </span>
           ))}
@@ -249,41 +262,41 @@ function MarqueeStrip() {
 function FeatureGrid() {
   const features = [
     { to: "/analytics", image: analyticsImg, tag: "Atlas", title: "India Crop Atlas", copy: "Nine-state production intelligence, 2025-26 estimates.", icon: <BarChart3 className="h-4 w-4"/>, size: "lg" },
-    { to: "/weather", image: weatherImg, tag: "Live", title: "Weather Intelligence", copy: "Radar, AQI, soil moisture and agri advisories.", icon: <CloudRain className="h-4 w-4"/>, size: "md" },
-    { to: "/market", image: marketImg, tag: "Mandi", title: "Market Prices", copy: "Daily trends, MSP and profit estimator.", icon: <TrendingUp className="h-4 w-4"/>, size: "md" },
-    { to: "/rotation", image: rotationImg, tag: "Wheel", title: "Rotation Planner", copy: "Sequences that rebuild soil and profit.", icon: <Compass className="h-4 w-4"/>, size: "md" },
-    { to: "/schemes", image: schemesImg, tag: "Govt", title: "Schemes & Subsidies", copy: "Central + state programs, eligibility & links.", icon: <ShieldCheck className="h-4 w-4"/>, size: "lg" },
+    { to: "/weather", image: weatherImg, tag: "Live", title: "Weather intelligence", copy: "Radar, AQI, soil moisture and agri advisories.", icon: <CloudRain className="h-4 w-4"/>, size: "md" },
+    { to: "/market", image: marketImg, tag: "Mandi", title: "Market prices", copy: "Daily trends, MSP and profit estimator.", icon: <TrendingUp className="h-4 w-4"/>, size: "md" },
+    { to: "/rotation", image: rotationImg, tag: "Wheel", title: "Rotation planner", copy: "Sequences that rebuild soil and profit.", icon: <Compass className="h-4 w-4"/>, size: "md" },
+    { to: "/schemes", image: schemesImg, tag: "Govt", title: "Schemes & subsidies", copy: "Central + state programs, eligibility & links.", icon: <ShieldCheck className="h-4 w-4"/>, size: "lg" },
   ];
   return (
-    <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-32">
-      <SectionHeader eyebrow="Intelligence" title="Everything an acre needs." subtitle="A modular agritech ecosystem. Each surface is beautifully image-first and tuned to your district." />
+    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
+      <SectionHeader eyebrow="Services" title="Everything an acre needs." subtitle="A modular platform. Each surface is beautifully image-first and tuned to your district." />
 
-      <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-6">
+      <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-6">
         {features.map((f, i) => (
           <Reveal key={f.to} delay={i * 60} className={`${f.size === "lg" ? "md:col-span-3" : "md:col-span-2"}`}>
             <Link
               to={f.to}
-              className="group relative block h-full min-h-[300px] overflow-hidden rounded-[2rem] border border-white/5 neo-glass"
-              style={{ boxShadow: "var(--neo-glass-shadow)" }}
+              className="group relative block h-full min-h-[240px] overflow-hidden rounded-3xl border border-border/60"
+              style={{ boxShadow: "var(--shadow-elegant)" }}
             >
-              <img src={f.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-[1400ms] group-hover:scale-105 group-hover:opacity-80" />
-              <div className="absolute inset-0 bg-gradient-to-t from-midnight-navy via-midnight-navy/60 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary-crimson/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <img src={f.image} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/10" />
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/15 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-              <div className="relative flex h-full flex-col justify-between p-8">
+              <div className="relative flex h-full flex-col justify-between p-6">
                 <div className="flex items-center justify-between">
-                  <div className="grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-primary-crimson to-bright-crimson text-white shadow-lg shadow-primary-crimson/20">
+                  <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground">
                     {f.icon}
                   </div>
-                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-muted-blue-gray backdrop-blur transition-colors group-hover:text-moonlight-white">
+                  <span className="rounded-full border border-border/60 bg-background/50 px-2.5 py-1 text-[10px] uppercase tracking-widest text-muted-foreground backdrop-blur">
                     {f.tag}
                   </span>
                 </div>
                 <div>
-                  <h3 className="font-display text-2xl font-black tracking-tight text-moonlight-white md:text-3xl">{f.title}</h3>
-                  <p className="mt-2 max-w-md text-sm text-muted-blue-gray font-medium leading-relaxed">{f.copy}</p>
-                  <div className="mt-6 inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary-crimson group-hover:gap-3 transition-all">
-                    ENTER MODULE <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                  <h3 className="font-display text-2xl font-black tracking-tight md:text-3xl">{f.title}</h3>
+                  <p className="mt-1.5 max-w-md text-sm text-muted-foreground">{f.copy}</p>
+                  <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+                    Open <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </div>
                 </div>
               </div>
@@ -297,17 +310,17 @@ function FeatureGrid() {
 
 function SectionHeader({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle?: string }) {
   return (
-    <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end mb-12">
+    <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
       <div>
         <Reveal>
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-crimson">{eyebrow}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-primary">{eyebrow}</span>
         </Reveal>
         <Reveal delay={60}>
-          <h2 className="mt-4 max-w-2xl font-display text-4xl font-black tracking-tighter text-moonlight-white md:text-6xl">{title}</h2>
+          <h2 className="mt-2 max-w-2xl font-display text-3xl font-black tracking-tight md:text-5xl">{title}</h2>
         </Reveal>
         {subtitle && (
           <Reveal delay={120}>
-            <p className="mt-6 max-w-2xl text-base text-muted-blue-gray font-medium leading-relaxed md:text-lg">{subtitle}</p>
+            <p className="mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">{subtitle}</p>
           </Reveal>
         )}
       </div>
@@ -357,22 +370,22 @@ function TrendingSection({ trending }: { trending: any[] }) {
   }, [liveMap, trending]);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-32">
-      <div className="flex items-end justify-between mb-12">
-        <SectionHeader eyebrow="Momentum" title="Crops moving this season." />
-        <div className="hidden shrink-0 flex-col items-end gap-3 md:flex">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-crimson/30 bg-primary-crimson/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary-crimson backdrop-blur">
-            <span className={`h-2 w-2 rounded-full bg-primary-crimson ${loading ? "animate-ping" : "animate-pulse"}`} />
-            {loading ? "Syncing Mandis" : "Live · Agmarknet"}
+    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
+      <div className="flex items-end justify-between">
+        <SectionHeader eyebrow="Trending" title="Crops moving this season." />
+        <div className="hidden shrink-0 flex-col items-end gap-2 md:flex">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
+            <span className={`h-1.5 w-1.5 rounded-full bg-primary ${loading ? "animate-ping" : "animate-pulse"}`} />
+            {loading ? "Syncing mandis" : "Live · Agmarknet"}
             {updated ? ` · ${updated}` : ""}
           </span>
-          <Link to="/crops" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary-crimson hover:brightness-110 transition-all group">
-            BROWSE LIBRARY <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          <Link to="/crops" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80">
+            Browse library <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
         {cards.map(({ crop: c, live: l }, i) => {
           const up = (l?.deltaPct ?? 0) >= 0;
           return (
@@ -380,19 +393,18 @@ function TrendingSection({ trending }: { trending: any[] }) {
               <Link
                 to="/crops/$slug"
                 params={{ slug: c.slug }}
-                className="group relative block aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/5 neo-glass transition-all duration-700 hover:scale-[1.03] hover:-translate-y-1"
-                style={{ boxShadow: "var(--neo-glass-shadow)" }}
+                className="group relative block aspect-[4/5] overflow-hidden rounded-3xl border border-border/60"
+                style={{ boxShadow: "var(--shadow-elegant)" }}
               >
-                <img src={c.image} alt={c.name} loading="lazy" className="h-full w-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-midnight-navy via-midnight-navy/40 to-transparent" />
-                
+                <img src={c.image} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
                 <span
-                  className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-widest backdrop-blur shadow-lg ${
+                  className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest ${
                     l
                       ? up
-                        ? "bg-primary-crimson/90 text-white"
-                        : "bg-steel-blue/90 text-moonlight-white"
-                      : "bg-primary-crimson/90 text-white"
+                        ? "bg-primary/90 text-primary-foreground"
+                        : "bg-destructive/90 text-destructive-foreground"
+                      : "bg-primary/90 text-primary-foreground"
                   }`}
                 >
                   {l ? (
@@ -404,18 +416,17 @@ function TrendingSection({ trending }: { trending: any[] }) {
                     <>+{c.profitPct}%</>
                   )}
                 </span>
-                <div className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full glass border border-white/10 text-xl">{c.emoji}</div>
-                
-                <div className="absolute inset-x-0 bottom-0 p-5">
-                  <div className="text-[9px] font-black uppercase tracking-[0.2em] text-primary-crimson">{String(c.season).split(" ")[0]}</div>
-                  <div className="mt-1 truncate font-display text-lg font-black text-moonlight-white tracking-tight">{c.name}</div>
+                <div className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full glass text-base">{c.emoji}</div>
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                  <div className="text-[10px] uppercase tracking-widest text-primary">{String(c.season).split(" ")[0]}</div>
+                  <div className="mt-0.5 truncate font-display text-lg font-bold">{c.name}</div>
                   {l ? (
-                    <div className="mt-2 truncate text-[10px] text-muted-blue-gray font-bold">
-                      <span className="text-moonlight-white">₹{l.modal.toLocaleString("en-IN")}</span>/qtl · {l.markets} mandis
+                    <div className="mt-1 truncate text-[10px] text-muted-foreground">
+                      <span className="font-semibold text-foreground">₹{l.modal.toLocaleString("en-IN")}</span>/qtl · {l.markets} mandis
                     </div>
                   ) : (
-                    <div className="mt-2 flex items-center gap-2 text-[10px] text-muted-blue-gray font-bold">
-                      <Droplets className="h-3.5 w-3.5 text-primary-crimson" /> {c.waterNeed}
+                    <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
+                      <Droplets className="h-3 w-3" /> {c.waterNeed}
                     </div>
                   )}
                 </div>
