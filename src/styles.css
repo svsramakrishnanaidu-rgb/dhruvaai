@@ -12,8 +12,9 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
 
-  --font-display: "Orbitron", "Rajdhani", system-ui, sans-serif;
-  --font-sans: "Inter", "Manrope", system-ui, sans-serif;
+  --font-display: "Japan Ramen", "Orbitron", "Rajdhani", system-ui, sans-serif;
+  --font-sans: "Inter", "Manrope", "DM Sans", system-ui, sans-serif;
+  --font-mono: "Space Mono", "IBM Plex Mono", "JetBrains Mono", monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -45,89 +46,78 @@
 :root {
   --radius: 1.15rem;
 
-  /* Premium Cinematic Palette — Modern Luxury */
-  --bg-1: #0A0A0A;
-  --bg-2: #121212;
-  --bg-3: #1A1A1A;
-  --bg-4: #242424;
-  --bg-5: #2E2E2E;
+  /* Moonlit Crimson Palette — Cinematic Japan */
+  --midnight-navy: #050B16;
+  --moonlit-navy: #0B1729;
+  --steel-blue: #263E52;
+  --primary-crimson: #E31937;
+  --bright-crimson: #FF304F;
+  --deep-burgundy: #6E0D21;
+  --moonlight-white: #F5F3EE;
+  --cool-silver: #B9C2CC;
+  --muted-blue-gray: #718093;
+  --near-black: #02050A;
 
-  /* Refined Gold & Metallic Accents */
-  --gold-1: #E5C366;
-  --gold-2: #D4AF37;
-  --gold-3: #B8860B;
-  --bronze: #8C6239;
-  --copper: #A57C5B;
+  --background: var(--midnight-navy);
+  --foreground: var(--moonlight-white);
 
-  --profit: #22C55E;
-  --loss: #EF4444;
-  --amber: #FBBF24;
-  --info: #60A5FA;
+  --card: rgba(5, 11, 22, 0.68);
+  --card-foreground: var(--moonlight-white);
+  --popover: var(--moonlit-navy);
+  --popover-foreground: var(--moonlight-white);
 
-  --background: #0A0A0A;
-  --foreground: #F8FAFC;
+  --primary: var(--primary-crimson);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--steel-blue);
+  --secondary-foreground: var(--moonlight-white);
+  --muted: var(--near-black);
+  --muted-foreground: var(--muted-blue-gray);
+  --accent: var(--bright-crimson);
+  --accent-foreground: #FFFFFF;
 
-  --card: rgba(26, 26, 26, 0.6);
-  --card-foreground: #F8FAFC;
-  --popover: #121212;
-  --popover-foreground: #F8FAFC;
+  --destructive: var(--deep-burgundy);
+  --destructive-foreground: #FFFFFF;
 
-  --primary: #E5C366;                        /* Soft Gold */
-  --primary-foreground: #0A0A0A;
-  --secondary: #1E293B;
-  --secondary-foreground: #F8FAFC;
-  --muted: #1A1A1A;
-  --muted-foreground: #94A3B8;
-  --accent: #FDE047;                         /* Highlight Gold */
-  --accent-foreground: #0A0A0A;
+  --border: rgba(245, 243, 238, 0.1);
+  --input: rgba(245, 243, 238, 0.05);
+  --ring: var(--primary-crimson);
 
-  --destructive: #7F1D1D;
-  --destructive-foreground: #F8FAFC;
-
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.05);
-  --ring: #E5C366;
-
-  /* Semantic hues repurposed */
+  /* Semantic Hues Repurposed */
   --leaf: #4ADE80;
   --sunrise: #FDE047;
-  --sky: #E2E8F0;
+  --sky: var(--cool-silver);
   --loam: #B45309;
-  --monsoon: #60A5FA;
+  --monsoon: var(--steel-blue);
 
-  --glass-bg: rgba(18, 18, 18, 0.7);
-  --glass-border: rgba(229, 195, 102, 0.2);
+  --glass-bg: rgba(5, 11, 22, 0.68);
+  --glass-border: rgba(227, 25, 55, 0.2);
   --shadow-glow:
-    0 0 50px -10px rgba(229, 195, 102, 0.3),
-    0 0 25px -10px rgba(253, 224, 71, 0.2);
+    0 0 50px -10px rgba(227, 25, 55, 0.35),
+    0 0 25px -10px rgba(255, 48, 79, 0.25);
   --shadow-elegant:
     0 25px 50px -12px rgba(0, 0, 0, 0.7),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --gradient-hero:
-    radial-gradient(1200px 700px at 15% 10%, rgba(229, 195, 102, 0.08), transparent 70%),
-    radial-gradient(1000px 600px at 85% 20%, rgba(180, 83, 9, 0.06), transparent 70%),
-    linear-gradient(180deg, #0A0A0A 0%, #121212 100%);
-  --gradient-primary: linear-gradient(135deg, #E5C366 0%, #D4AF37 100%);
-  --gradient-gold: linear-gradient(135deg, #FDE047, #E5C366 50%, #D4AF37);
-  --gradient-cool: linear-gradient(135deg, #1E293B, #0F172A);
-  --gradient-aurora: conic-gradient(from 180deg at 50% 50%,
-    rgba(229, 195, 102, 0.4),
-    rgba(253, 224, 71, 0.4),
-    rgba(180, 83, 9, 0.3),
-    rgba(226, 232, 240, 0.1),
-    rgba(229, 195, 102, 0.4));
 
+  --gradient-hero: linear-gradient(180deg, var(--midnight-navy) 0%, var(--near-black) 100%);
+  --gradient-primary: linear-gradient(135deg, var(--bright-crimson) 0%, var(--primary-crimson) 100%);
+  --gradient-crimson: linear-gradient(135deg, var(--bright-crimson), var(--primary-crimson) 50%, var(--deep-burgundy));
+  --gradient-atmospheric: linear-gradient(135deg, var(--steel-blue), var(--moonlit-navy));
+  --gradient-aurora: conic-gradient(from 180deg at 50% 50%,
+    rgba(227, 25, 55, 0.4),
+    rgba(255, 48, 79, 0.4),
+    rgba(110, 13, 33, 0.3),
+    rgba(38, 62, 82, 0.1),
+    rgba(227, 25, 55, 0.4));
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* Neo-Glassmorphism Tokens — Sophisticated Depth */
-  --neo-glass-bg: rgba(15, 15, 15, 0.55);
-  --neo-glass-blur: 32px;
-  --neo-glass-border: rgba(255, 255, 255, 0.08);
+  /* Neo-Glassmorphism Tokens — Crimson Depth */
+  --neo-glass-bg: rgba(5, 11, 22, 0.68);
+  --neo-glass-blur: 18px;
+  --neo-glass-border: rgba(245, 243, 238, 0.1);
   --neo-glass-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.8);
   --neo-glass-highlight: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%, rgba(255, 255, 255, 0.02) 100%);
-
 }
 
 
@@ -157,7 +147,7 @@
 @utility glass {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(var(--neo-glass-blur)) saturate(150%);
   border-radius: var(--radius-2xl);
 }
 
@@ -166,11 +156,11 @@
 }
 
 @utility text-gradient {
-  background: var(--gradient-gold);
+  background: var(--gradient-crimson);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 24px rgba(212, 175, 55, 0.25);
+  text-shadow: 0 0 24px rgba(227, 25, 55, 0.35);
 }
 
 @utility card-elegant {
@@ -188,29 +178,29 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.65), transparent);
+    background: linear-gradient(90deg, transparent, rgba(227, 25, 55, 0.65), transparent);
     border-radius: inherit;
     pointer-events: none;
   }
-  &:hover { border-color: rgba(212,175,55,0.35); }
+  &:hover { border-color: rgba(227, 25, 55, 0.35); }
 }
 
 @utility gold-border {
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  border: 1px solid rgba(227, 25, 55, 0.35);
 }
 
 @utility btn-gold {
-  background: var(--gradient-gold);
+  background: var(--gradient-crimson);
   color: #111111;
   font-weight: 700;
   letter-spacing: 0.02em;
-  box-shadow: 0 8px 24px -8px rgba(212, 175, 55, 0.55), inset 0 1px 0 rgba(255,255,255,0.25);
+  box-shadow: 0 8px 24px -8px rgba(227, 25, 55, 0.55), inset 0 1px 0 rgba(255,255,255,0.25);
   transition: transform .25s var(--ease-out-expo), box-shadow .25s ease, filter .25s ease;
-  &:hover { filter: brightness(1.05); box-shadow: 0 12px 32px -8px rgba(241, 199, 91, 0.7), inset 0 1px 0 rgba(255,255,255,0.35); transform: translateY(-1px); }
+  &:hover { filter: brightness(1.05); box-shadow: 0 12px 32px -8px rgba(255, 48, 79, 0.7), inset 0 1px 0 rgba(255,255,255,0.35); transform: translateY(-1px); }
 }
 
 @utility metallic-text {
-  background: linear-gradient(180deg, #F1C75B 0%, #D4AF37 45%, #8b6b1f 100%);
+  background: linear-gradient(180deg, var(--bright-crimson) 0%, var(--primary-crimson) 45%, var(--deep-burgundy) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -401,7 +391,7 @@ div:has(> iframe[src*="lovable.dev"]) {
     z-index: 1;
     background:
       radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%),
-      radial-gradient(1200px 800px at 50% -10%, rgba(212,175,55,0.06), transparent 60%);
+      radial-gradient(1200px 800px at 50% -10%, rgba(227,25,55,0.06), transparent 60%);
   }
   /* Film grain — cinematic luxury texture */
   body::after {
@@ -414,6 +404,15 @@ div:has(> iframe[src*="lovable.dev"]) {
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/></svg>");
   }
+
+  @font-face {
+    font-family: 'Japan Ramen';
+    src: url('/fonts/JapanRamen.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
   h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
   ::selection { background: color-mix(in oklab, var(--primary) 55%, transparent); color: var(--color-foreground); }
 

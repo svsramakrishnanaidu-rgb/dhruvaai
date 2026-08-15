@@ -4,7 +4,7 @@ import mobileVideo from "@/assets/intro-mobile.mp4.asset.json";
 import desktopVideo from "@/assets/intro-desktop.mp4.asset.json";
 
 const MOBILE_BP = 768;
-const PLAYED_KEY = "krishsense_intro_played_v1";
+const PLAYED_KEY = "krishsense_intro_played_crimson_v1";
 
 export function CinematicLoader() {
   // Mount-gated: nothing renders during SSR / first hydration pass, so the

@@ -36,14 +36,15 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-[70dvh] items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="font-display text-8xl font-black text-gradient">404</h1>
-        <h2 className="mt-4 text-xl font-semibold">This field is fallow</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h1 className="font-display text-8xl font-black text-primary-crimson drop-shadow-[0_0_15px_rgba(227,25,55,0.4)]">404</h1>
+        <h2 className="mt-4 text-xl font-black text-moonlight-white">THIS FIELD IS FALLOW</h2>
+        <p className="mt-2 text-sm text-muted-blue-gray uppercase tracking-widest font-bold">
           The page you're looking for hasn't been sown yet.
         </p>
         <Link
           to="/"
-          className="mt-6 inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:brightness-110"
+          className="mt-8 inline-flex items-center justify-center rounded-full bg-primary-crimson px-8 py-3 text-xs font-black uppercase tracking-widest text-white transition-all hover:brightness-110 hover:scale-105"
+          style={{ boxShadow: "var(--shadow-glow)" }}
         >
           Return home
         </Link>
@@ -61,16 +62,17 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-[70dvh] items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight">Something wilted</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Try again or head home.</p>
-        <div className="mt-6 flex justify-center gap-2">
+        <h1 className="text-xl font-black tracking-widest uppercase text-primary-crimson">SOMETHING WILTED</h1>
+        <p className="mt-2 text-sm text-muted-blue-gray font-bold uppercase tracking-widest">Try again or head home.</p>
+        <div className="mt-8 flex justify-center gap-3">
           <button
             onClick={() => { router.invalidate(); reset(); }}
-            className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:brightness-110"
+            className="rounded-full bg-primary-crimson px-8 py-3 text-xs font-black uppercase tracking-widest text-white hover:brightness-110 transition-all"
+            style={{ boxShadow: "var(--shadow-glow)" }}
           >
             Try again
           </button>
-          <a href="/" className="rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-secondary">
+          <a href="/" className="rounded-full border border-white/10 bg-white/5 px-8 py-3 text-xs font-black uppercase tracking-widest text-moonlight-white hover:bg-white/10 transition-all">
             Go home
           </a>
         </div>
@@ -84,7 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#111111" },
+      { name: "theme-color", content: "#050B16" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },

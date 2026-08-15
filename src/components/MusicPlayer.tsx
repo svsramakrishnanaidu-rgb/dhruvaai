@@ -404,16 +404,16 @@ export function MusicPlayer() {
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
           onDrop={onDrop}
-          className={`glass relative w-[min(92vw,380px)] rounded-2xl p-3 shadow-elegant ${dragOver ? "ring-2 ring-primary" : ""}`}
+          className={`neo-glass relative w-[min(92vw,380px)] rounded-[2rem] p-4 border border-white/10 shadow-2xl ${dragOver ? "ring-2 ring-primary-crimson" : ""}`}
         >
           {/* Header now-playing */}
-          <div className="flex items-center gap-2">
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary/60 to-accent/60">
-              <ListMusic className="h-5 w-5 text-primary-foreground" />
+          <div className="flex items-center gap-3">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-primary-crimson to-bright-crimson shadow-lg shadow-primary-crimson/20">
+              <ListMusic className="h-6 w-6 text-white" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-semibold">{currentTrack?.name ?? "—"}</div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <div className="truncate text-sm font-black uppercase tracking-tight text-moonlight-white">{currentTrack?.name ?? "—"}</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-blue-gray">
                 {currentTrack?.format} · {fmtSize(currentTrack?.size ?? 0)} · {fmtTime(duration)}
               </div>
             </div>
@@ -438,7 +438,7 @@ export function MusicPlayer() {
                 if (audioRef.current) audioRef.current.currentTime = v;
                 setProgress(v);
               }}
-              className="h-1 w-full cursor-pointer accent-primary"
+              className="h-1 w-full cursor-pointer accent-primary-crimson"
               aria-label="Seek"
             />
             <div className="mt-0.5 flex justify-between text-[10px] tabular-nums text-muted-foreground">
@@ -449,31 +449,32 @@ export function MusicPlayer() {
           {/* Transport */}
           <div className="mt-2 flex items-center justify-between">
             <div className="flex items-center gap-1">
-              <button onClick={() => setShuffle((s) => !s)} aria-pressed={shuffle} className={`grid h-8 w-8 place-items-center rounded-full ${shuffle ? "text-primary" : "text-muted-foreground hover:text-foreground"}`} title="Shuffle">
+              <button onClick={() => setShuffle((s) => !s)} aria-pressed={shuffle} className={`grid h-8 w-8 place-items-center rounded-full ${shuffle ? "text-primary-crimson" : "text-muted-blue-gray hover:text-moonlight-white"}`} title="Shuffle">
                 <Shuffle className="h-4 w-4" />
               </button>
-              <button onClick={prevTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:text-foreground" title="Previous">
+              <button onClick={prevTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-blue-gray hover:text-moonlight-white" title="Previous">
                 <SkipBack className="h-4 w-4" />
               </button>
-              <button onClick={playPause} className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground hover:brightness-110" title={playing ? "Pause" : "Play"}>
+              <button onClick={playPause} className="grid h-10 w-10 place-items-center rounded-full bg-primary-crimson text-white hover:brightness-110 shadow-lg shadow-primary-crimson/20" title={playing ? "Pause" : "Play"}>
                 {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </button>
-              <button onClick={nextTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:text-foreground" title="Next">
+              <button onClick={nextTrack} className="grid h-8 w-8 place-items-center rounded-full text-muted-blue-gray hover:text-moonlight-white" title="Next">
                 <SkipForward className="h-4 w-4" />
               </button>
-              <button onClick={() => setLoop((l) => !l)} aria-pressed={loop} className={`grid h-8 w-8 place-items-center rounded-full ${loop ? "text-primary" : "text-muted-foreground hover:text-foreground"}`} title="Loop">
+              <button onClick={() => setLoop((l) => !l)} aria-pressed={loop} className={`grid h-8 w-8 place-items-center rounded-full ${loop ? "text-primary-crimson" : "text-muted-blue-gray hover:text-moonlight-white"}`} title="Loop">
                 <Repeat className="h-4 w-4" />
               </button>
             </div>
             <div className="flex items-center gap-1.5">
-              <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute" : "Mute"} className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground hover:text-foreground">
+              <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute" : "Mute"} className="grid h-7 w-7 place-items-center rounded-full text-muted-blue-gray hover:text-moonlight-white">
                 {muted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               </button>
               <input
                 type="range" min={0} max={1} step={0.01}
+                className="w-20 h-1 cursor-pointer accent-primary-crimson"
                 value={muted ? 0 : volume}
                 onChange={(e) => { const v = parseFloat(e.target.value); setVolume(v); if (v > 0 && muted) setMuted(false); }}
-                className="h-1 w-20 cursor-pointer accent-primary" aria-label="Volume"
+                aria-label="Volume"
               />
             </div>
           </div>
@@ -501,13 +502,13 @@ export function MusicPlayer() {
               <input
                 value={query} onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search library"
-                className="w-full rounded-full border border-border/60 bg-background/60 py-1.5 pl-7 pr-2 text-xs outline-none focus:border-primary"
+                className="w-full rounded-full border border-white/10 bg-midnight-navy/60 py-1.5 pl-7 pr-2 text-[10px] font-bold uppercase tracking-widest text-moonlight-white outline-none focus:border-primary-crimson transition-colors"
               />
             </div>
             <select
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as SortKey)}
-              className="rounded-full border border-border/60 bg-background/60 px-2 py-1.5 text-xs outline-none focus:border-primary"
+              className="rounded-full border border-white/10 bg-midnight-navy/60 px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-moonlight-white outline-none focus:border-primary-crimson transition-colors"
               aria-label="Sort"
             >
               <option value="date">Date</option>
@@ -536,9 +537,9 @@ export function MusicPlayer() {
             {filtered.map((t) => {
               const isActive = t.id === currentId;
               return (
-                <div key={t.id} className={`group flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs ${isActive ? "bg-primary/15" : "hover:bg-secondary/50"}`}>
-                  <button onClick={() => goto(t.id)} className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-secondary/70 text-foreground">
-                    {isActive && playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                <div key={t.id} className={`group flex items-center gap-3 rounded-xl px-2.5 py-2 text-xs transition-all ${isActive ? "bg-primary-crimson/15 border border-primary-crimson/20" : "hover:bg-white/5 border border-transparent"}`}>
+                  <button onClick={() => goto(t.id)} className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition-all ${isActive ? "bg-primary-crimson text-white shadow-lg shadow-primary-crimson/30" : "bg-white/10 text-moonlight-white"}`}>
+                    {isActive && playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                   </button>
                   <div className="min-w-0 flex-1">
                     {renameId === t.id ? (
