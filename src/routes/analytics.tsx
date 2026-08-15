@@ -343,10 +343,10 @@ function Analytics() {
         <div className="mt-4 h-80">
           <ResponsiveContainer>
             <RadarChart data={macroRadar}>
-              <PolarGrid stroke="var(--border)" />
-              <PolarAngleAxis dataKey="category" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-              <PolarRadiusAxis tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} />
-              <Radar name="Area (Lakh Ha)" dataKey="Area" stroke="var(--leaf)" fill="var(--leaf)" fillOpacity={0.35} />
+              <PolarGrid stroke="rgba(255,255,255,0.05)" />
+              <PolarAngleAxis dataKey="category" tick={{ fill: "var(--muted-blue-gray)", fontSize: 10, fontWeight: "bold" }} />
+              <PolarRadiusAxis tick={{ fill: "var(--muted-blue-gray)", fontSize: 9 }} />
+              <Radar name="Area (Lakh Ha)" dataKey="Area" stroke="var(--primary-crimson)" fill="var(--primary-crimson)" fillOpacity={0.3} />
               <Radar name="Output (÷5)" dataKey="Output" stroke="var(--sunrise)" fill="var(--sunrise)" fillOpacity={0.35} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }} />
