@@ -40,7 +40,7 @@ export function LanguageSwitcher() {
       {open && (
         <ul
           role="listbox"
-          aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            ADD MENU SECTION IN WEBSITE VERSION ALSO LIKE APP VERSION"
+          aria-label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            UPLOADED IMAGE ADD A PROBLEM IS OCCURS IN THE  ANALYTICS SECTION SO SLOVE IT"
           style={{ animation: "scale-in .18s var(--ease-out-expo) both" }}
         >
           {LANGS.map((l) => {

@@ -50,7 +50,7 @@ Schema:
 export const generateMarketInsights = createServerFn({ method: "POST" })
   .validator((input: { snapshot: MarketInsightSummary[]; scope?: string }) => input)
   .handler(async ({ data }): Promise<MarketInsights> => {
-    const endpoint = resolveAiEndpoint("fast");
+    const endpoint = resolveAiEndpoint("smart");
     const emptyLangs = { en: "", te: "", hi: "" };
     const emptyLists = { en: [], te: [], hi: [] };
     const empty: MarketInsights = {
