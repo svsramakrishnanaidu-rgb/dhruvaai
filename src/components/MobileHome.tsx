@@ -178,24 +178,24 @@ function HeaderIcon({
    ============================================================ */
 function HeroTile() {
   return (
-    <div className="neo-glass-card relative col-span-2 overflow-hidden px-7 py-8">
+    <div className="neo-glass-card relative col-span-2 overflow-hidden px-8 py-10 border border-white/10">
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
-        style={{ background: "color-mix(in oklab, var(--accent) 35%, transparent)" }}
+        className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full blur-[80px]"
+        style={{ background: "rgba(227, 25, 55, 0.15)" }}
       />
-      <h1 className="font-display mb-3 text-[36px] uppercase leading-[0.95] tracking-tighter">
-        <span className="text-white">KRISH</span><br /><span className="text-gradient">SENSE</span>
+      <h1 className="font-display mb-6 text-6xl font-black uppercase leading-[0.9] tracking-tighter">
+        <span className="text-white">KRISH</span><br /><span className="text-primary-crimson">SENSE</span>
       </h1>
-      <p className="mb-5 max-w-[220px] text-xs leading-relaxed text-muted-foreground">
+      <p className="mb-8 max-w-[240px] text-sm font-medium leading-relaxed text-muted-blue-gray/90">
         Precision agricultural intelligence, forged for the modern Indian farmer.
       </p>
       <Link
         to="/crops"
-        className="btn-gold font-display inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-[12px] uppercase tracking-widest active:scale-95"
+        className="group inline-flex items-center gap-3 rounded-2xl bg-primary-crimson px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-white active:scale-95 transition-all shadow-[0_10px_30px_-10px_rgba(227,25,55,0.4)]"
       >
         Explore Crops
-        <ArrowRight className="h-4 w-4" />
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
       </Link>
 
     </div>
