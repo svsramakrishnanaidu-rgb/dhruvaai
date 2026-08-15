@@ -89,16 +89,15 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
       <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-3 sm:px-4">
         <div
           className={`flex min-w-0 flex-1 items-center gap-1 rounded-full border px-2 py-1.5 transition-all sm:px-3 sm:py-2 ${
-            scrolled ? "glass shadow-elegant" : "glass"
+            scrolled ? "web-glass shadow-elegant" : "web-glass border-web-leaf/20"
           }`}
-          style={{ boxShadow: scrolled ? "var(--shadow-elegant)" : undefined }}
         >
           <Link to="/" aria-label="Krish Sense home" className="flex shrink-0 items-center gap-2 pr-1 sm:pr-2">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-accent shadow-lg">
-              <Sprout className="h-5 w-5 text-primary-foreground" aria-hidden />
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-web-emerald to-web-leaf shadow-lg shadow-web-emerald/30">
+              <Sprout className="h-5 w-5 text-web-mist" aria-hidden />
             </div>
             <span className="hidden font-display text-lg font-bold tracking-tight xs:inline sm:inline">
-              Krish <span className="text-gradient">Sense</span>
+              Krish <span className="web-text-gold">Sense</span>
             </span>
           </Link>
 
@@ -113,10 +112,10 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                   key={item.to}
                   to={item.to}
                   aria-current={active ? "page" : undefined}
-                  className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                  className={`relative rounded-full px-3 py-1.5 text-sm font-semibold transition-colors font-[Plus Jakarta Sans] ${
                     active
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "text-web-mist"
+                      : "text-web-sage hover:text-web-mist"
                   }`}
                 >
                   {active && (
@@ -124,8 +123,8 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
                       aria-hidden
                       className="absolute inset-0 -z-10 rounded-full"
                       style={{
-                        background: "color-mix(in oklab, var(--primary) 22%, transparent)",
-                        boxShadow: "inset 0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent)",
+                        background: "color-mix(in oklab, var(--web-emerald) 35%, transparent)",
+                        boxShadow: "inset 0 0 0 1px color-mix(in oklab, var(--web-emerald) 65%, transparent)",
                       }}
                     />
                   )}

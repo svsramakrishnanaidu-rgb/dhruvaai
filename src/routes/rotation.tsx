@@ -29,7 +29,7 @@ function Rotation() {
   const N = wheel.length;
 
   return (
-    <div>
+    <div className="relative min-h-screen bg-web-bg-midnight font-[Plus Jakarta Sans]">
       <HeroBanner
         image={heroImg}
         eyebrow="Sustainability"
@@ -45,10 +45,10 @@ function Rotation() {
               <button
                 key={c.slug}
                 onClick={() => setSlug(c.slug)}
-                className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                className={`shrink-0 rounded-full border px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
                   slug === c.slug
-                    ? "border-primary bg-primary/15 text-foreground"
-                    : "border-border/60 text-muted-foreground hover:text-foreground"
+                    ? "border-web-emerald bg-web-emerald/20 text-web-mist"
+                    : "border-web-leaf/10 text-web-sage hover:bg-web-emerald/10 hover:text-web-gold"
                 }`}
               >
                 {c.emoji} {c.name}
@@ -165,19 +165,19 @@ function Rotation() {
         </div>
 
         {/* DESKTOP — original wheel */}
-        <div className="mt-12 hidden gap-10 sm:grid lg:grid-cols-[1fr_1.2fr]">
+        <div className="mt-12 hidden gap-10 sm:grid lg:grid-cols-[1fr_1.2fr] font-[Plus Jakarta Sans]">
           <div className="relative aspect-square">
             <div
               className="absolute inset-4 rounded-full"
               style={{
-                background: "conic-gradient(from 0deg, var(--leaf), var(--sunrise), var(--sky), var(--leaf))",
-                filter: "blur(40px)",
-                opacity: 0.35,
+                background: "conic-gradient(from 0deg, var(--web-emerald), var(--web-gold), var(--web-leaf), var(--web-emerald))",
+                filter: "blur(60px)",
+                opacity: 0.2,
                 animation: "gradient-shift 14s linear infinite",
               }}
             />
             <div
-              className="absolute inset-0 rounded-full border border-border/60"
+              className="absolute inset-0 rounded-full border border-web-leaf/20"
               style={{ animation: "float-y 6s ease-in-out infinite" }}
             />
             <div className="absolute inset-0">
@@ -192,36 +192,36 @@ function Rotation() {
                     }}
                   >
                     <div
-                      className="card-elegant hover-lift grid w-40 place-items-center gap-1 p-4 text-center"
+                      className="web-glass hover-lift grid w-40 place-items-center gap-1 p-4 text-center border-web-leaf/10"
                       style={{ animation: `scale-in 0.5s var(--ease-spring) ${i * 100}ms both` }}
                     >
                       <div className="text-3xl">{w.emoji ?? "🌱"}</div>
-                      <div className="font-semibold">{w.name}</div>
-                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{w.meta ?? (w as any).season}</div>
+                      <div className="font-[Unbounded] text-sm font-black text-web-mist uppercase">{w.name}</div>
+                      <div className="text-[9px] font-black uppercase tracking-widest text-web-sage">{w.meta ?? (w as any).season}</div>
                     </div>
                   </div>
                 );
               })}
             </div>
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-primary to-accent p-6 shadow-xl">
-              <Recycle className="h-8 w-8 text-primary-foreground" />
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-web-emerald to-web-emerald/50 p-6 shadow-xl shadow-web-emerald/20">
+              <Recycle className="h-8 w-8 text-web-mist" />
             </div>
           </div>
 
           <div>
-            <h2 className="font-display text-2xl font-bold">Why rotate from {crop.name}?</h2>
+            <h2 className="font-[Unbounded] text-2xl font-black text-web-mist">Why rotate from {crop.name}?</h2>
             <div className="mt-4 space-y-3">
               {crop.rotation.map((r, i) => (
                 <Reveal key={r.crop} delay={i * 80}>
-                  <div className="card-elegant p-5">
+                  <div className="web-glass p-5 border-web-leaf/10 hover:border-web-emerald/30 transition-all">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold">{r.crop}</h3>
-                      <div className="flex gap-1 text-xs">
-                        <span className="rounded-full border border-border/60 px-2 py-0.5">{r.season}</span>
-                        <span className="rounded-full border border-border/60 px-2 py-0.5">{r.gapDays}d</span>
+                      <h3 className="font-[Unbounded] text-base font-black text-web-mist uppercase tracking-tight">{r.crop}</h3>
+                      <div className="flex gap-1 text-[9px] font-black uppercase tracking-widest">
+                        <span className="rounded-full border border-web-leaf/20 bg-web-bg-midnight/40 px-2 py-0.5 text-web-sage">{r.season}</span>
+                        <span className="rounded-full border border-web-leaf/20 bg-web-bg-midnight/40 px-2 py-0.5 text-web-sage">{r.gapDays}d</span>
                       </div>
                     </div>
-                    <p className="mt-2 text-sm text-muted-foreground">{r.benefit}</p>
+                    <p className="mt-2 text-xs font-bold leading-relaxed text-web-sage">{r.benefit}</p>
                   </div>
                 </Reveal>
               ))}

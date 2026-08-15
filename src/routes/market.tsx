@@ -145,16 +145,17 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
   const [imgError, setImgError] = useState(false);
   
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/60 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-elegant">
-      <div className="relative aspect-video w-full overflow-hidden bg-muted/20">
+    <article className="web-glass group relative overflow-hidden rounded-3xl border-web-leaf/10 transition-all duration-500 hover:-translate-y-2 hover:border-web-emerald/30 hover:shadow-2xl font-[Plus Jakarta Sans]">
+      <div className="relative aspect-video w-full overflow-hidden bg-web-bg-midnight/20">
         <img 
           src={imgError ? IMAGE_PRESETS.crop(s.commodity) : IMAGE_PRESETS.market(s.commodity)} 
           alt={s.commodity} 
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
+          className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+
           loading="lazy"
           onError={() => setImgError(true)}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-web-bg-midnight/90 via-transparent to-transparent" />
         <div className="absolute right-3 top-3">
           <button onClick={onFav} aria-label={isFav ? "Remove favourite" : "Add favourite"} className="rounded-full bg-black/40 p-2 text-white backdrop-blur-md transition hover:bg-black/60 hover:text-primary">
             <Star className={`h-4 w-4 ${isFav ? "fill-primary text-primary" : ""}`} />
@@ -162,12 +163,12 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
         </div>
       </div>
       <div className="p-4">
-      <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-web-emerald/10 blur-3xl" />
       <header className="flex items-start justify-between gap-2">
         <button onClick={onOpen} className="min-w-0 flex-1 text-left">
-          <h3 className="truncate font-display text-base font-bold leading-tight">{s.commodity}</h3>
-          <div className="mt-1 flex items-center gap-1 truncate text-[11px] text-muted-foreground">
-            <MapPin className="h-3 w-3 shrink-0" />
+          <h3 className="truncate font-[Unbounded] text-base font-black leading-tight text-web-mist">{s.commodity}</h3>
+          <div className="mt-1 flex items-center gap-1 truncate text-[10px] font-bold uppercase tracking-wider text-web-sage">
+            <MapPin className="h-3 w-3 shrink-0 text-web-gold" />
             <span className="truncate">{s.topMandi ? `${s.topMandi.market}, ${s.topMandi.state}` : "—"}</span>
           </div>
         </button>
@@ -176,11 +177,11 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
       <button onClick={onOpen} className="mt-3 block w-full text-left">
         <div className="flex items-end justify-between gap-2">
           <div className="min-w-0">
-            <div className="flex items-baseline gap-1 font-display text-2xl font-black tabular-nums">
-              <IndianRupee className="h-4 w-4 text-primary" />
+            <div className="flex items-baseline gap-1 font-[Unbounded] text-2xl font-black tabular-nums text-web-mist">
+              <IndianRupee className="h-4 w-4 text-web-gold" />
               <AnimatedNumber value={s.modal} />
             </div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.markets} mandis · ₹/Q</div>
+            <div className="text-[10px] font-black uppercase tracking-widest text-web-sage">{s.markets} mandis · ₹/Q</div>
           </div>
 
           <div className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-bold tabular-nums ${t.cls}`}>
@@ -189,9 +190,9 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
         </div>
 
         <div className="mt-2 grid grid-cols-3 gap-1 text-[10px]">
-          <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Min</span><div className="font-semibold tabular-nums">{fmtINR(s.min)}</div></div>
-          <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Max</span><div className="font-semibold tabular-nums">{fmtINR(s.max)}</div></div>
-          <div className="rounded-lg bg-background/50 px-2 py-1"><span className="text-muted-foreground">Volume</span><div className="font-semibold tabular-nums">{s.arrivals}</div></div>
+          <div className="rounded-xl border border-web-leaf/10 bg-web-bg-midnight/30 px-2 py-1.5"><span className="text-[9px] font-bold uppercase tracking-tighter text-web-sage">Min</span><div className="font-[Unbounded] text-[11px] font-black tabular-nums text-web-mist">{fmtINR(s.min)}</div></div>
+          <div className="rounded-xl border border-web-leaf/10 bg-web-bg-midnight/30 px-2 py-1.5"><span className="text-[9px] font-bold uppercase tracking-tighter text-web-sage">Max</span><div className="font-[Unbounded] text-[11px] font-black tabular-nums text-web-mist">{fmtINR(s.max)}</div></div>
+          <div className="rounded-xl border border-web-leaf/10 bg-web-bg-midnight/30 px-2 py-1.5"><span className="text-[9px] font-bold uppercase tracking-tighter text-web-sage">Volume</span><div className="font-[Unbounded] text-[11px] font-black tabular-nums text-web-mist">{s.arrivals}</div></div>
         </div>
 
         <div className="mt-2 -mx-1 h-14">
@@ -211,12 +212,12 @@ function CropCard({ s, isFav, onFav, onOpen }: { s: CommoditySummary; isFav: boo
         </div>
       </button>
 
-      <footer className="mt-2 flex items-center justify-between border-t border-border/40 pt-2 text-[10px] text-muted-foreground">
+      <footer className="mt-2 flex items-center justify-between border-t border-web-leaf/10 pt-2 text-[9px] font-bold uppercase tracking-widest text-web-sage">
         <span className="inline-flex items-center gap-1">
-          <span className={`h-1.5 w-1.5 rounded-full ${s.fresh ? "bg-emerald-400 animate-pulse" : "bg-muted-foreground/50"}`} />
+          <span className={`h-1.5 w-1.5 rounded-full ${s.fresh ? "bg-web-emerald animate-pulse" : "bg-web-sage/30"}`} />
           {s.fresh ? "LIVE" : "STALE"}
         </span>
-        <span className="tabular-nums">{s.markets} mandis · {s.states} states</span>
+        <span className="tabular-nums">{s.markets} markets</span>
         <span className="tabular-nums">{s.lastArrival}</span>
       </footer>
       </div>
@@ -243,23 +244,23 @@ function DetailDrawer({ s, updated, onClose, onAlert }: {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-background/70 backdrop-blur-sm" role="dialog" aria-label={`${s.commodity} market detail`}>
+    <div className="fixed inset-0 z-50 flex justify-end bg-web-bg-midnight/70 backdrop-blur-md font-[Plus Jakarta Sans]" role="dialog" aria-label={`${s.commodity} market detail`}>
       <button className="flex-1" aria-label="Close detail" onClick={onClose} />
-      <div className="h-full w-full max-w-2xl overflow-y-auto border-l border-border/60 bg-card/95 p-4 sm:p-6 shadow-2xl">
+      <div className="h-full w-full max-w-2xl overflow-y-auto border-l border-web-leaf/10 bg-web-bg-midnight/95 p-4 sm:p-6 shadow-2xl backdrop-blur-2xl">
         <div className="relative mb-6 -mx-4 -mt-4 aspect-video sm:-mx-6 sm:-mt-6">
           <DetailImage commodity={s.commodity} />
-          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-web-bg-midnight via-web-bg-midnight/20 to-transparent" />
         </div>
 
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
-              <Radio className="h-3 w-3 animate-pulse" /> {s.category} · Live
+            <div className="inline-flex items-center gap-2 rounded-full bg-web-emerald/20 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-web-emerald">
+              <Radio className="h-3 w-3 animate-pulse text-web-gold" /> {s.category} · Live
             </div>
-            <h2 className="mt-2 truncate font-display text-2xl font-black">{s.commodity}</h2>
-            <p className="text-xs text-muted-foreground">Arrival {s.lastArrival} · updated {timeAgo(updated)} · Agmarknet (DMI)</p>
+            <h2 className="mt-2 truncate font-[Unbounded] text-2xl font-black text-web-mist">{s.commodity}</h2>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-web-sage">Arrival {s.lastArrival} · updated {timeAgo(updated)} · Agmarknet (DMI)</p>
           </div>
-          <button onClick={onClose} aria-label="Close" className="rounded-full p-2 text-muted-foreground hover:bg-secondary/60"><X className="h-4 w-4" /></button>
+          <button onClick={onClose} aria-label="Close" className="rounded-full p-2 text-web-sage hover:bg-web-emerald/10 hover:text-web-gold transition-all"><X className="h-4 w-4" /></button>
         </div>
 
         {/* Price block */}
@@ -270,44 +271,44 @@ function DetailDrawer({ s, updated, onClose, onAlert }: {
             { k: "Maximum", v: fmtINR(s.max) },
             { k: "Window Avg", v: fmtINR(s.avgAll) },
           ].map((x) => (
-            <div key={x.k} className="rounded-xl border border-border/60 bg-background/50 p-3">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{x.k}</div>
-              <div className="font-display text-lg font-black tabular-nums">{x.v}</div>
+            <div key={x.k} className="rounded-2xl border border-web-leaf/10 bg-web-bg-midnight/40 p-3">
+              <div className="text-[9px] font-black uppercase tracking-widest text-web-gold">{x.k}</div>
+              <div className="font-[Unbounded] text-lg font-black tabular-nums text-web-mist">{x.v}</div>
             </div>
           ))}
         </div>
 
         <div className="mt-2 flex flex-wrap gap-2 text-xs">
-          <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-bold tabular-nums ${t.cls}`}><t.Icon className="h-3 w-3" /> Daily {pctText(s.deltaPct)}</span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/50 px-2.5 py-1 tabular-nums">Weekly {pctText(s.weekPct)}</span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/50 px-2.5 py-1 tabular-nums">Monthly {pctText(s.monthPct)}</span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/50 px-2.5 py-1 tabular-nums"><Gauge className="h-3 w-3" /> Volatility {s.volatilityPct.toFixed(1)}%</span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/50 px-2.5 py-1">Demand {s.demand} · Supply {s.supply}</span>
+          <span className={`inline-flex items-center gap-1 rounded-full border border-web-leaf/20 bg-web-bg-midnight/40 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest tabular-nums ${t.cls}`}><t.Icon className="h-3 w-3" /> Daily {pctText(s.deltaPct)}</span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-web-leaf/20 bg-web-bg-midnight/40 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest tabular-nums text-web-sage">Weekly {pctText(s.weekPct)}</span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-web-leaf/20 bg-web-bg-midnight/40 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest tabular-nums text-web-sage">Monthly {pctText(s.monthPct)}</span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-web-leaf/20 bg-web-bg-midnight/40 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest tabular-nums text-web-sage"><Gauge className="h-3 w-3" /> Volatility {s.volatilityPct.toFixed(1)}%</span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-web-leaf/20 bg-web-bg-midnight/40 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-web-sage">Demand {s.demand} · Supply {s.supply}</span>
         </div>
 
         {/* AI advice */}
-        <div className="mt-4 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+        <div className="mt-4 rounded-[2rem] border border-web-emerald/30 bg-web-emerald/5 p-4">
           <div className="flex items-center justify-between gap-2">
-            <div className="inline-flex items-center gap-2 text-sm font-bold text-primary"><Sparkles className="h-4 w-4" /> AI Market Signal</div>
-            <span className={`rounded-full px-3 py-1 text-xs font-black ${s.signal === "BUY" ? "bg-emerald-500/20 text-emerald-400" : s.signal === "SELL" ? "bg-red-500/20 text-red-400" : "bg-muted/60 text-muted-foreground"}`}>{s.signal}</span>
+            <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-web-emerald"><Sparkles className="h-4 w-4" /> AI Market Signal</div>
+            <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${s.signal === "BUY" ? "bg-emerald-500/20 text-emerald-400" : s.signal === "SELL" ? "bg-red-500/20 text-red-400" : "bg-web-sage/20 text-web-sage"}`}>{s.signal}</span>
           </div>
-          <p className="mt-2 text-sm text-muted-foreground">{s.advice}</p>
-          <p className="mt-2 text-xs tabular-nums">Next-session projection: <span className="font-bold text-foreground">{fmtINR(s.forecast)}</span> ({pctText(s.forecastPct)})</p>
+          <p className="mt-2 text-xs font-bold leading-relaxed text-web-sage">{s.advice}</p>
+          <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-web-sage tabular-nums">Next-session projection: <span className="text-web-mist">{fmtINR(s.forecast)}</span> ({pctText(s.forecastPct)})</p>
         </div>
 
         {/* Trend chart */}
         <section className="mt-5">
-          <h3 className="mb-2 font-display text-sm font-bold">Price trend (reported arrival days)</h3>
-          <div className="h-52 rounded-2xl border border-border/60 bg-background/40 p-2">
+          <h3 className="mb-2 font-[Unbounded] text-[10px] font-black uppercase tracking-[0.2em] text-web-gold">Price trend (reported arrival days)</h3>
+          <div className="h-52 rounded-[2rem] border border-web-leaf/10 bg-web-bg-midnight/40 p-2">
             <ResponsiveContainer>
               <AreaChart data={s.daily}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                <YAxis tick={{ fontSize: 10 }} domain={["auto", "auto"]} />
-                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 11 }} />
-                <Area type="monotone" dataKey="max" stroke="var(--border)" fill="var(--primary)" fillOpacity={0.06} />
-                <Area type="monotone" dataKey="avg" stroke="var(--primary)" strokeWidth={2} fill="var(--primary)" fillOpacity={0.18} />
-                <Area type="monotone" dataKey="min" stroke="var(--border)" fill="transparent" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--web-leaf)" opacity={0.1} />
+                <XAxis dataKey="date" tick={{ fontSize: 9, fill: 'var(--web-sage)', fontWeight: 'bold' }} />
+                <YAxis tick={{ fontSize: 9, fill: 'var(--web-sage)', fontWeight: 'bold' }} domain={["auto", "auto"]} />
+                <Tooltip contentStyle={{ background: "var(--web-bg-midnight)", border: "1px solid var(--web-leaf)", borderRadius: 20, fontSize: 10, fontWeight: 'bold', color: 'var(--web-mist)' }} />
+                <Area type="monotone" dataKey="max" stroke="var(--web-leaf)" fill="var(--web-emerald)" fillOpacity={0.06} />
+                <Area type="monotone" dataKey="avg" stroke="var(--web-emerald)" strokeWidth={2} fill="var(--web-emerald)" fillOpacity={0.18} />
+                <Area type="monotone" dataKey="min" stroke="var(--web-leaf)" fill="transparent" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -315,28 +316,28 @@ function DetailDrawer({ s, updated, onClose, onAlert }: {
 
         {/* Mandi table */}
         <section className="mt-5">
-          <h3 className="mb-2 font-display text-sm font-bold">Mandi-wise live rates ({s.mandis.length})</h3>
-          <div className="max-h-80 overflow-auto rounded-2xl border border-border/60">
-            <table className="w-full text-left text-xs">
-              <thead className="sticky top-0 bg-card/95 backdrop-blur">
-                <tr className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                  <th className="p-2">Mandi</th><th className="p-2">District</th><th className="p-2">State</th>
+          <h3 className="mb-2 font-[Unbounded] text-[10px] font-black uppercase tracking-[0.2em] text-web-gold">Mandi-wise live rates ({s.mandis.length})</h3>
+          <div className="max-h-80 overflow-auto rounded-[2rem] border border-web-leaf/10 bg-web-bg-midnight/40">
+            <table className="w-full text-left text-[10px] font-bold">
+              <thead className="sticky top-0 bg-web-bg-midnight/95 backdrop-blur">
+                <tr className="text-[9px] font-black uppercase tracking-widest text-web-sage">
+                  <th className="p-3">Mandi</th><th className="p-3">District</th><th className="p-3">State</th>
                   <th className="p-2">Variety</th><th className="p-2">Grade</th>
                   <th className="p-2 text-right">Min</th><th className="p-2 text-right">Max</th><th className="p-2 text-right">Modal</th>
                 </tr>
               </thead>
               <tbody>
                 {s.mandis.map((m, i) => (
-                  <tr key={`${m.market}-${m.variety}-${m.grade}-${i}`} className="border-t border-border/40 hover:bg-secondary/40">
-                    <td className="p-2 font-semibold">{m.market}</td>
+                  <tr key={`${m.market}-${m.variety}-${m.grade}-${i}`} className="border-t border-web-leaf/10 hover:bg-web-emerald/5 transition-colors">
+                    <td className="p-3 font-black text-web-mist uppercase">{m.market}</td>
 
-                    <td className="p-2 text-muted-foreground">{m.district}</td>
-                    <td className="p-2 text-muted-foreground">{m.state}</td>
-                    <td className="p-2 text-muted-foreground">{m.variety}</td>
-                    <td className="p-2 text-muted-foreground">{m.grade}</td>
-                    <td className="p-2 text-right tabular-nums">{m.min.toLocaleString("en-IN")}</td>
-                    <td className="p-2 text-right tabular-nums">{m.max.toLocaleString("en-IN")}</td>
-                    <td className="p-2 text-right font-bold tabular-nums">{m.modal.toLocaleString("en-IN")}</td>
+                    <td className="p-3 text-web-sage">{m.district}</td>
+                    <td className="p-3 text-web-sage">{m.state}</td>
+                    <td className="p-3 text-web-sage">{m.variety}</td>
+                    <td className="p-3 text-web-sage">{m.grade}</td>
+                    <td className="p-3 text-right tabular-nums text-web-sage">{m.min.toLocaleString("en-IN")}</td>
+                    <td className="p-3 text-right tabular-nums text-web-sage">{m.max.toLocaleString("en-IN")}</td>
+                    <td className="p-3 text-right font-black tabular-nums text-web-mist">{m.modal.toLocaleString("en-IN")}</td>
                   </tr>
                 ))}
               </tbody>
@@ -346,16 +347,16 @@ function DetailDrawer({ s, updated, onClose, onAlert }: {
 
         {/* State comparison */}
         <section className="mt-5">
-          <h3 className="mb-2 font-display text-sm font-bold">State-wise comparison</h3>
-          <div className="h-56 rounded-2xl border border-border/60 bg-background/40 p-2">
+          <h3 className="mb-2 font-[Unbounded] text-[10px] font-black uppercase tracking-[0.2em] text-web-gold">State-wise comparison</h3>
+          <div className="h-56 rounded-[2rem] border border-web-leaf/10 bg-web-bg-midnight/40 p-2">
             <ResponsiveContainer>
               <BarChart data={s.byState.slice(0, 12)} layout="vertical" margin={{ left: 8, right: 12 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.25} />
-                <XAxis type="number" tick={{ fontSize: 10 }} />
-                <YAxis type="category" dataKey="name" width={110} tick={{ fontSize: 10 }} />
-                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 11 }} formatter={(v) => [`₹${v}`, "Modal"]} />
-                <Bar dataKey="modal" radius={[0, 6, 6, 0]}>
-                  {s.byState.slice(0, 12).map((r, i) => <Cell key={r.name} fill={i === 0 ? "var(--primary)" : "var(--muted-foreground)"} fillOpacity={i === 0 ? 1 : 0.45} />)}
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--web-leaf)" opacity={0.1} />
+                <XAxis type="number" tick={{ fontSize: 9, fill: 'var(--web-sage)', fontWeight: 'bold' }} />
+                <YAxis type="category" dataKey="name" width={110} tick={{ fontSize: 9, fill: 'var(--web-sage)', fontWeight: 'bold' }} />
+                <Tooltip contentStyle={{ background: "var(--web-bg-midnight)", border: "1px solid var(--web-leaf)", borderRadius: 20, fontSize: 10, fontWeight: 'bold', color: 'var(--web-mist)' }} formatter={(v) => [`₹${v}`, "Modal"]} />
+                <Bar dataKey="modal" radius={[0, 12, 12, 0]}>
+                  {s.byState.slice(0, 12).map((r, i) => <Cell key={r.name} fill={i === 0 ? "var(--web-emerald)" : "var(--web-sage)"} fillOpacity={i === 0 ? 1 : 0.45} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -365,33 +366,33 @@ function DetailDrawer({ s, updated, onClose, onAlert }: {
         {/* Map */}
         {MAPS_KEY && mapQ && (
           <section className="mt-5">
-            <h3 className="mb-2 inline-flex items-center gap-2 font-display text-sm font-bold"><MapIcon className="h-4 w-4 text-primary" /> Best-priced mandi location</h3>
+            <h3 className="mb-2 inline-flex items-center gap-2 font-[Unbounded] text-[10px] font-black uppercase tracking-[0.2em] text-web-gold"><MapIcon className="h-4 w-4 text-web-emerald" /> Best-priced mandi location</h3>
             <iframe
               title={`Map of ${s.topMandi?.market}`}
               loading="lazy"
-              className="h-56 w-full rounded-2xl border border-border/60"
+              className="h-56 w-full rounded-[2.5rem] border border-web-leaf/10 filter invert grayscale opacity-60 hover:opacity-100 transition-all"
               src={`https://www.google.com/maps/embed/v1/search?key=${MAPS_KEY}&q=${mapQ}`}
             />
           </section>
         )}
 
         {/* Alerts */}
-        <section className="mt-5 rounded-2xl border border-border/60 bg-background/40 p-4">
-          <h3 className="inline-flex items-center gap-2 font-display text-sm font-bold"><Bell className="h-4 w-4 text-primary" /> Price alert</h3>
+        <section className="mt-5 rounded-[2rem] border border-web-leaf/10 bg-web-bg-midnight/40 p-4">
+          <h3 className="inline-flex items-center gap-2 font-[Unbounded] text-[10px] font-black uppercase tracking-[0.2em] text-web-gold"><Bell className="h-4 w-4 text-web-emerald" /> Price alert</h3>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <input
               value={alertPrice}
               onChange={(e) => setAlertPrice(e.target.value)}
               inputMode="numeric"
               aria-label="Alert price"
-              className="w-32 rounded-lg border border-border/50 bg-background/70 px-3 py-2 text-sm tabular-nums outline-none focus:border-primary/60"
+              className="w-32 rounded-2xl border border-web-leaf/10 bg-web-bg-midnight/60 px-3 py-2 text-[11px] font-bold tabular-nums text-web-mist outline-none focus:border-web-emerald transition-all"
             />
-            <button onClick={() => onAlert(Number(alertPrice) || 0, "above")} className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-400">Notify above</button>
-            <button onClick={() => onAlert(Number(alertPrice) || 0, "below")} className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-400">Notify below</button>
+            <button onClick={() => onAlert(Number(alertPrice) || 0, "above")} className="rounded-2xl border border-web-emerald/30 bg-web-emerald/10 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-web-emerald hover:bg-web-emerald/20 transition-all">Notify above</button>
+            <button onClick={() => onAlert(Number(alertPrice) || 0, "below")} className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-rose-400 hover:bg-rose-500/20 transition-all">Notify below</button>
           </div>
         </section>
 
-        <p className="mt-4 text-[10px] text-muted-foreground">
+        <p className="mt-4 text-[9px] font-bold uppercase tracking-widest text-web-sage opacity-60">
           Source: data.gov.in / Agmarknet — Directorate of Marketing &amp; Inspection, Ministry of Agriculture &amp; Farmers Welfare. Prices in ₹ per quintal.
         </p>
       </div>
@@ -497,7 +498,7 @@ function MarketPage() {
     return [...new Set(rows.map((r) => r.market).filter(Boolean))].sort();
   }, [feed.records, stateFilter, district]);
 
-  const selectCls = "rounded-xl border border-border/50 bg-background/70 px-2.5 py-2 text-xs font-medium outline-none focus:border-primary/60";
+  const selectCls = "rounded-xl border border-web-leaf/10 bg-web-bg-midnight/30 px-2.5 py-2 text-xs font-bold uppercase tracking-wider text-web-sage outline-none focus:border-web-emerald/60 focus:bg-web-bg-midnight/50 transition-all";
 
   return (
     <div className="space-y-8 pb-16">
@@ -510,22 +511,22 @@ function MarketPage() {
 
       <div className="container mx-auto space-y-6 px-4">
         {/* Status strip */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/50 p-3 backdrop-blur-md">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-web-leaf/10 bg-web-emerald/5 p-3 backdrop-blur-md font-[Plus Jakarta Sans]">
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 font-bold uppercase tracking-wider text-primary">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-web-emerald/20 px-3 py-1 font-black uppercase tracking-widest text-web-emerald">
               <Radio className="h-3 w-3 animate-pulse" /> Live feed
             </span>
-            <span className="text-muted-foreground">Agmarknet · data.gov.in (DMI)</span>
-            {feed.updated && <span className="inline-flex items-center gap-1 text-muted-foreground"><Clock className="h-3 w-3" /> Updated {timeAgo(feed.updated)}</span>}
+            <span className="font-bold text-web-sage uppercase tracking-tighter">Agmarknet · data.gov.in (DMI)</span>
+            {feed.updated && <span className="inline-flex items-center gap-1 font-bold text-web-sage/70 uppercase tracking-tighter"><Clock className="h-3 w-3" /> Updated {timeAgo(feed.updated)}</span>}
           </div>
           <div className="flex items-center gap-2">
             {!alerts.enabled && (
-              <button onClick={() => void alerts.enable()} className="inline-flex items-center gap-1 rounded-xl border border-border/50 bg-background/70 px-3 py-2 text-xs font-semibold hover:border-primary/50">
-                <BellRing className="h-3.5 w-3.5" /> Enable alerts
+              <button onClick={() => void alerts.enable()} className="inline-flex items-center gap-1 rounded-xl border border-web-leaf/10 bg-web-bg-midnight/40 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-web-mist hover:border-web-emerald/50 hover:bg-web-bg-midnight/60 transition-all">
+                <BellRing className="h-3.5 w-3.5 text-web-gold" /> Enable alerts
               </button>
             )}
-            <button onClick={feed.refresh} className="inline-flex items-center gap-1 rounded-xl border border-border/50 bg-background/70 px-3 py-2 text-xs font-semibold hover:border-primary/50">
-              <RefreshCw className={`h-3.5 w-3.5 ${feed.refreshing ? "animate-spin" : ""}`} /> Refresh
+            <button onClick={feed.refresh} className="inline-flex items-center gap-1 rounded-xl border border-web-leaf/10 bg-web-bg-midnight/40 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-web-mist hover:border-web-emerald/50 hover:bg-web-bg-midnight/60 transition-all">
+              <RefreshCw className={`h-3.5 w-3.5 text-web-emerald ${feed.refreshing ? "animate-spin" : ""}`} /> Refresh
             </button>
           </div>
         </div>
@@ -540,10 +541,10 @@ function MarketPage() {
             { label: "Losers", value: feed.totals.losers, icon: ArrowDownRight },
             { label: "Records", value: feed.totals.records, icon: Gauge },
           ].map((k) => (
-            <div key={k.label} className="rounded-2xl border border-border/60 bg-card/50 p-3 backdrop-blur-md">
-              <k.icon className="h-4 w-4 text-primary" />
-              <div className="mt-1 font-display text-xl font-black tabular-nums"><AnimatedNumber value={k.value} /></div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.label}</div>
+            <div key={k.label} className="web-glass rounded-2xl border-web-leaf/10 p-3 transition-all hover:border-web-emerald/30 font-[Plus Jakarta Sans]">
+              <k.icon className="h-4 w-4 text-web-gold" />
+              <div className="mt-1 font-[Unbounded] text-xl font-black tabular-nums text-web-mist"><AnimatedNumber value={k.value} /></div>
+              <div className="text-[9px] font-black uppercase tracking-widest text-web-sage">{k.label}</div>
             </div>
           ))}
         </div>
@@ -564,12 +565,12 @@ function MarketPage() {
         )}
 
         {/* Controls */}
-        <div className="space-y-2 rounded-2xl border border-border/60 bg-card/40 p-3 backdrop-blur-md">
+        <div className="space-y-2 rounded-3xl border border-web-leaf/10 bg-web-bg-midnight/20 p-4 backdrop-blur-md">
           <div className="flex flex-wrap items-center gap-2">
             <SmartSearch value={q} onChange={setQ} suggestions={searchSummaries(scoped, q)} onPick={(s) => { setQ(s.commodity); setOpenCrop(s.commodity); }} />
             <button
               onClick={() => setFavOnly((v) => !v)}
-              className={`inline-flex items-center gap-1 rounded-xl border px-3 py-2 text-xs font-semibold transition ${favOnly ? "border-primary bg-primary text-primary-foreground" : "border-border/50 bg-background/70 text-muted-foreground hover:text-foreground"}`}
+              className={`inline-flex items-center gap-1 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${favOnly ? "border-web-gold bg-web-gold text-web-bg-midnight" : "border-web-leaf/10 bg-web-bg-midnight/40 text-web-sage hover:text-web-mist hover:border-web-emerald/50"}`}
             >
               <Star className={`h-3.5 w-3.5 ${favOnly ? "fill-current" : ""}`} /> Favourites
             </button>

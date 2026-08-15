@@ -11,6 +11,7 @@ import { MobileHome } from "@/components/MobileHome";
 import { useIsDesktop } from "@/hooks/use-viewport";
 import { useAgmarknetLive, type LiveCommodity } from "@/lib/agmarknet-live";
 import { TopTrendingBar } from "@/components/TopTrendingBar";
+import { WebCinematicBackground } from "@/components/WebCinematicBackground";
 
 
 
@@ -56,6 +57,7 @@ function Home() {
       {/* Desktop / tablet — original cinematic home */}
       {showDesktop && (
         <div className="relative hidden lg:block">
+          <WebCinematicBackground />
           <HeroSection loc={loc} p={p} featured={featured} heroImg={heroImg} />
           <MarqueeStrip />
           <FeatureGrid />
@@ -97,21 +99,21 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
         {/* Left column */}
         <div className="lg:col-span-7">
           <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-web-leaf/30 bg-web-bg-midnight/40 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] backdrop-blur text-web-sage">
+              <Sparkles className="h-3.5 w-3.5 text-web-gold" />
               Advisory reimagined · v2026
             </span>
           </Reveal>
 
           <Reveal delay={80}>
-            <h1 className="mt-5 font-display text-5xl font-black leading-[1.02] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+            <h1 className="mt-5 font-[Unbounded] text-5xl font-black leading-[1.02] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem] text-web-mist">
               Farm with{" "}
-              <span className="text-gradient">foresight,</span>
+              <span className="web-text-gold">foresight,</span>
               <br className="hidden sm:block" />
               grow with{" "}
               <span className="relative inline-block">
                 clarity.
-                <svg className="absolute -bottom-2 left-0 h-3 w-full text-primary/70" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden>
+                <svg className="absolute -bottom-2 left-0 h-3 w-full text-web-gold/40" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden>
                   <path d="M0 8 Q 50 0 100 6 T 200 4" stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round"/>
                 </svg>
               </span>
@@ -119,39 +121,38 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
           </Reveal>
 
           <Reveal delay={160}>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-web-sage md:text-lg font-[Instrument Sans]">
               A cinematic, science-backed playbook — from soil to mandi — tuned live to{" "}
-              <b className="font-semibold text-foreground">{loc.district}, {loc.state}</b>.
+              <b className="font-semibold text-web-mist">{loc.district}, {loc.state}</b>.
               Trusted by a growing community of Indian growers.
             </p>
           </Reveal>
 
           <Reveal delay={240}>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-3 font-[Plus Jakarta Sans]">
               <Link
                 to="/crops"
-                className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:brightness-110 tap"
-                style={{ boxShadow: "var(--shadow-glow)" }}
+                className="group inline-flex items-center gap-2 rounded-full bg-web-emerald px-6 py-3 text-sm font-semibold text-web-mist transition hover:bg-web-leaf tap shadow-lg shadow-web-emerald/20"
               >
                 Explore crops
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/analytics"
-                className="group inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/50 px-6 py-3 text-sm font-semibold backdrop-blur transition hover:bg-secondary tap"
+                className="group inline-flex items-center gap-2 rounded-full border border-web-leaf/40 bg-web-bg-midnight/30 px-6 py-3 text-sm font-semibold text-web-mist backdrop-blur transition hover:bg-web-bg-forest tap"
               >
-                <PlayCircle className="h-4 w-4 text-primary" />
+                <PlayCircle className="h-4 w-4 text-web-gold" />
                 See the India atlas
               </Link>
-              <Link to="/districts" className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground tap">
-                <MapPin className="h-3.5 w-3.5 text-primary" /> Change district
+              <Link to="/districts" className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs text-web-sage hover:text-web-mist tap">
+                <MapPin className="h-3.5 w-3.5 text-web-gold" /> Change district
               </Link>
             </div>
           </Reveal>
 
           {/* Live mini-stats */}
           <Reveal delay={320}>
-            <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 font-[Plus Jakarta Sans]">
               <MiniStat icon={<Sun className="h-4 w-4" />} label="Season" value={p.season?.split(" ")[0] ?? "Kharif"} />
               <MiniStat icon={<Leaf className="h-4 w-4" />} label="Soil" value={p.soil?.split(" ")[0] ?? "Loam"} />
               <MiniStat icon={<Droplets className="h-4 w-4" />} label="Rain YTD" value={`${p.rainfallYtdMm} mm`} />
@@ -169,25 +170,25 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
               <Link
                 to="/crops/$slug"
                 params={{ slug: featured.slug }}
-                className="group relative block overflow-hidden rounded-[2rem] border border-white/10"
+                className="group relative block overflow-hidden rounded-[2rem] border border-web-leaf/20"
                 style={{ boxShadow: "var(--shadow-elegant)" }}
               >
                 <img src={featured.image} alt={featured.name} className="h-[520px] w-full object-cover transition-transform duration-[1400ms] group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-web-bg-midnight via-web-bg-midnight/40 to-transparent" />
 
                 {/* top chips */}
-                <div className="absolute inset-x-5 top-5 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground">
+                <div className="absolute inset-x-5 top-5 flex items-center justify-between font-[Plus Jakarta Sans]">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-web-emerald px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-web-mist">
                     <Star className="h-3 w-3" /> Featured today
                   </span>
-                  <div className="grid h-10 w-10 place-items-center rounded-full glass text-xl">{featured.emoji}</div>
+                  <div className="grid h-10 w-10 place-items-center rounded-full web-glass text-xl">{featured.emoji}</div>
                 </div>
 
                 {/* bottom info */}
                 <div className="absolute inset-x-0 bottom-0 p-6">
-                  <div className="text-[11px] uppercase tracking-[0.28em] text-primary">Crop dossier</div>
-                  <h3 className="mt-1 font-display text-3xl font-black tracking-tight md:text-4xl">{featured.name}</h3>
-                  <p className="text-xs italic text-muted-foreground">{featured.scientificName}</p>
+                  <div className="text-[11px] uppercase tracking-[0.28em] text-web-gold font-bold font-[Plus Jakarta Sans]">Crop dossier</div>
+                  <h3 className="mt-1 font-[Unbounded] text-3xl font-black tracking-tight md:text-4xl text-web-mist">{featured.name}</h3>
+                  <p className="text-xs italic text-web-sage font-[Instrument Sans]">{featured.scientificName}</p>
 
                   <div className="mt-4 grid grid-cols-3 gap-2">
                     <MiniBadge label="Profit" value={`+${featured.profitPct}%`} accent />
@@ -211,11 +212,11 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
 
 function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="glass flex items-center gap-3 rounded-2xl px-3 py-3">
-      <div className="grid h-8 w-8 place-items-center rounded-full bg-primary/15 text-primary">{icon}</div>
+    <div className="web-glass flex items-center gap-3 rounded-2xl px-3 py-3 border-web-leaf/10">
+      <div className="grid h-8 w-8 place-items-center rounded-full bg-web-emerald/15 text-web-emerald">{icon}</div>
       <div className="min-w-0">
-        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
-        <div className="truncate text-sm font-semibold">{value}</div>
+        <div className="text-[10px] uppercase tracking-widest text-web-sage font-bold font-[Plus Jakarta Sans]">{label}</div>
+        <div className="truncate text-sm font-semibold text-web-mist font-[Plus Jakarta Sans]">{value}</div>
       </div>
     </div>
   );
@@ -223,9 +224,9 @@ function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string
 
 function MiniBadge({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className={`rounded-xl border px-3 py-2 backdrop-blur ${accent ? "border-primary/50 bg-primary/15" : "border-border/60 bg-background/50"}`}>
-      <div className="text-[9px] uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className={`text-sm font-bold ${accent ? "text-primary" : ""}`}>{value}</div>
+    <div className={`rounded-xl border px-3 py-2 backdrop-blur font-[Plus Jakarta Sans] ${accent ? "border-web-gold/50 bg-web-gold/15" : "border-web-leaf/20 bg-web-bg-midnight/50"}`}>
+      <div className="text-[9px] uppercase tracking-widest text-web-sage font-bold">{label}</div>
+      <div className={`text-sm font-bold ${accent ? "text-web-gold" : "text-web-mist"}`}>{value}</div>
     </div>
   );
 }
@@ -240,12 +241,12 @@ function MarqueeStrip() {
     "Open-Meteo backed weather", "MSP & scheme intelligence",
   ];
   return (
-    <div className="border-y border-border/40 bg-background/40 py-4 backdrop-blur">
+    <div className="border-y border-web-leaf/20 bg-web-bg-midnight/40 py-4 backdrop-blur font-[Plus Jakarta Sans]">
       <div className="mx-auto max-w-[100vw] overflow-hidden">
         <div className="flex gap-10 whitespace-nowrap will-change-transform" style={{ animation: "marquee 40s linear infinite" }}>
           {[...items, ...items, ...items].map((t, i) => (
-            <span key={i} className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.28em] text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span key={i} className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.28em] text-web-sage font-bold">
+              <span className="h-1.5 w-1.5 rounded-full bg-web-gold" />
               {t}
             </span>
           ))}
@@ -280,22 +281,22 @@ function FeatureGrid() {
               style={{ boxShadow: "var(--shadow-elegant)" }}
             >
               <img src={f.image} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/10" />
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/15 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-t from-web-bg-midnight via-web-bg-midnight/70 to-web-bg-midnight/10" />
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-web-emerald/15 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
               <div className="relative flex h-full flex-col justify-between p-6">
                 <div className="flex items-center justify-between">
-                  <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground">
+                  <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-web-emerald to-web-leaf text-web-mist shadow-lg shadow-web-emerald/20">
                     {f.icon}
                   </div>
-                  <span className="rounded-full border border-border/60 bg-background/50 px-2.5 py-1 text-[10px] uppercase tracking-widest text-muted-foreground backdrop-blur">
+                  <span className="rounded-full border border-web-leaf/30 bg-web-bg-midnight/50 px-2.5 py-1 text-[10px] uppercase tracking-widest text-web-sage font-bold backdrop-blur">
                     {f.tag}
                   </span>
                 </div>
                 <div>
-                  <h3 className="font-display text-2xl font-black tracking-tight md:text-3xl">{f.title}</h3>
-                  <p className="mt-1.5 max-w-md text-sm text-muted-foreground">{f.copy}</p>
-                  <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+                  <h3 className="font-[Unbounded] text-2xl font-black tracking-tight md:text-3xl text-web-mist">{f.title}</h3>
+                  <p className="mt-1.5 max-w-md text-sm text-web-sage font-[Instrument Sans]">{f.copy}</p>
+                  <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-web-gold font-[Plus Jakarta Sans]">
                     Open <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </div>
                 </div>
@@ -313,14 +314,14 @@ function SectionHeader({ eyebrow, title, subtitle }: { eyebrow: string; title: s
     <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
       <div>
         <Reveal>
-          <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-primary">{eyebrow}</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-web-gold font-[Plus Jakarta Sans]">{eyebrow}</span>
         </Reveal>
         <Reveal delay={60}>
-          <h2 className="mt-2 max-w-2xl font-display text-3xl font-black tracking-tight md:text-5xl">{title}</h2>
+          <h2 className="mt-2 max-w-2xl font-[Unbounded] text-3xl font-black tracking-tight md:text-5xl text-web-mist">{title}</h2>
         </Reveal>
         {subtitle && (
           <Reveal delay={120}>
-            <p className="mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">{subtitle}</p>
+            <p className="mt-3 max-w-2xl text-sm text-web-sage md:text-base font-[Instrument Sans]">{subtitle}</p>
           </Reveal>
         )}
       </div>
@@ -397,14 +398,14 @@ function TrendingSection({ trending }: { trending: any[] }) {
                 style={{ boxShadow: "var(--shadow-elegant)" }}
               >
                 <img src={c.image} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-web-bg-midnight via-transparent to-transparent" />
                 <span
-                  className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest ${
+                  className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-widest transition-all ${
                     l
                       ? up
-                        ? "bg-primary/90 text-primary-foreground"
-                        : "bg-destructive/90 text-destructive-foreground"
-                      : "bg-primary/90 text-primary-foreground"
+                        ? "bg-web-emerald text-web-bg-midnight"
+                        : "bg-rose-500 text-white"
+                      : "bg-web-gold text-web-bg-midnight"
                   }`}
                 >
                   {l ? (
@@ -416,13 +417,13 @@ function TrendingSection({ trending }: { trending: any[] }) {
                     <>+{c.profitPct}%</>
                   )}
                 </span>
-                <div className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full glass text-base">{c.emoji}</div>
+                <div className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full web-glass border-web-leaf/20 text-base">{c.emoji}</div>
                 <div className="absolute inset-x-0 bottom-0 p-4">
-                  <div className="text-[10px] uppercase tracking-widest text-primary">{String(c.season).split(" ")[0]}</div>
-                  <div className="mt-0.5 truncate font-display text-lg font-bold">{c.name}</div>
+                  <div className="text-[9px] font-black uppercase tracking-widest text-web-gold">{String(c.season).split(" ")[0]}</div>
+                  <div className="mt-0.5 truncate font-[Unbounded] text-lg font-black text-web-mist">{c.name}</div>
                   {l ? (
-                    <div className="mt-1 truncate text-[10px] text-muted-foreground">
-                      <span className="font-semibold text-foreground">₹{l.modal.toLocaleString("en-IN")}</span>/qtl · {l.markets} mandis
+                    <div className="mt-1 truncate text-[10px] font-bold text-web-sage">
+                      <span className="font-black text-web-mist">₹{l.modal.toLocaleString("en-IN")}</span>/qtl · {l.markets} mandis
                     </div>
                   ) : (
                     <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
@@ -456,21 +457,21 @@ function CategoriesSection() {
   ];
   return (
     <section className="relative">
-      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
+      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 font-[Plus Jakarta Sans]">
         <SectionHeader eyebrow="Categories" title="Every crop family, one taxonomy." subtitle="Filter the library by category, water need, soil and district." />
         <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
           {cats.map((c, i) => (
             <Reveal key={c.key} delay={i * 40}>
               <Link
                 to="/crops"
-                className="group card-elegant hover-lift flex items-center gap-4 p-5"
+                className="group web-glass hover-lift border-web-leaf/10 flex items-center gap-4 p-5 transition-all duration-500 hover:border-web-emerald/30"
               >
-                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-primary/25 to-accent/20 text-3xl transition-transform group-hover:scale-110">
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-web-emerald/20 text-3xl transition-transform group-hover:scale-110 group-hover:bg-web-emerald/30">
                   {c.icon}
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate font-display text-lg font-bold">{c.name}</div>
-                  <div className="text-[11px] uppercase tracking-widest text-muted-foreground">Browse →</div>
+                  <div className="truncate font-[Unbounded] text-base font-black text-web-mist">{c.name}</div>
+                  <div className="text-[9px] font-black uppercase tracking-widest text-web-sage group-hover:text-web-gold">Browse →</div>
                 </div>
               </Link>
             </Reveal>
@@ -494,18 +495,19 @@ function StatsSection({ cropsCount }: { cropsCount: number }) {
   return (
     <section className="mx-auto max-w-7xl px-4 pb-4 pt-4 sm:px-6">
       <Reveal>
-        <div className="relative overflow-hidden rounded-[2rem] border border-border/60 p-8 md:p-12" style={{
-          background: "linear-gradient(135deg, color-mix(in oklab, var(--primary) 25%, transparent), color-mix(in oklab, var(--accent) 18%, transparent))",
-          boxShadow: "var(--shadow-elegant)",
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-web-leaf/10 p-8 md:p-12 font-[Plus Jakarta Sans]" style={{
+          background: "linear-gradient(135deg, rgba(7, 26, 18, 0.8), rgba(4, 15, 10, 0.8))",
+          backdropFilter: "blur(40px)",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
         }}>
-          <div aria-hidden className="absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-40 blur-3xl" style={{ background: "var(--primary)" }} />
+          <div aria-hidden className="absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-40 blur-3xl bg-web-emerald" />
           <div className="relative grid grid-cols-2 gap-8 md:grid-cols-4">
             {stats.map((s) => (
               <div key={s.label} className="text-center md:text-left">
-                <div className="font-display text-4xl font-black tracking-tight md:text-6xl">
+                <div className="font-[Unbounded] text-4xl font-black tracking-tight text-web-gold md:text-6xl">
                   <CountUp value={s.value} suffix={s.suffix} precision={(s as any).precision ?? 0} />
                 </div>
-                <div className="mt-2 text-[10px] uppercase tracking-widest text-muted-foreground md:text-xs">{s.label}</div>
+                <div className="mt-2 text-[9px] font-black uppercase tracking-widest text-web-sage md:text-[10px]">{s.label}</div>
               </div>
             ))}
           </div>
@@ -525,25 +527,25 @@ function TestimonialsSection() {
     { name: "Anil V.", role: "Chilli & Turmeric · Guntur", quote: "LEO answers me in Telugu. My father — who doesn't type — now uses the app every morning." },
   ];
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
+    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 font-[Plus Jakarta Sans]">
       <SectionHeader eyebrow="Voices" title="Loved by growers across India." />
       <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
         {items.map((t, i) => (
           <Reveal key={t.name} delay={i * 80}>
-            <figure className="card-elegant hover-lift flex h-full flex-col p-6">
-              <Quote className="h-6 w-6 text-primary" />
-              <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-foreground/90 md:text-base">
+            <figure className="web-glass hover-lift border-web-leaf/10 flex h-full flex-col p-6 transition-all duration-500 hover:border-web-emerald/30">
+              <Quote className="h-6 w-6 text-web-gold" />
+              <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-web-mist font-[Instrument Sans] md:text-base">
                 "{t.quote}"
               </blockquote>
-              <div className="mt-6 flex items-center gap-3 border-t border-border/50 pt-4">
-                <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-primary to-accent font-bold text-primary-foreground">
+              <div className="mt-6 flex items-center gap-3 border-t border-web-leaf/10 pt-4">
+                <div className="grid h-10 w-10 place-items-center rounded-full bg-web-emerald/20 font-[Unbounded] font-black text-web-gold">
                   {t.name.charAt(0)}
                 </div>
                 <figcaption className="min-w-0">
-                  <div className="truncate text-sm font-semibold">{t.name}</div>
-                  <div className="truncate text-[11px] text-muted-foreground">{t.role}</div>
+                  <div className="truncate text-sm font-black text-web-mist uppercase tracking-tighter">{t.name}</div>
+                  <div className="truncate text-[10px] font-bold text-web-sage uppercase tracking-widest">{t.role}</div>
                 </figcaption>
-                <div className="ml-auto flex items-center gap-0.5 text-primary">
+                <div className="ml-auto flex items-center gap-0.5 text-web-gold">
                   {Array.from({ length: 5 }).map((_, k) => (
                     <Star key={k} className="h-3.5 w-3.5 fill-current" />
                   ))}
@@ -562,38 +564,40 @@ function TestimonialsSection() {
    ============================================================ */
 function CTASection() {
   return (
-    <section className="mx-auto max-w-7xl px-4 pb-24 pt-4 sm:px-6">
+    <section className="mx-auto max-w-7xl px-4 pb-24 pt-4 sm:px-6 font-[Plus Jakarta Sans]">
       <Reveal>
-        <div className="relative overflow-hidden rounded-[2rem] border border-border/60 p-10 md:p-16" style={{ boxShadow: "var(--shadow-elegant)" }}>
-          <img src={heroImg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" />
-          <div className="absolute inset-0" style={{
-            background: "radial-gradient(700px 400px at 20% 20%, color-mix(in oklab, var(--primary) 35%, transparent), transparent 60%), linear-gradient(135deg, color-mix(in oklab, var(--background) 60%, transparent), color-mix(in oklab, var(--background) 90%, transparent))",
-          }}/>
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-web-leaf/10 p-10 md:p-16" style={{
+          background: "linear-gradient(135deg, rgba(7, 26, 18, 0.9), rgba(4, 15, 10, 0.9))",
+          backdropFilter: "blur(40px)",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
+        }}>
+          <img src={heroImg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-15 mix-blend-overlay" />
+          <div className="absolute inset-0 bg-[radial-gradient(800px_400px_at_20%_20%,rgba(52,211,153,0.1),transparent_60%)]" />
           <div className="relative flex flex-col items-start gap-8 md:flex-row md:items-center md:justify-between">
             <div className="max-w-2xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">
+              <span className="inline-flex items-center gap-2 rounded-full border border-web-emerald/30 bg-web-emerald/20 px-3 py-1 text-[9px] font-black uppercase tracking-[0.3em] text-web-gold">
                 <Sprout className="h-3.5 w-3.5" /> Ready when you are
               </span>
-              <h2 className="mt-4 font-display text-3xl font-black tracking-tight md:text-5xl">
-                Turn every acre into an <span className="text-gradient">informed decision.</span>
+              <h2 className="mt-4 font-[Unbounded] text-3xl font-black tracking-tight text-web-mist md:text-5xl">
+                Turn every acre into an <span className="text-web-gold">informed decision.</span>
               </h2>
-              <p className="mt-3 max-w-xl text-sm text-muted-foreground md:text-base">
+              <p className="mt-3 max-w-xl text-xs font-bold uppercase tracking-widest text-web-sage md:text-sm">
                 Open the dashboard, pick your district, and watch the entire platform tune to your ground truth.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
                 to="/crops"
-                className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:brightness-110 tap"
-                style={{ boxShadow: "var(--shadow-glow)" }}
+                className="group inline-flex items-center gap-2 rounded-full bg-web-gold px-8 py-4 text-[11px] font-black uppercase tracking-widest text-web-bg-midnight transition-all hover:scale-105 hover:bg-white tap"
+                style={{ boxShadow: "0 10px 30px -10px rgba(229, 195, 102, 0.5)" }}
               >
                 Start exploring <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/analytics"
-                className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/60 px-6 py-3 text-sm font-semibold backdrop-blur transition hover:bg-secondary tap"
+                className="inline-flex items-center gap-2 rounded-full border border-web-leaf/20 bg-web-bg-midnight/60 px-8 py-4 text-[11px] font-black uppercase tracking-widest text-web-mist backdrop-blur transition hover:bg-web-bg-midnight/80 tap"
               >
-                <Languages className="h-4 w-4 text-primary" /> Available in EN · తె · हिं
+                <Languages className="h-4 w-4 text-web-gold" /> Available in EN · తె · हिं
               </Link>
             </div>
           </div>

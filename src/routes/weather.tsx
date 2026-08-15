@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { WebCinematicBackground } from "@/components/WebCinematicBackground";
 import {
   Area,
   AreaChart,
@@ -100,7 +101,7 @@ function ArcGauge({
   min = 0,
   max = 100,
   label,
-  color = "hsl(var(--primary))",
+  color = "var(--web-gold)",
   unit = "",
 }: {
   value: number;
@@ -115,30 +116,30 @@ function ArcGauge({
   const dash = C * 0.75; // 270°
   const filled = dash * pct;
   return (
-    <div className="relative flex flex-col items-center">
+    <div className="web-glass relative flex flex-col items-center p-6 border-web-leaf/10">
       <svg viewBox="0 0 120 120" className="h-32 w-32">
         <circle cx="60" cy="60" r={R} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="10"
           strokeDasharray={`${dash} ${C}`} transform="rotate(135 60 60)" strokeLinecap="round" />
         <circle cx="60" cy="60" r={R} fill="none" stroke={color} strokeWidth="10"
           strokeDasharray={`${filled} ${C}`} transform="rotate(135 60 60)" strokeLinecap="round"
           style={{ transition: "stroke-dasharray 700ms ease" }} />
-        <text x="60" y="62" textAnchor="middle" className="fill-foreground" style={{ font: "700 22px system-ui" }}>
+        <text x="60" y="62" textAnchor="middle" className="fill-web-mist" style={{ font: "900 22px Unbounded" }}>
           {Math.round(value)}
         </text>
-        <text x="60" y="80" textAnchor="middle" className="fill-muted-foreground" style={{ font: "500 10px system-ui" }}>
+        <text x="60" y="80" textAnchor="middle" className="fill-web-sage" style={{ font: "700 10px Plus Jakarta Sans" }}>
           {unit}
         </text>
       </svg>
-      <div className="mt-1 text-xs font-medium text-muted-foreground">{label}</div>
+      <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-web-sage font-[Plus Jakarta Sans]">{label}</div>
     </div>
   );
 }
 
 function WindCompass({ deg, kph, gust }: { deg: number; kph: number; gust: number }) {
   return (
-    <div className="glass hover-lift relative overflow-hidden rounded-3xl p-5">
-      <div className="flex items-center gap-2 text-sm font-semibold">
-        <Compass className="h-4 w-4 text-primary" /> Wind
+    <div className="web-glass hover-lift relative overflow-hidden rounded-3xl p-5 border-web-leaf/10 font-[Plus Jakarta Sans]">
+      <div className="flex items-center gap-2 text-sm font-bold text-web-mist">
+        <Compass className="h-4 w-4 text-web-gold" /> Wind
       </div>
       <div className="mt-3 flex items-center justify-center">
         <div className="relative h-40 w-40">
@@ -177,9 +178,9 @@ function SunPath({ sunrise, sunset }: { sunrise: string; sunset: string }) {
   const x = 20 + pct * 260;
   const y = 90 - Math.sin(pct * Math.PI) * 60;
   return (
-    <div className="glass rounded-3xl p-5">
-      <div className="flex items-center gap-2 text-sm font-semibold">
-        <Sun className="h-4 w-4 text-amber-300" /> Sun path
+    <div className="web-glass rounded-3xl p-5 border-web-leaf/10 font-[Plus Jakarta Sans]">
+      <div className="flex items-center gap-2 text-sm font-bold text-web-mist">
+        <Sun className="h-4 w-4 text-web-gold" /> Sun path
       </div>
       <svg viewBox="0 0 300 110" className="mt-2 h-24 w-full">
         <path d="M 20 90 Q 150 -30 280 90" fill="none" stroke="rgba(255,255,255,0.15)" strokeDasharray="3 4" strokeWidth="2" />
@@ -199,18 +200,18 @@ function SunPath({ sunrise, sunset }: { sunrise: string; sunset: string }) {
 function AqiPanel({ air }: { air: NonNullable<WeatherBundle["air"]> }) {
   const cat = aqiCategory(air.aqi);
   return (
-    <div className="glass hover-lift rounded-3xl p-5">
+    <div className="web-glass hover-lift rounded-3xl p-5 border-web-leaf/10 font-[Plus Jakarta Sans]">
       <div className="flex items-center justify-between">
-        <div className="text-sm font-semibold">Air Quality</div>
-        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: `${cat.color}22`, color: cat.color }}>
+        <div className="text-sm font-bold text-web-mist">Air Quality</div>
+        <span className="rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest" style={{ background: `${cat.color}22`, color: cat.color }}>
           {cat.label}
         </span>
       </div>
       <div className="mt-2 flex items-end gap-2">
-        <div className="font-display text-5xl font-black" style={{ color: cat.color }}>{air.aqi}</div>
-        <div className="mb-2 text-xs text-muted-foreground">European AQI</div>
+        <div className="font-[Unbounded] text-5xl font-black" style={{ color: cat.color }}>{air.aqi}</div>
+        <div className="mb-2 text-xs font-bold text-web-sage">European AQI</div>
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">{cat.tone}</p>
+      <p className="mt-1 text-xs text-web-sage font-[Instrument Sans]">{cat.tone}</p>
       <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
         {[
           ["PM2.5", `${air.pm2_5.toFixed(1)} µg`],
@@ -521,7 +522,10 @@ function WeatherPage() {
   }
 
   return (
-    <div>
+    <div className="relative min-h-screen bg-web-bg-midnight font-[Plus Jakarta Sans]">
+      <div className="hidden lg:block">
+        <WebCinematicBackground />
+      </div>
       <HeroBanner
         image={heroImg}
         eyebrow={`Live · ${ctx.season} · ${ctx.weekday}`}
@@ -530,11 +534,11 @@ function WeatherPage() {
       />
 
       {manual ? (
-        <div className="glass mx-auto mt-6 flex max-w-5xl flex-wrap items-center gap-3 rounded-3xl p-4">
-          <MapPin className="h-5 w-5 shrink-0 text-primary" />
+        <div className="web-glass border-web-leaf/10 mx-auto mt-6 flex max-w-5xl flex-wrap items-center gap-3 rounded-[2rem] p-4">
+          <MapPin className="h-5 w-5 shrink-0 text-web-gold" />
           <div className="min-w-0 flex-1">
-            <div className="truncate font-display text-lg font-bold leading-tight">{placeLabel}</div>
-            <div className="text-xs text-muted-foreground">
+            <div className="truncate font-[Unbounded] text-lg font-black leading-tight text-web-mist uppercase">{placeLabel}</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-web-sage">
               Manual location · live weather for this place
             </div>
 
@@ -542,7 +546,7 @@ function WeatherPage() {
           <button
             onClick={() => setTick((t) => t + 1)}
             disabled={loading}
-            className="tap inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-60"
+            className="tap inline-flex items-center justify-center gap-2 rounded-2xl bg-web-emerald/20 border border-web-emerald/30 px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-web-emerald hover:bg-web-emerald/30 disabled:opacity-60 transition-all"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             {loading ? "Updating…" : "Refresh"}
@@ -567,15 +571,15 @@ function WeatherPage() {
 
       {/* HERO CONDITION CARD */}
       <section className="mx-auto mt-6 max-w-7xl px-6">
-        <div className="relative overflow-hidden rounded-[2.5rem] border border-border/40 shadow-2xl">
+        <div className="web-glass relative overflow-hidden rounded-[3rem] border-web-leaf/10 shadow-2xl">
           {weatherImage && (
             <div className="absolute inset-0 z-0">
               <img 
                 src={weatherImage} 
                 alt="Live weather condition" 
-                className="h-full w-full object-cover opacity-40 mix-blend-overlay transition-opacity duration-1000"
+                className="h-full w-full object-cover opacity-60 mix-blend-soft-light transition-opacity duration-1000"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-br from-web-bg-midnight via-web-bg-midnight/60 to-transparent" />
             </div>
           )}
           <WeatherBackground kind={kind} />
@@ -603,7 +607,7 @@ function WeatherPage() {
                   <WeatherIcon code={bundle.current.weatherCode} isDay={bundle.current.isDay} className="h-24 w-24 drop-shadow-xl" />
                 )}
               </div>
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 font-[Plus Jakarta Sans]">
                 <MiniStat icon={<Droplets className="h-4 w-4" />} label="Humidity" value={`${bundle?.current.humidity ?? "—"}%`} />
                 <MiniStat icon={<Wind className="h-4 w-4" />} label="Wind" value={`${bundle?.current.windKph ?? "—"} km/h`} />
                 <MiniStat icon={<Gauge className="h-4 w-4" />} label="Pressure" value={`${bundle?.current.pressureHpa ?? "—"} hPa`} />
@@ -615,17 +619,17 @@ function WeatherPage() {
               </div>
             </div>
             <div className="grid content-start gap-4">
-              <div className="glass rounded-3xl p-5">
+              <div className="web-glass rounded-3xl p-5 border-web-leaf/10 font-[Plus Jakarta Sans]">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-semibold">AI Summary</div>
+                  <div className="text-sm font-bold text-web-mist">AI Summary</div>
                   <button
                     onClick={() => setTick((t) => t + 1)}
-                    className="tap inline-flex items-center gap-1 rounded-full bg-secondary/60 px-3 py-1 text-xs font-medium hover:bg-secondary"
+                    className="tap inline-flex items-center gap-1 rounded-full bg-web-emerald/20 px-3 py-1 text-xs font-bold text-web-gold hover:bg-web-emerald/30 transition-colors"
                   >
                     <RefreshCw className="h-3 w-3" /> Refresh
                   </button>
                 </div>
-                <p className="mt-2 text-sm leading-relaxed text-foreground/90">
+                <p className="mt-2 text-sm leading-relaxed text-web-sage font-[Instrument Sans]">
                   {bundle
                     ? aiSummary(bundle, ctx.season)
                     : "Fetching your hyperlocal forecast…"}
@@ -642,9 +646,9 @@ function WeatherPage() {
       {/* GAUGES */}
       {bundle && (
         <section className="mx-auto mt-8 max-w-7xl px-6">
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="glass hover-lift rounded-3xl p-5">
-              <div className="mb-2 flex items-center gap-2 text-sm font-semibold">
+          <div className="grid gap-4 md:grid-cols-4 font-[Plus Jakarta Sans]">
+            <div className="web-glass hover-lift rounded-3xl p-5 border-web-leaf/10">
+              <div className="mb-2 flex items-center gap-2 text-sm font-bold text-web-mist">
                 <Thermometer className="h-4 w-4 text-rose-400" /> Temperature
               </div>
               <div className="flex justify-center">
