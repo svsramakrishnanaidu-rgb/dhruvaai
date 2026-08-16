@@ -109,7 +109,9 @@ export function MobileHome() {
    HEADER
    ============================================================ */
 function Header({ loc }: { loc: { state: string; district: string } }) {
-  return (
+  const { lang, setLang } = useI18n();
+  const badge = lang.toUpperCase();
+
     <header className="relative z-10 flex items-center justify-between px-6 pb-2 pt-8">
       <div className="flex min-w-0 flex-col">
         <div className="flex items-center gap-1.5">
