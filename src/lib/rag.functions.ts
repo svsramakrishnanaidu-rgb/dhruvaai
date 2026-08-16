@@ -2,13 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 
+const QuerySchema = z.object({
+  query: z.string(),
+  limit: z.number().optional().default(5),
+});
+
 export const queryKnowledgeBase = createServerFn({ method: "POST" })
-  .inputValidator((data) => z.object({
-    query: z.string(),
-    limit: z.number().optional().default(5),
-  }).parse(data))
+  .validator((input: unknown) => QuerySchema.parse(input))
   .handler(async ({ data }) => {
-    // Basic text search until embeddings are hooked up in the next turn
+    // Basic text search until embeddings are hooked up
     const { data: documents, error } = await supabase
       .from("kb_documents")
       .select("content, metadata")
@@ -20,15 +22,17 @@ export const queryKnowledgeBase = createServerFn({ method: "POST" })
       return { documents: [], error: error.message };
     }
 
-    return { documents };
+    return { documents: documents || [] };
   });
 
+const IngestSchema = z.object({
+  content: z.string(),
+  metadata: z.record(z.any()).optional(),
+  embedding: z.array(z.number()).optional(),
+});
+
 export const ingestDocument = createServerFn({ method: "POST" })
-  .inputValidator((data) => z.object({
-    content: z.string(),
-    metadata: z.record(z.any()).optional(),
-    embedding: z.array(z.number()).optional(),
-  }).parse(data))
+  .validator((input: unknown) => IngestSchema.parse(input))
   .handler(async ({ data }) => {
     // Embedding is stored as a vector string "[0.1, 0.2, ...]" for pgvector
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
@@ -37,8 +41,8 @@ export const ingestDocument = createServerFn({ method: "POST" })
       .from("kb_documents")
       .insert({
         content: data.content,
-        metadata: data.metadata || {},
-        embedding: embeddingString as any // The supabase-js client accepts the string for vector columns
+        metadata: data.metadata as any, // Cast to any to satisfy Supabase Json type
+        embedding: embeddingString
       });
 
     if (error) throw new Error(error.message);
