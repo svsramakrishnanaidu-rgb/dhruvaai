@@ -227,7 +227,7 @@ export function MarketAnalyticsPro() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
-        <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> Updated {timeAgo(feed.updated)} · auto every 3 min</span>
+        <span suppressHydrationWarning className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> Updated {timeAgo(feed.updated)} · auto every 3 min</span>
         <span>{feed.totals.commodities} crops · {feed.totals.mandis} mandis · {feed.totals.states} states · {feed.totals.records} records</span>
       </div>
 
