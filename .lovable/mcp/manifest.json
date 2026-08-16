@@ -242,7 +242,7 @@
       {
         "name": "query_knowledge_base",
         "title": "Query Knowledge Base",
-        "description": "Searches the Krish Sense RAG Knowledge Base for detailed agronomy, disease, and production data. Use this for complex queries not covered by specific tools.",
+        "description": "Searches the Krish Sense Knowledge Base for detailed agronomy, disease protocols, and regional production statistics. Use this for complex agricultural advisory queries.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,

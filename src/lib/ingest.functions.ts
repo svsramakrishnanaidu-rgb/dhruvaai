@@ -4,6 +4,9 @@ import { DISEASE_DATABASE } from "@/data/diseases";
 import { DISTRICTS } from "@/data/pdf-data";
 import { ingestDocument } from "./rag.functions";
 
+/**
+ * Populates the RAG Knowledge Base with chunks from crops, diseases, and production data.
+ */
 export const populateKnowledgeBase = createServerFn({ method: "POST" })
   .handler(async () => {
     const chunks: Array<{ content: string; metadata: any }> = [];
@@ -35,19 +38,21 @@ export const populateKnowledgeBase = createServerFn({ method: "POST" })
     // 3. Chunk Production Data
     DISTRICTS.forEach((d) => {
       chunks.push({
-        content: `Production Data: In ${d.district}, ${d.state}, the ${d.season} ${d.crop} production is ${d.productionMT} MT with a yield of ${d.yieldKgHa} kg/ha over ${d.areaHa} hectares.`,
+        content: `Production Data: In ${d.district}, ${d.state}, the ${d.season} ${d.crop} production is ${d.productionMT} Metric Tonnes with a yield of ${d.yieldKgHa} kg/ha over ${d.areaHa} hectares.`,
         metadata: { type: "production", state: d.state, district: d.district, crop: d.crop }
       });
     });
 
     // 4. Ingest Chunks
+    let count = 0;
     for (const chunk of chunks) {
       try {
         await ingestDocument({ data: chunk });
+        count++;
       } catch (err) {
         console.error("Ingestion failed for chunk", chunk.metadata, err);
       }
     }
 
-    return { totalIngested: chunks.length };
+    return { totalIngested: count };
   });

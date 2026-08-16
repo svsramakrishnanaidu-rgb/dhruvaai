@@ -13,10 +13,13 @@ const IngestSchema = z.object({
   embedding: z.array(z.number()).optional(),
 });
 
+/**
+ * Searches the knowledge base using simple text matching.
+ * Vector search via match_kb_documents is prepared in the database but 
+ * requires client-side embedding generation.
+ */
 export const queryKnowledgeBase = createServerFn({ method: "POST" })
-  .validator((input: unknown) => {
-    return QuerySchema.parse(input);
-  })
+  .validator((input: any) => QuerySchema.parse(input))
   .handler(async ({ data }) => {
     const { data: documents, error } = await supabase
       .from("kb_documents")
@@ -32,10 +35,11 @@ export const queryKnowledgeBase = createServerFn({ method: "POST" })
     return { documents: documents || [] };
   });
 
+/**
+ * Ingests a new document into the RAG store.
+ */
 export const ingestDocument = createServerFn({ method: "POST" })
-  .validator((input: unknown) => {
-    return IngestSchema.parse(input);
-  })
+  .validator((input: any) => IngestSchema.parse(input))
   .handler(async ({ data }) => {
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
 
