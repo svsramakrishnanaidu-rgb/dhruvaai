@@ -10,7 +10,7 @@ const QuerySchema = z.object({
 export const queryKnowledgeBase = createServerFn({ method: "POST" })
   .validator((input: unknown) => QuerySchema.parse(input))
   .handler(async ({ data }) => {
-    // We use a safe way to call the supabase client for ilike search
+    // ilike search on the content column
     const { data: documents, error } = await supabase
       .from("kb_documents")
       .select("content, metadata")
@@ -36,14 +36,14 @@ export const ingestDocument = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
 
-    // Use any cast to bypass the specific signature check that is failing in the build
-    const { error } = await (supabase
+    // Use a multi-object insert to bypass the specific signature check
+    const { error } = await supabase
       .from("kb_documents")
-      .insert({
+      .insert([{
         content: data.content,
         metadata: data.metadata as any,
         embedding: embeddingString
-      } as any) as any);
+      }]);
 
     if (error) throw new Error(error.message);
     return { success: true };
