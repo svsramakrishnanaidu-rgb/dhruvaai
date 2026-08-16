@@ -83,21 +83,48 @@ async function fetchPage(key: string, q: AgmarknetQuery, limit: number, offset: 
   const url = `${ENDPOINT}?${buildParams(key, q, limit, offset).toString()}`;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const res = await fetch(url, { headers: { accept: "application/json" } });
+      const res = await fetch(url, { 
+        headers: { 
+          accept: "application/json",
+          // Add User-Agent to look like a browser if needed, 
+          // though usually not required for data.gov.in
+        },
+        // Force a shorter timeout to trigger retries faster
+        signal: AbortSignal.timeout(10000) 
+      });
+      
       if (res.status === 429) {
-        await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+        // Exponential backoff for rate limiting
+        await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
         continue;
       }
-      if (!res.ok) throw new Error(`Upstream ${res.status}`);
-      const json = (await res.json()) as { total?: number; records?: RawRecord[] };
+      
+      if (!res.ok) {
+        console.error(`Agmarknet upstream error: ${res.status} ${res.statusText} at ${url}`);
+        throw new Error(`Upstream ${res.status}`);
+      }
+
+      const text = await res.text();
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        console.error("Agmarknet JSON parse failed. Response text:", text.slice(0, 200));
+        throw new Error("Invalid JSON response from Agmarknet");
+      }
+
       const records = normalize(json.records ?? []);
       return { total: json.total ?? records.length, records };
     } catch (err) {
-      if (attempt === retries) throw err;
-      await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      console.error(`Agmarknet attempt ${attempt + 1} failed:`, err);
+      if (attempt === retries) {
+        // If all retries failed, return empty instead of crashing the feed
+        return { total: 0, records: [] };
+      }
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
     }
   }
-  throw new Error("Agmarknet request failed");
+  return { total: 0, records: [] };
 }
 
 export async function agmarknetQuery(q: AgmarknetQuery): Promise<AgmarknetResponse> {
