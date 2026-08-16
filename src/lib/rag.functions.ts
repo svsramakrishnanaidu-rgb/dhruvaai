@@ -17,7 +17,8 @@ export const queryKnowledgeBase = createServerFn({ method: "POST" })
   .validator((input: unknown) => {
     return QuerySchema.parse(input);
   })
-  .handler(async ({ data }: any) => {
+  .handler(async (ctx: any) => {
+    const data = ctx.data;
     const { data: documents, error } = await supabase
       .from("kb_documents")
       .select("content, metadata")
@@ -36,7 +37,8 @@ export const ingestDocument = createServerFn({ method: "POST" })
   .validator((input: unknown) => {
     return IngestSchema.parse(input);
   })
-  .handler(async ({ data }: any) => {
+  .handler(async (ctx: any) => {
+    const data = ctx.data;
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
 
     const { error } = await supabase
