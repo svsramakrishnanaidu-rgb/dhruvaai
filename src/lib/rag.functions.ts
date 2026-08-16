@@ -13,13 +13,9 @@ const IngestSchema = z.object({
   embedding: z.array(z.number()).optional(),
 });
 
-/**
- * Searches the knowledge base using simple text matching.
- */
 export const queryKnowledgeBase = createServerFn({ method: "POST" })
-  .validator((input: unknown) => QuerySchema.parse(input))
-  .handler(async (args) => {
-    const data = args.data as z.infer<typeof QuerySchema>;
+  .validator((input: unknown): z.infer<typeof QuerySchema> => QuerySchema.parse(input))
+  .handler(async ({ data }) => {
     const { data: documents, error } = await supabase
       .from("kb_documents")
       .select("content, metadata")
@@ -34,13 +30,9 @@ export const queryKnowledgeBase = createServerFn({ method: "POST" })
     return { documents: documents || [] };
   });
 
-/**
- * Ingests a new document into the RAG store.
- */
 export const ingestDocument = createServerFn({ method: "POST" })
-  .validator((input: unknown) => IngestSchema.parse(input))
-  .handler(async (args) => {
-    const data = args.data as z.infer<typeof IngestSchema>;
+  .validator((input: unknown): z.infer<typeof IngestSchema> => IngestSchema.parse(input))
+  .handler(async ({ data }) => {
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
 
     const { error } = await supabase
