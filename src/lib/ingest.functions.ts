@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { CROP_LIST } from "@/data/crops";
 import { DISEASE_DATABASE } from "@/data/diseases";
-import { DISTRICTS, MACRO } from "@/data/pdf-data";
+import { DISTRICTS } from "@/data/pdf-data";
 import { ingestDocument } from "./rag.functions";
 
 export const populateKnowledgeBase = createServerFn({ method: "POST" })
@@ -11,13 +11,14 @@ export const populateKnowledgeBase = createServerFn({ method: "POST" })
     // 1. Chunk Crops
     CROP_LIST.forEach((crop) => {
       chunks.push({
-        content: `Crop: ${crop.name} (${crop.scientificName}). Category: ${crop.category}. Growing Season: ${crop.growingSeason}. Suitable Districts: ${crop.suitableDistricts.join(", ")}. Soil: ${crop.soilType}. Temperature: ${crop.temperature}. Rainfall: ${crop.rainfall}.`,
+        content: `Crop: ${crop.name} (${crop.scientificName}). Season: ${crop.season}. Suitable Districts: ${crop.suitableDistricts.join(", ")}. Soil: ${crop.soilType}. Temperature: ${crop.temperature}. Rainfall: ${crop.rainfall}.`,
         metadata: { type: "crop", slug: crop.slug }
       });
       
-      if (crop.landPreparation) {
+      if (crop.landPrep && crop.landPrep.length > 0) {
+        const prepStr = crop.landPrep.map(s => `${s.title}: ${s.description}`).join("; ");
         chunks.push({
-          content: `Land Preparation for ${crop.name}: ${crop.landPreparation.fieldCleaning} ${crop.landPreparation.ploughing} ${crop.landPreparation.bedPreparation}`,
+          content: `Land Preparation for ${crop.name}: ${prepStr}`,
           metadata: { type: "agronomy", slug: crop.slug, section: "land-prep" }
         });
       }
@@ -39,7 +40,7 @@ export const populateKnowledgeBase = createServerFn({ method: "POST" })
       });
     });
 
-    // 4. Ingest Chunks (serial for safety in server function)
+    // 4. Ingest Chunks
     for (const chunk of chunks) {
       try {
         await ingestDocument({ data: chunk });

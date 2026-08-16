@@ -36,14 +36,14 @@ export const ingestDocument = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
 
-    // Use a multi-object insert to bypass the specific signature check
-    const { error } = await supabase
+    // Use specific table type and cast to bypass signature ambiguity
+    const { error } = await (supabase
       .from("kb_documents")
       .insert([{
         content: data.content,
         metadata: data.metadata as any,
         embedding: embeddingString
-      }]);
+      }] as any) as any);
 
     if (error) throw new Error(error.message);
     return { success: true };
