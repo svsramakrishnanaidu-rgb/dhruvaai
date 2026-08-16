@@ -2,13 +2,26 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 
+const QuerySchema = z.object({
+  query: z.string(),
+  limit: z.number().optional().default(5),
+});
+
+const IngestSchema = z.object({
+  content: z.string(),
+  metadata: z.record(z.any()).optional(),
+  embedding: z.array(z.number()).optional(),
+});
+
 export const queryKnowledgeBase = createServerFn({ method: "POST" })
-  .handler(async ({ data }: { data: { query: string; limit?: number } }) => {
+  .validator((input: any) => QuerySchema.parse(input))
+  .handler(async (args: any) => {
+    const data = args.data;
     const { data: documents, error } = await supabase
       .from("kb_documents")
       .select("content, metadata")
       .ilike("content", `%${data.query}%`)
-      .limit(data.limit || 5);
+      .limit(data.limit);
 
     if (error) {
       console.error("Knowledge base query error:", error);
@@ -19,7 +32,9 @@ export const queryKnowledgeBase = createServerFn({ method: "POST" })
   });
 
 export const ingestDocument = createServerFn({ method: "POST" })
-  .handler(async ({ data }: { data: { content: string; metadata?: any; embedding?: number[] } }) => {
+  .validator((input: any) => IngestSchema.parse(input))
+  .handler(async (args: any) => {
+    const data = args.data;
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
 
     const { error } = await supabase
