@@ -43,16 +43,20 @@ export const populateKnowledgeBase = createServerFn({ method: "POST" })
       });
     });
 
+    console.log(`Starting ingestion of ${chunks.length} chunks...`);
+
     // 4. Ingest Chunks
     let count = 0;
     for (const chunk of chunks) {
       try {
         await ingestDocument({ data: chunk });
         count++;
-      } catch (err) {
-        console.error("Ingestion failed for chunk", chunk.metadata, err);
+      } catch (err: any) {
+        console.error(`Ingestion failed for chunk ${count}:`, err.message);
       }
     }
 
+    console.log(`Ingestion complete. Total ingested: ${count}`);
     return { totalIngested: count };
   });
+
