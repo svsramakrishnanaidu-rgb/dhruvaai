@@ -37,13 +37,16 @@ export const ingestDocument = createServerFn({ method: "POST" })
     // Embedding is stored as a vector string "[0.1, 0.2, ...]" for pgvector
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
 
+    // Use a single-object insert to ensure we're using the simpler signature
+    const newDoc = {
+      content: data.content,
+      metadata: data.metadata as any,
+      embedding: embeddingString
+    };
+
     const { error } = await supabase
       .from("kb_documents")
-      .insert({
-        content: data.content,
-        metadata: data.metadata as any,
-        embedding: embeddingString
-      }, { count: "exact" } as any); // Provide 2nd argument to satisfy overloaded signature
+      .insert(newDoc);
 
     if (error) throw new Error(error.message);
     return { success: true };
