@@ -238,6 +238,36 @@
           }
         },
         "outputSchema": null
+      },
+      {
+        "name": "query_knowledge_base",
+        "title": "Query Knowledge Base",
+        "description": "Searches the Krish Sense Knowledge Base for detailed agronomy, disease protocols, and regional production statistics. Use this for complex agricultural advisory queries.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Natural language query to search in the knowledge base."
+            },
+            "limit": {
+              "description": "Number of relevant documents to return (default 5).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "query"
+          ]
+        },
+        "outputSchema": null
       }
     ]
   }
