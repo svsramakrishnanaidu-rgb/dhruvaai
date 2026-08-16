@@ -128,7 +128,7 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
         <HeaderDivider />
         <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[15px] w-[15px]" />} />
         <HeaderDivider />
-        <HeaderIcon label="Language" icon={<Languages className="h-[15px] w-[15px]" />} badge="English" />
+        <HeaderIcon label="Language" icon={<Languages className="h-[15px] w-[15px]" />} badge={badge} />
         <HeaderDivider />
         <HeaderIcon label="Notifications" icon={<Bell className="h-[15px] w-[15px]" />} dot />
       </div>
