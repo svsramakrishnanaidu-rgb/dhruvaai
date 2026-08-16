@@ -134,7 +134,7 @@ function Header({ loc }: { loc: { state: string; district: string } }) {
         <HeaderDivider />
         <HeaderIcon to="/music" label="Music studio" icon={<Music2 className="h-[15px] w-[15px]" />} />
         <HeaderDivider />
-        <HeaderIcon label="Language" icon={<Languages className="h-[15px] w-[15px]" />} badge="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            MASTER QA TESTER, DEBUGGER & COMPLEX PROBLEM-SOLVING WORKFLOW\n\n... continue iteratively until every reachable component has been tested and the application has reached the highest practical level of correctness, reliability, security, speed, accuracy, scalability, maintainability, AI quality, and production readiness." />
+        <HeaderIcon label="Language" icon={<Languages className="h-[15px] w-[15px]" />} badge="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            REMOVE TODAY MODIFICATIONS" />
         <HeaderDivider />
         <HeaderIcon label="Notifications" icon={<Bell className="h-[15px] w-[15px]" />} dot />
       </div>
