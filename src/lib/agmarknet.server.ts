@@ -77,7 +77,8 @@ function buildParams(key: string, q: AgmarknetQuery, limit: number, offset: numb
 
 const cache = new Map<string, { data: AgmarknetResponse; at: number }>();
 const inflight = new Map<string, Promise<AgmarknetResponse>>();
-const TTL = 5 * 60 * 1000;
+const TTL = 30 * 60 * 1000; // Increased TTL to 30 minutes for better performance
+
 
 async function fetchPage(key: string, q: AgmarknetQuery, limit: number, offset: number, retries = 3): Promise<{ total: number; records: AgmarknetRecord[] }> {
   const url = `${ENDPOINT}?${buildParams(key, q, limit, offset).toString()}`;
@@ -167,8 +168,9 @@ export async function agmarknetQueryPaged(q: AgmarknetQuery): Promise<AgmarknetR
   if (existing) return existing;
 
   const task = (async () => {
-    const requested = Math.min(Math.max(q.limit ?? 2000, 100), 5000);
-    const budget = Math.min(requested * Math.min(Math.max(q.pages ?? 4, 1), 12), 12_000);
+    const requested = Math.min(Math.max(q.limit ?? 2500, 100), 5000);
+    const budget = Math.min(requested * Math.min(Math.max(q.pages ?? 2, 1), 6), 8_000); // Reduced budget and pages to speed up initial load
+
     const all: AgmarknetRecord[] = [];
     
     try {
