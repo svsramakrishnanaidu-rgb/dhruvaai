@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n";
+
 import { Link } from "@tanstack/react-router";
 import {
   Bell, Sun, ArrowRight, ChevronRight, Calculator,
