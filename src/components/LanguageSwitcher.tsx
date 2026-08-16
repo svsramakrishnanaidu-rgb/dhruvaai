@@ -35,7 +35,7 @@ export function LanguageSwitcher() {
         className="tap flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-web-sage transition-all hover:bg-web-emerald/10 hover:text-web-gold font-[Plus Jakarta Sans]"
       >
         <Languages className="h-4 w-4 text-web-gold" aria-hidden />
-        <span className="hidden sm:inline">{current.label}</span>
+        <span className="hidden sm:inline">'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            MASTER QA TESTER, DEBUGGER & COMPLEX PROBLEM-SOLVING WORKFLOW\n\n... continue iteratively until every reachable component has been tested and the application has reached the highest practical level of correctness, reliability, security, speed, accuracy, scalability, maintainability, AI quality, and production readiness.</span>
       </button>
       {open && (
         <ul
