@@ -41,9 +41,9 @@ export const ingestDocument = createServerFn({ method: "POST" })
       .from("kb_documents")
       .insert({
         content: data.content,
-        metadata: data.metadata as any, // Cast to any to satisfy Supabase Json type
+        metadata: data.metadata as any,
         embedding: embeddingString
-      });
+      }, { count: "exact" } as any); // Provide 2nd argument to satisfy overloaded signature
 
     if (error) throw new Error(error.message);
     return { success: true };
