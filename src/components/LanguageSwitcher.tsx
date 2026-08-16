@@ -35,7 +35,7 @@ export function LanguageSwitcher() {
         className="tap flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-web-sage transition-all hover:bg-web-emerald/10 hover:text-web-gold font-[Plus Jakarta Sans]"
       >
         <Languages className="h-4 w-4 text-web-gold" aria-hidden />
-        <span className="hidden sm:inline">'''DO NOT MAKE ANY VISUAL{"\n"}</span>
+        <span className="hidden sm:inline">{"\n"}</span>
       </button>
       {open && (
         <ul
