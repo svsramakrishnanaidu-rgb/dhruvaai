@@ -9,7 +9,7 @@ const QuerySchema = z.object({
 
 const IngestSchema = z.object({
   content: z.string(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
   embedding: z.array(z.number()).optional(),
 });
 
