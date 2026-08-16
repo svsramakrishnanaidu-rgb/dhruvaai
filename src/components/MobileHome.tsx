@@ -112,7 +112,7 @@ export function MobileHome() {
    ============================================================ */
 function Header({ loc }: { loc: { state: string; district: string } }) {
   const { lang } = useI18n();
-  const badge = lang.toUpperCase();
+  const badge = "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Feed issue\n\nAgmarknet request failed  SLOVE IT";
 
   return (
     <header className="relative z-10 flex items-center justify-between px-6 pb-2 pt-8">
