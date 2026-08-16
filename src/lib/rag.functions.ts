@@ -9,7 +9,8 @@ const QuerySchema = z.object({
 
 export const queryKnowledgeBase = createServerFn({ method: "POST" })
   .validator((input: unknown) => {
-    return QuerySchema.parse(input);
+    const parsed = QuerySchema.parse(input);
+    return parsed;
   })
   .handler(async ({ data }) => {
     const { data: documents, error } = await supabase
@@ -34,7 +35,8 @@ const IngestSchema = z.object({
 
 export const ingestDocument = createServerFn({ method: "POST" })
   .validator((input: unknown) => {
-    return IngestSchema.parse(input);
+    const parsed = IngestSchema.parse(input);
+    return parsed;
   })
   .handler(async ({ data }) => {
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
