@@ -19,7 +19,7 @@ const IngestSchema = z.object({
  * requires client-side embedding generation.
  */
 export const queryKnowledgeBase = createServerFn({ method: "POST" })
-  .validator((input: any) => QuerySchema.parse(input))
+  .validator((input: any) => QuerySchema.parse(input) as any)
   .handler(async ({ data }) => {
     const { data: documents, error } = await supabase
       .from("kb_documents")
@@ -39,7 +39,7 @@ export const queryKnowledgeBase = createServerFn({ method: "POST" })
  * Ingests a new document into the RAG store.
  */
 export const ingestDocument = createServerFn({ method: "POST" })
-  .validator((input: any) => IngestSchema.parse(input))
+  .validator((input: any) => IngestSchema.parse(input) as any)
   .handler(async ({ data }) => {
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
 
