@@ -21,7 +21,7 @@ export const translateBatch = createServerFn({ method: "POST" })
     }
     
     const endpoint = resolveAiEndpoint("fast");
-    if (!endpoint) throw new Error("No AI provider key configured");
+    if (!endpoint) return { translations: data.items };
 
     const langName = data.lang === "te" ? "Telugu (తెలుగు)" : "Hindi (हिन्दी)";
     const prompt = `Translate every string in the input JSON array into natural, farmer-friendly ${langName}.
@@ -29,34 +29,39 @@ export const translateBatch = createServerFn({ method: "POST" })
 - Keep the same order and same array length.
 - Do NOT add explanations. Return STRICT JSON: {"translations": ["...", "..."]}`;
 
-    const res = await fetch(endpoint.url, {
-      method: "POST",
-      headers: endpoint.headers,
-      body: JSON.stringify({
-        model: endpoint.model,
-        messages: [
-          { role: "system", content: prompt },
-          { role: "user", content: JSON.stringify({ items: data.items }) },
-        ],
-        ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
-      }),
-    });
-
-
-    if (!res.ok) {
-      if (res.status === 429 || res.status === 402) return { translations: data.items };
-      throw new Error(`translate ${res.status}`);
-    }
-    const json: any = await res.json();
-    const content: string = json?.choices?.[0]?.message?.content ?? "{}";
     try {
+      const res = await fetch(endpoint.url, {
+        method: "POST",
+        headers: endpoint.headers,
+        body: JSON.stringify({
+          model: endpoint.model,
+          messages: [
+            { role: "system", content: prompt },
+            { role: "user", content: JSON.stringify({ items: data.items }) },
+          ],
+          ...(endpoint.supportsJsonMode ? { response_format: { type: "json_object" } } : {}),
+        }),
+      });
+
+      // Translation is an enhancement. Provider authorization, quota, and
+      // availability errors must never break the page or its language switcher.
+      if (!res.ok) {
+        console.warn(`[translateBatch] ${endpoint.provider} returned ${res.status}`);
+        return { translations: data.items };
+      }
+
+      const json = await res.json() as {
+        choices?: Array<{ message?: { content?: string } }>;
+      };
+      const content = json.choices?.[0]?.message?.content ?? "{}";
       const parsed = JSON.parse(content);
       const out = Array.isArray(parsed.translations) ? parsed.translations : [];
       // Guarantee same length; fall back to originals for any misses.
       return {
         translations: data.items.map((s, i) => (typeof out[i] === "string" && out[i].length > 0 ? out[i] : s)),
       };
-    } catch {
+    } catch (error) {
+      console.warn("[translateBatch] provider request failed", error);
       return { translations: data.items };
     }
   });
