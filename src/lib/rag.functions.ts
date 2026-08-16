@@ -16,6 +16,7 @@ const IngestSchema = z.object({
 export const queryKnowledgeBase = createServerFn({ method: "POST" })
   .validator((input: any) => QuerySchema.parse(input))
   .handler(async ({ data }: any) => {
+    console.log("queryKnowledgeBase called with:", data);
     const { data: documents, error } = await supabase
       .from("kb_documents")
       .select("content, metadata")
@@ -27,12 +28,14 @@ export const queryKnowledgeBase = createServerFn({ method: "POST" })
       return { documents: [], error: error.message };
     }
 
+    console.log("queryKnowledgeBase returned:", documents?.length, "docs");
     return { documents: documents || [] };
   });
 
 export const ingestDocument = createServerFn({ method: "POST" })
   .validator((input: any) => IngestSchema.parse(input))
   .handler(async ({ data }: any) => {
+    console.log("ingestDocument called with content length:", data.content.length);
     const embeddingString = data.embedding ? `[${data.embedding.join(",")}]` : null;
 
     const { error } = await supabase
@@ -43,6 +46,10 @@ export const ingestDocument = createServerFn({ method: "POST" })
         embedding: embeddingString
       } as any);
 
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("ingestDocument error:", error);
+      throw new Error(error.message);
+    }
+    
     return { success: true };
   });
