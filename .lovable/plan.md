@@ -1,27 +1,53 @@
-# Plan: Resolve Agmarknet Server Function 500 Errors
+# Plan - Krish Sense RAG Knowledge Base Implementation
 
-The application is experiencing `500 Internal Server Error` when calling `fetchAgmarknet` and `fetchAgmarknetPaged` via TanStack Start server functions. The dev server logs indicate `Error: Invalid server function ID`, which typically happens when the server function split transform fails or the environment is unstable during a hot reload.
+Implement a robust RAG (Retrieval-Augmented Generation) infrastructure for Krish Sense to provide accurate, context-aware agricultural advisory using the project's high-quality datasets.
+
+## User Review Required
+
+> [!IMPORTANT]
+> To enable RAG, I will need to use a Vector Database. I will use Supabase Vector (pgvector) which is already available in your Lovable Cloud backend.
 
 ## Proposed Changes
 
-### 1. Refactor Agmarknet Server Functions
-Move the actual logic from `src/lib/agmarknet.functions.ts` into `src/lib/agmarknet.server.ts` or similar to ensure a clean boundary and stable ID generation. I will also wrap the handlers in try-catch blocks to prevent 500s from propagating if the upstream API fails.
+### Database & Storage
+- Enable `pgvector` extension in the Lovable Cloud database.
+- Create a `kb_documents` table to store text chunks and their corresponding vector embeddings.
+- Implement a search function using cosine similarity to retrieve relevant context.
 
-### 2. Fix Input Validation
-The server logs show payloads like `{"state": "Andhra Pradesh", "limit": 1500}`. I will ensure the `validator` in `createServerFn` explicitly parses this using Zod to avoid runtime type mismatches that might lead to internal errors.
+### Data Ingestion (ETL)
+- Create a server-side ingestion script that parses:
+  - `src/data/crops/*.ts`: Full agronomy guides (soil, water, fertilizer, sowing).
+  - `src/data/diseases/index.ts`: Identification and treatment protocols.
+  - `src/data/crop-knowledge.ts`: Detailed weed and pest libraries.
+  - `src/data/pdf-data.ts`: Official government production stats and yield KPIs.
+- Chunk the data intelligently to maintain agricultural context (e.g., keeping a specific disease treatment together).
+- Generate embeddings using OpenAI's `text-embedding-3-small` or Gemini's embedding model via the Lovable AI Gateway.
 
-### 3. Stabilize Development Environment
-The "Invalid server function ID" error is often cleared by a fresh build or dev server restart. I will trigger a dev server restart after the code changes to ensure the Vite transform cache is clean.
+### API & AI Integration
+- Create a new server function `queryKnowledgeBase` that:
+  - Takes a user query.
+  - Generates a search embedding.
+  - Performs a vector search to find the most relevant agricultural context.
+  - Passes the retrieved context to the LLM (Krish AI) to formulate a grounded response.
+- Update the Krish AI interface to show "Sources" when it uses the RAG database.
 
 ## Technical Details
 
-- **Files affected**:
-    - `src/lib/agmarknet.functions.ts`: Update to be a thin wrapper.
-    - `src/lib/agmarknet.server.ts`: Ensure robust handling of the `DATA_GOV_IN_API_KEY`.
-    - `src/lib/agmarknet.schema.ts`: (Verify) Ensure schemas match the actual data.
+### Schema
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
 
-- **Checklist**:
-    - [ ] Move logic to `.server.ts`.
-    - [ ] Add Zod validation to `createServerFn`.
-    - [ ] Restart dev server.
-    - [ ] Verify functionality via preview.
+CREATE TABLE public.kb_documents (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  content text NOT NULL,
+  metadata jsonb DEFAULT '{}'::jsonb,
+  embedding vector(1536) -- Optimized for OpenAI/Gemini embeddings
+);
+
+-- Grant access to authenticated users and service role
+GRANT SELECT ON public.kb_documents TO authenticated;
+GRANT ALL ON public.kb_documents TO service_role;
+```
+
+### Ingestion Logic
+The ingestion will happen as a one-time migration or via a dedicated server route that reads the static TypeScript data files and upserts them into the vector database.
