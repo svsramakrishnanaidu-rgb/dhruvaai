@@ -106,7 +106,7 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
           </Reveal>
 
           <Reveal delay={80}>
-            <h1 className="mt-5 font-[Unbounded] text-5xl font-black leading-[1.02] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem] text-web-mist">
+            <h1 className="mt-5 font-[Plus_Jakarta_Sans] text-base font-semibold leading-[1.25] tracking-normal sm:text-lg md:text-xl lg:text-[16px] text-web-mist">
               <span className="web-text-gold">Farm Smarter.</span>
               <br className="hidden sm:block" />
               See Further.{" "}
