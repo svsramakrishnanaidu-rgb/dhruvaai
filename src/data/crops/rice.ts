@@ -109,6 +109,12 @@ const rice: Crop = {
     { label: "ICAR Rice Package of Practices", url: "https://icar-nrri.in/" },
     { label: "YouTube: SRI Paddy Cultivation", url: "https://www.youtube.com/results?search_query=SRI+paddy+cultivation" },
   ],
+  seedSuggestions: [
+    { name: "BPT 5204 (Samba Mahsuri)", description: "Fine grain, high yield, 145-150 days duration. Excellent cooking quality." },
+    { name: "MTU 1010", description: "Short duration (120 days), drought tolerant, long slender grains." },
+    { name: "MTU 1061 (Indra)", description: "Suitable for lowlands, flood tolerant, 150 days duration." },
+    { name: "NLR 34449", description: "Fine grain, blast resistant, 125 days duration." },
+  ],
 };
 
 export default rice;
