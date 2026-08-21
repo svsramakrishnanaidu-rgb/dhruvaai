@@ -108,7 +108,7 @@ const chilli: Crop = {
   seedSuggestions: [
     { name: "Teja (S-17)", description: "High pungency, deep red color, preferred for export." },
     { name: "Guntur Sannam (S-4)", description: "Popular spice variety, medium pungency." },
-    { name: Indam 5, description: "High yield, virus tolerance." },
+    { name: "Indam 5", description: "High yield, virus tolerance." },
     { name: "US 341", description: "Large fruit size, high color value." },
   ],
 };
