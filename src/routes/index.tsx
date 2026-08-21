@@ -107,12 +107,11 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
 
           <Reveal delay={80}>
             <h1 className="mt-5 font-[Unbounded] text-5xl font-black leading-[1.02] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem] text-web-mist">
-              Farm with{" "}
-              <span className="web-text-gold">foresight,</span>
+              <span className="web-text-gold">Farm Smarter.</span>
               <br className="hidden sm:block" />
-              grow with{" "}
+              See Further.{" "}
               <span className="relative inline-block">
-                clarity.
+                Grow Better.
                 <svg className="absolute -bottom-2 left-0 h-3 w-full text-web-gold/40" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden>
                   <path d="M0 8 Q 50 0 100 6 T 200 4" stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round"/>
                 </svg>
