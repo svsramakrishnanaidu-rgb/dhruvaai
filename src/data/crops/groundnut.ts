@@ -107,6 +107,12 @@ const groundnut: Crop = {
     { label: "ICAR-DGR Groundnut", url: "https://dgr.icar.gov.in/" },
     { label: "YouTube: Groundnut Cultivation", url: "https://www.youtube.com/results?search_query=groundnut+cultivation+india" },
   ],
+  seedSuggestions: [
+    { name: "K6 (Kadiri 6)", description: "Bold seeded, high yield, 105 days duration." },
+    { name: "Kadiri 9 (K9)", description: "Drought tolerant, leaf spot resistant." },
+    { name: "TMV 2", description: "Early bunch type, suitable for rainfed areas." },
+    { name: "TAG 24", description: "High oil content, early maturity." },
+  ],
 };
 
 export default groundnut;

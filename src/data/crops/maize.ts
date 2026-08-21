@@ -107,6 +107,12 @@ const maize: Crop = {
     { label: "ICAR-IIMR Maize", url: "https://iimr.icar.gov.in/" },
     { label: "YouTube: Maize Cultivation Guide", url: "https://www.youtube.com/results?search_query=maize+cultivation" },
   ],
+  seedSuggestions: [
+    { name: "Pioneer 3396", description: "High yield, stable performance across seasons." },
+    { name: "Dekalb 9108", description: "Excellent grain quality, stay-green trait." },
+    { name: "NK 6240", description: "Suitable for both Kharif and Rabi, good grain color." },
+    { name: "900 Gold", description: "High yield, drought tolerant." },
+  ],
 };
 
 export default maize;

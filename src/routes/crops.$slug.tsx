@@ -137,6 +137,19 @@ function CropDetail() {
             <InfoCard label="Spacing" value={c.spacing} />
             <InfoCard label="Sowing method" value={c.sowingMethod} />
           </div>
+          {c.seedSuggestions && c.seedSuggestions.length > 0 && (
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {c.seedSuggestions.map((s, idx) => (
+                <Reveal key={s.name} delay={idx * 50}>
+                  <div className="web-glass rounded-2xl p-4 border-web-emerald/10 hover:border-web-gold/30 transition-all">
+                    <div className="text-[9px] font-black uppercase tracking-widest text-web-gold/80 mb-1">Recommended Seed</div>
+                    <div className="font-[Unbounded] text-xs font-black text-web-mist mb-1 uppercase"><T>{s.name}</T></div>
+                    <div className="text-[10px] font-bold text-web-sage leading-relaxed opacity-80"><T>{s.description}</T></div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          )}
         </Section>
 
         {/* Irrigation */}

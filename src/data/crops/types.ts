@@ -77,4 +77,5 @@ export type Crop = {
   durationDays?: number;
   localNames?: LocalNames;
   tags?: string[]; // e.g. "cash", "export", "organic-friendly", "drought-tolerant"
+  seedSuggestions?: { name: string; description: string }[];
 };

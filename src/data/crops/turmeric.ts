@@ -105,6 +105,12 @@ const turmeric: Crop = {
     { label: "ICAR-IISR Turmeric Practices", url: "https://spices.res.in/" },
     { label: "Nizamabad Turmeric Market", url: "https://agmarknet.gov.in/" },
   ],
+  seedSuggestions: [
+    { name: "Prathiba", description: "High curcumin content (5.0%+), high yield." },
+    { name: "IISR Alleppey Supreme", description: "Quality export variety, 210 days duration." },
+    { name: "Mydukur", description: "Local popular variety in Andhra Pradesh, stable yield." },
+    { name: "Roma", description: "High dry recovery, curcumin 4.5%." },
+  ],
 };
 
 export default turmeric;
