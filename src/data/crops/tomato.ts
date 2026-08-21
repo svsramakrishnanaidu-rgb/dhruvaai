@@ -105,6 +105,12 @@ const tomato: Crop = {
     { label: "ICAR-IIHR Tomato", url: "https://www.iihr.res.in/" },
     { label: "Madanapalle Mandi Prices", url: "https://agmarknet.gov.in/" },
   ],
+  seedSuggestions: [
+    { name: "Arka Rakshak", description: "Triple disease resistant (ToLCV, BW, EB), high yield." },
+    { name: "Abhinav (Seminis)", description: "Long duration, excellent fruit firmness for transport." },
+    { name: "Arka Samrat", description: "High yield, multiple disease resistance." },
+    { name: "US 440", description: "Uniform fruit size, good shelf life." },
+  ],
 };
 
 export default tomato;

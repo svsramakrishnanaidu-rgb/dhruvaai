@@ -107,6 +107,12 @@ const cotton: Crop = {
     { label: "CICR Cotton Advisory", url: "https://www.cicr.org.in/" },
     { label: "YouTube: BT Cotton HDPS", url: "https://www.youtube.com/results?search_query=BT+cotton+HDPS" },
   ],
+  seedSuggestions: [
+    { name: "Tulasi 144 BG II", description: "High boll weight, suitable for irrigated areas." },
+    { name: "Jadoo BG II", description: "Wide adaptability, good for central and south India." },
+    { name: "ATM (Kaveri)", description: "Early maturity, suitable for light soils." },
+    { name: "Prachand", description: "High sucking pest tolerance." },
+  ],
 };
 
 export default cotton;
