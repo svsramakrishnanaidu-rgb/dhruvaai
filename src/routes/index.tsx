@@ -107,9 +107,9 @@ function HeroSection({ loc, p, featured, heroImg }: any) {
 
           <Reveal delay={80}>
             <h1 className="mt-5 font-[Plus_Jakarta_Sans] text-3xl font-bold leading-[1.15] tracking-tight sm:text-4xl md:text-5xl lg:text-6xl text-web-mist">
-              <span className="web-text-gold">Farm Smarter.</span>
+              <span className="web-text-gold">Farm Smarter</span>
               <br className="hidden sm:block" />
-              See Further.{" "}
+              See Further&nbsp;
               <span className="relative inline-block">
                 Grow Better.
                 <svg className="absolute -bottom-2 left-0 h-3 w-full text-web-gold/40" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden>
