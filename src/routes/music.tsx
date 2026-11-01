@@ -17,10 +17,10 @@ import {
 export const Route = createFileRoute("/music")({
   head: () => ({
     meta: [
-      { title: "Telugu Music Radar — Krish Sense" },
-      { name: "description", content: "1000+ trending Telugu songs — movies, artists, composers. Cinematic streaming built into Krish Sense." },
-      { property: "og:title", content: "Telugu Music Radar — Krish Sense" },
-      { property: "og:description", content: "Discover the top trending Telugu tracks from the biggest movies. Playback continues everywhere in Krish Sense." },
+      { title: "Telugu Music Radar — DHRUVA" },
+      { name: "description", content: "1000+ trending Telugu songs — movies, artists, composers. Cinematic streaming built into DHRUVA." },
+      { property: "og:title", content: "Telugu Music Radar — DHRUVA" },
+      { property: "og:description", content: "Discover the top trending Telugu tracks from the biggest movies. Playback continues everywhere in DHRUVA." },
       { property: "og:type", content: "music.playlist" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -101,7 +101,7 @@ function MusicPage() {
         </h1>
         <p className="mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">
           {TELUGU_CATALOG.length.toLocaleString()} tracks · blockbuster movies, indie releases, folk, devotional & classical.
-          Tap any track to stream — playback continues everywhere in Krish Sense.
+          Tap any track to stream — playback continues everywhere in DHRUVA.
         </p>
       </header>
 

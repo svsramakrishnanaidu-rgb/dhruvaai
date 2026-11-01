@@ -1,7 +1,7 @@
 /**
  * AI gateway resolver (server-only).
  *
- * Krish Sense talks to any OpenAI-compatible chat endpoint. The first provider
+ * DHRUVA talks to any OpenAI-compatible chat endpoint. The first provider
  * whose API key is configured wins:
  *
  *   OPENAI_API_KEY      -> OpenAI            (primary)

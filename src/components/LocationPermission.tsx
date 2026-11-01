@@ -124,7 +124,7 @@ export function LocationPermission() {
               {servicesOff
                 ? "Your device's Location setting is switched off, so GPS can't return a fix. Turn it on and we'll pick up your district automatically."
                 : blocked
-                  ? "Krish Sense can't access GPS until location permission is allowed for this app."
+                  ? "DHRUVA can't access GPS until location permission is allowed for this app."
                   : `Allow GPS access so weather, soil, market rates and crop advice match your exact district instead of the default (${loc.district}).`}
             </p>
           </div>

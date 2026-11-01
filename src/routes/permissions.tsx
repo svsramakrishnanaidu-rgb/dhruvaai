@@ -28,17 +28,17 @@ import { reverseGeocodePlace } from "@/lib/live-weather";
 export const Route = createFileRoute("/permissions")({
   head: () => ({
     meta: [
-      { title: "App Permissions & Location Access — Krish Sense" },
+      { title: "App Permissions & Location Access — DHRUVA" },
       {
         name: "description",
         content:
-          "Review and control the permissions Krish Sense uses. Allow or deny device location access for live weather, soil and market intelligence.",
+          "Review and control the permissions DHRUVA uses. Allow or deny device location access for live weather, soil and market intelligence.",
       },
-      { property: "og:title", content: "App Permissions & Location Access — Krish Sense" },
+      { property: "og:title", content: "App Permissions & Location Access — DHRUVA" },
       {
         property: "og:description",
         content:
-          "Manage device location permission for Krish Sense — allow for live GPS weather, or deny and pick your district manually.",
+          "Manage device location permission for DHRUVA — allow for live GPS weather, or deny and pick your district manually.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -132,7 +132,7 @@ function PermissionsPage() {
         </div>
         <h1 className="mt-4 font-display text-3xl font-bold">App Permissions</h1>
         <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Krish Sense asks for one device permission only. You stay in control — allow it for live
+          DHRUVA asks for one device permission only. You stay in control — allow it for live
           GPS weather, or deny it and choose your district manually.
         </p>
       </header>
@@ -250,7 +250,7 @@ function PermissionsPage() {
           </div>
           <div>
             <h2 className="font-display text-base font-bold">
-              {installed ? "Running as an installed app" : "Install Krish Sense on your phone"}
+              {installed ? "Running as an installed app" : "Install DHRUVA on your phone"}
             </h2>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
               {installed

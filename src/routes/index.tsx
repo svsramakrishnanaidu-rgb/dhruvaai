@@ -28,7 +28,7 @@ import schemesImg from "@/assets/heroes/schemes.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Krish Sense — Smart Agricultural Advisory Platform" },
+      { title: "DHRUVA — Smart Agricultural Advisory Platform" },
       { name: "description", content: "A cinematic, science-backed advisory for Indian farmers: crops, weather, mandi prices, fertilizer planner, disease library and district atlas." },
     ],
   }),

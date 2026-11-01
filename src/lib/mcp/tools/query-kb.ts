@@ -3,14 +3,14 @@ import { z } from "zod";
 import { queryKnowledgeBase } from "../../rag.functions";
 
 /** 
- * Performs a search across the Krish Sense Knowledge Base.
+ * Performs a search across the DHRUVA Knowledge Base.
  * Designed to provide context for AI agents using consolidated agronomy and production data.
  */
 export default defineTool({
   name: "query_knowledge_base",
   title: "Query Knowledge Base",
   description:
-    "Searches the Krish Sense Knowledge Base for detailed agronomy, disease protocols, and regional production statistics. Use this for complex agricultural advisory queries.",
+    "Searches the DHRUVA Knowledge Base for detailed agronomy, disease protocols, and regional production statistics. Use this for complex agricultural advisory queries.",
   inputSchema: {
     query: z.string().describe("Natural language query to search in the knowledge base."),
     limit: z.number().int().optional().describe("Number of relevant documents to return (default 5)."),

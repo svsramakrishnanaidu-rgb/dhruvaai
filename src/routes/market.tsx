@@ -19,9 +19,9 @@ import {
 export const Route = createFileRoute("/market")({
   head: () => ({
     meta: [
-      { title: "Live Crop Market Intelligence — Krish Sense" },
+      { title: "Live Crop Market Intelligence — DHRUVA" },
       { name: "description", content: "Live mandi prices for every crop in India — min, max and modal rates, variety, grade, arrivals, state and district filters, trends and AI selling advice from Agmarknet." },
-      { property: "og:title", content: "Live Crop Market Intelligence — Krish Sense" },
+      { property: "og:title", content: "Live Crop Market Intelligence — DHRUVA" },
       { property: "og:description", content: "Real-time government mandi prices for every Indian crop with state-wise comparison, trends and AI recommendations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

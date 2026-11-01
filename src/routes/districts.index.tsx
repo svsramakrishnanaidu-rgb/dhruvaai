@@ -8,7 +8,7 @@ import { MapPin, Check, Sprout } from "lucide-react";
 export const Route = createFileRoute("/districts/")({
   head: () => ({
     meta: [
-      { title: "Districts — Krish Sense" },
+      { title: "Districts — DHRUVA" },
       { name: "description", content: "Browse crops district-by-district across Andhra Pradesh. Every module reacts instantly to your selection." },
     ],
   }),

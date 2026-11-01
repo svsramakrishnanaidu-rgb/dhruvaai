@@ -49,7 +49,7 @@ type SortKey = "date" | "name" | "duration" | "size";
 
 const DEFAULT_TRACK: Track = {
   id: "default-bgm",
-  name: "Krish Sense — Theme",
+  name: "DHRUVA — Theme",
   src: bgm.url,
   size: bgm.size,
   format: "mp3",

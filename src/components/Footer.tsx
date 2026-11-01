@@ -46,7 +46,7 @@ export function Footer() {
           />
         </div>
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-web-leaf/10 pt-6 text-[10px] font-black uppercase tracking-widest text-web-sage sm:flex-row">
-          <p>© {new Date().getFullYear()} Krish Sense. Created by Mr. SRK.</p>
+          <p>© {new Date().getFullYear()} DHRUVA. Created by Mr. SRK.</p>
           <div className="flex items-center gap-3">
             <a href="#" aria-label="GitHub" className="text-web-sage hover:text-web-gold transition-colors"><Github className="h-4 w-4" /></a>
             <a href="#" aria-label="Twitter" className="text-web-sage hover:text-web-gold transition-colors"><Twitter className="h-4 w-4" /></a>
