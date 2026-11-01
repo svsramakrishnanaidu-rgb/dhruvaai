@@ -198,7 +198,7 @@ function HeroTile() {
         style={{ background: "color-mix(in oklab, var(--accent) 35%, transparent)" }}
       />
       <h1 className="font-display mb-3 text-[42px] uppercase leading-[0.9] tracking-tighter">
-        <span className="text-white">KRISH</span><br /><span className="text-gradient">SENSE</span>
+        <span className="text-gradient">DHRUVA</span>
       </h1>
       <p className="mb-5 max-w-[220px] text-xs leading-relaxed text-muted-foreground">
         Precision agricultural intelligence, forged for the modern Indian farmer.

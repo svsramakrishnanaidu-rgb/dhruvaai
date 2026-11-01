@@ -93,11 +93,9 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
           }`}
         >
           <Link to="/" aria-label="DHRUVA home" className="flex shrink-0 items-center gap-2 pr-1 sm:pr-2">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-web-emerald to-web-leaf shadow-lg shadow-web-emerald/30">
-              <Sprout className="h-5 w-5 text-web-mist" aria-hidden />
-            </div>
+            <img src={dhruvaLogo.url} alt="" aria-hidden className="h-9 w-9 shrink-0 rounded-full object-cover shadow-lg" />
             <span className="hidden font-display text-lg font-bold tracking-tight xs:inline sm:inline">
-              Krish <span className="web-text-gold">Sense</span>
+              DHRUVA
             </span>
           </Link>
 

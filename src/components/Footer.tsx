@@ -10,11 +10,11 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <div className="flex items-center gap-2">
-              <div className="grid h-9 w-9 place-items-center rounded-full bg-web-emerald/20">
-                <Sprout className="h-5 w-5 text-web-gold" />
+              <div className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-web-emerald/20">
+                <img src={dhruvaLogo.url} alt="" aria-hidden className="h-9 w-9 object-cover" />
               </div>
               <span className="font-[Unbounded] text-lg font-black text-web-mist">
-                Krish <span className="text-web-gold">Sense</span>
+                DHRUVA
               </span>
             </div>
             <p className="mt-3 max-w-xs text-[11px] font-bold uppercase tracking-widest text-web-sage">
