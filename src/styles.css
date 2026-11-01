@@ -92,13 +92,13 @@
   --popover: #171717;
   --popover-foreground: #F8FAFC;
 
-  --primary: #FFF21A;                        /* Soft Gold */
+  --primary: #FFF21A;                        /* Electric Yellow */
   --primary-foreground: #0A0A0A;
   --secondary: #1E293B;
   --secondary-foreground: #F8FAFC;
   --muted: #1A1A1A;
   --muted-foreground: #94A3B8;
-  --accent: #FFF21A;                         /* Highlight Gold */
+  --accent: #FFF21A;                         /* Electric Yellow */
   --accent-foreground: #0A0A0A;
 
   --destructive: #7F1D1D;
@@ -126,7 +126,7 @@
   --gradient-hero:
     radial-gradient(1200px 700px at 15% 10%, rgba(255, 242, 26, 0.08), transparent 70%),
     radial-gradient(1000px 600px at 85% 20%, rgba(166, 107, 255, 0.06), transparent 70%),
-    linear-gradient(180deg, #0A0A0A 0%, #121212 100%);
+    linear-gradient(180deg, #171717 0%, #171717 100%);
   --gradient-primary: linear-gradient(135deg, #FFF21A 0%, #FFF21A 100%);
   --gradient-gold: linear-gradient(135deg, #FFF21A, #FFF21A 50%, #FFF21A);
   --gradient-cool: linear-gradient(135deg, #1E293B, #0F172A);
