@@ -55,7 +55,7 @@ export function GoogleAtlasMap({ center, labs, activeId, onSelect }: Props) {
             streetViewControl: false,
             fullscreenControl: false,
             styles: [
-              { featureType: "all", elementType: "labels.text.fill", stylers: [{ color: "#E5C366" }] },
+              { featureType: "all", elementType: "labels.text.fill", stylers: [{ color: "#FFF21A" }] },
               { featureType: "landscape", stylers: [{ color: "#0A0A0A" }] },
               { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] },
               { featureType: "road", stylers: [{ color: "#1A1A1A" }] },
@@ -97,7 +97,7 @@ export function GoogleAtlasMap({ center, labs, activeId, onSelect }: Props) {
           title: lab.name,
           icon: {
             path: g.maps.SymbolPath.CIRCLE,
-            fillColor: "#E5C366",
+            fillColor: "#FFF21A",
             fillOpacity: 1,
             strokeWeight: 2,
             strokeColor: "#FFFFFF",
