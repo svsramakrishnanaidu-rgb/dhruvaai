@@ -1,8 +1,9 @@
 "use client";
+import dhruvaLogo from "@/assets/dhruva-logo.png.asset.json";
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  Menu, X, Search, Moon, Sun, Sprout,
+  Menu, X, Search, Moon, Sun,
   Home, LineChart, MapPin, Leaf, TrendingUp, RefreshCw, ShieldAlert,
   Calculator, Layers, Store, CloudSun, Landmark, Music2,
 } from "lucide-react";

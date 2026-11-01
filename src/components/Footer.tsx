@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Sprout, Github, Twitter, Youtube } from "lucide-react";
+import dhruvaLogo from "@/assets/dhruva-logo.png.asset.json";
+import { Github, Twitter, Youtube } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
 export function Footer() {
