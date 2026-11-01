@@ -9,13 +9,13 @@
     "server": {
       "name": "krish-sense-mcp",
       "version": "0.1.0",
-      "title": "Krish Sense — Agricultural Advisory"
+      "title": "DHRUVA — Agricultural Advisory"
     },
     "tools": [
       {
         "name": "list_crops",
         "title": "List crops",
-        "description": "List crops in the Krish Sense catalogue with optional text, category, season or district filters. Returns slug, name, season, soil, water need, profit % and expected yield.",
+        "description": "List crops in the DHRUVA catalogue with optional text, category, season or district filters. Returns slug, name, season, soil, water need, profit % and expected yield.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -242,7 +242,7 @@
       {
         "name": "query_knowledge_base",
         "title": "Query Knowledge Base",
-        "description": "Searches the Krish Sense Knowledge Base for detailed agronomy, disease protocols, and regional production statistics. Use this for complex agricultural advisory queries.",
+        "description": "Searches the DHRUVA Knowledge Base for detailed agronomy, disease protocols, and regional production statistics. Use this for complex agricultural advisory queries.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
