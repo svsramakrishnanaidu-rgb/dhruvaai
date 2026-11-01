@@ -9,92 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WeatherRouteImport } from './routes/weather'
-import { Route as SchemesRouteImport } from './routes/schemes'
-import { Route as RotationRouteImport } from './routes/rotation'
-import { Route as PermissionsRouteImport } from './routes/permissions'
-import { Route as PaddyFutureRouteImport } from './routes/paddy-future'
-import { Route as MusicRouteImport } from './routes/music'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as MarketRouteImport } from './routes/market'
-import { Route as DiseasesRouteImport } from './routes/diseases'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as CalculatorsRouteImport } from './routes/calculators'
-import { Route as AtlasRouteImport } from './routes/atlas'
-import { Route as AnalyticsRouteImport } from './routes/analytics'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DistrictsIndexRouteImport } from './routes/districts.index'
-import { Route as CropsIndexRouteImport } from './routes/crops.index'
-import { Route as DistrictsSlugRouteImport } from './routes/districts.$slug'
-import { Route as CropsSlugRouteImport } from './routes/crops.$slug'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as AtlasRouteImport } from './routes/atlas'
+import { Route as CalculatorsRouteImport } from './routes/calculators'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DiseasesRouteImport } from './routes/diseases'
+import { Route as MarketRouteImport } from './routes/market'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as MusicRouteImport } from './routes/music'
+import { Route as PaddyFutureRouteImport } from './routes/paddy-future'
+import { Route as PermissionsRouteImport } from './routes/permissions'
+import { Route as RotationRouteImport } from './routes/rotation'
+import { Route as SchemesRouteImport } from './routes/schemes'
+import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as CropsIndexRouteImport } from './routes/crops.index'
+import { Route as CropsSlugRouteImport } from './routes/crops.$slug'
+import { Route as DistrictsIndexRouteImport } from './routes/districts.index'
+import { Route as DistrictsSlugRouteImport } from './routes/districts.$slug'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
-const WeatherRoute = WeatherRouteImport.update({
-  id: '/weather',
-  path: '/weather',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SchemesRoute = SchemesRouteImport.update({
-  id: '/schemes',
-  path: '/schemes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RotationRoute = RotationRouteImport.update({
-  id: '/rotation',
-  path: '/rotation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PermissionsRoute = PermissionsRouteImport.update({
-  id: '/permissions',
-  path: '/permissions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PaddyFutureRoute = PaddyFutureRouteImport.update({
-  id: '/paddy-future',
-  path: '/paddy-future',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MusicRoute = MusicRouteImport.update({
-  id: '/music',
-  path: '/music',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MarketRoute = MarketRouteImport.update({
-  id: '/market',
-  path: '/market',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiseasesRoute = DiseasesRouteImport.update({
-  id: '/diseases',
-  path: '/diseases',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CalculatorsRoute = CalculatorsRouteImport.update({
-  id: '/calculators',
-  path: '/calculators',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AtlasRoute = AtlasRouteImport.update({
-  id: '/atlas',
-  path: '/atlas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnalyticsRoute = AnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -102,24 +42,86 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DistrictsIndexRoute = DistrictsIndexRouteImport.update({
-  id: '/districts/',
-  path: '/districts/',
+const AtlasRoute = AtlasRouteImport.update({
+  id: '/atlas',
+  path: '/atlas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalculatorsRoute = CalculatorsRouteImport.update({
+  id: '/calculators',
+  path: '/calculators',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiseasesRoute = DiseasesRouteImport.update({
+  id: '/diseases',
+  path: '/diseases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketRoute = MarketRouteImport.update({
+  id: '/market',
+  path: '/market',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MusicRoute = MusicRouteImport.update({
+  id: '/music',
+  path: '/music',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaddyFutureRoute = PaddyFutureRouteImport.update({
+  id: '/paddy-future',
+  path: '/paddy-future',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PermissionsRoute = PermissionsRouteImport.update({
+  id: '/permissions',
+  path: '/permissions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RotationRoute = RotationRouteImport.update({
+  id: '/rotation',
+  path: '/rotation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchemesRoute = SchemesRouteImport.update({
+  id: '/schemes',
+  path: '/schemes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeatherRoute = WeatherRouteImport.update({
+  id: '/weather',
+  path: '/weather',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CropsIndexRoute = CropsIndexRouteImport.update({
   id: '/crops/',
   path: '/crops/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DistrictsSlugRoute = DistrictsSlugRouteImport.update({
-  id: '/districts/$slug',
-  path: '/districts/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CropsSlugRoute = CropsSlugRouteImport.update({
@@ -127,18 +129,16 @@ const CropsSlugRoute = CropsSlugRouteImport.update({
   path: '/crops/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const DistrictsIndexRoute = DistrictsIndexRouteImport.update({
+  id: '/districts/',
+  path: '/districts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DistrictsSlugRoute = DistrictsSlugRouteImport.update({
+  id: '/districts/$slug',
+  path: '/districts/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -321,95 +321,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/weather': {
-      id: '/weather'
-      path: '/weather'
-      fullPath: '/weather'
-      preLoaderRoute: typeof WeatherRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/schemes': {
-      id: '/schemes'
-      path: '/schemes'
-      fullPath: '/schemes'
-      preLoaderRoute: typeof SchemesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rotation': {
-      id: '/rotation'
-      path: '/rotation'
-      fullPath: '/rotation'
-      preLoaderRoute: typeof RotationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/permissions': {
-      id: '/permissions'
-      path: '/permissions'
-      fullPath: '/permissions'
-      preLoaderRoute: typeof PermissionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/paddy-future': {
-      id: '/paddy-future'
-      path: '/paddy-future'
-      fullPath: '/paddy-future'
-      preLoaderRoute: typeof PaddyFutureRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/music': {
-      id: '/music'
-      path: '/music'
-      fullPath: '/music'
-      preLoaderRoute: typeof MusicRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/market': {
-      id: '/market'
-      path: '/market'
-      fullPath: '/market'
-      preLoaderRoute: typeof MarketRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/diseases': {
-      id: '/diseases'
-      path: '/diseases'
-      fullPath: '/diseases'
-      preLoaderRoute: typeof DiseasesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/calculators': {
-      id: '/calculators'
-      path: '/calculators'
-      fullPath: '/calculators'
-      preLoaderRoute: typeof CalculatorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/atlas': {
-      id: '/atlas'
-      path: '/atlas'
-      fullPath: '/atlas'
-      preLoaderRoute: typeof AtlasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/analytics': {
-      id: '/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof AnalyticsRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -419,39 +335,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/districts/': {
-      id: '/districts/'
-      path: '/districts'
-      fullPath: '/districts/'
-      preLoaderRoute: typeof DistrictsIndexRouteImport
+    '/atlas': {
+      id: '/atlas'
+      path: '/atlas'
+      fullPath: '/atlas'
+      preLoaderRoute: typeof AtlasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/crops/': {
-      id: '/crops/'
-      path: '/crops'
-      fullPath: '/crops/'
-      preLoaderRoute: typeof CropsIndexRouteImport
+    '/calculators': {
+      id: '/calculators'
+      path: '/calculators'
+      fullPath: '/calculators'
+      preLoaderRoute: typeof CalculatorsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/districts/$slug': {
-      id: '/districts/$slug'
-      path: '/districts/$slug'
-      fullPath: '/districts/$slug'
-      preLoaderRoute: typeof DistrictsSlugRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/crops/$slug': {
-      id: '/crops/$slug'
-      path: '/crops/$slug'
-      fullPath: '/crops/$slug'
-      preLoaderRoute: typeof CropsSlugRouteImport
+    '/diseases': {
+      id: '/diseases'
+      path: '/diseases'
+      fullPath: '/diseases'
+      preLoaderRoute: typeof DiseasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/market': {
+      id: '/market'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof MarketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/music': {
+      id: '/music'
+      path: '/music'
+      fullPath: '/music'
+      preLoaderRoute: typeof MusicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/paddy-future': {
+      id: '/paddy-future'
+      path: '/paddy-future'
+      fullPath: '/paddy-future'
+      preLoaderRoute: typeof PaddyFutureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/permissions': {
+      id: '/permissions'
+      path: '/permissions'
+      fullPath: '/permissions'
+      preLoaderRoute: typeof PermissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rotation': {
+      id: '/rotation'
+      path: '/rotation'
+      fullPath: '/rotation'
+      preLoaderRoute: typeof RotationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schemes': {
+      id: '/schemes'
+      path: '/schemes'
+      fullPath: '/schemes'
+      preLoaderRoute: typeof SchemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/weather': {
+      id: '/weather'
+      path: '/weather'
+      fullPath: '/weather'
+      preLoaderRoute: typeof WeatherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/oauth-protected-resource': {
@@ -461,11 +440,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.mcp/list-tools': {
-      id: '/.mcp/list-tools'
-      path: '/.mcp/list-tools'
-      fullPath: '/.mcp/list-tools'
-      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+    '/crops/': {
+      id: '/crops/'
+      path: '/crops'
+      fullPath: '/crops/'
+      preLoaderRoute: typeof CropsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crops/$slug': {
+      id: '/crops/$slug'
+      path: '/crops/$slug'
+      fullPath: '/crops/$slug'
+      preLoaderRoute: typeof CropsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/districts/': {
+      id: '/districts/'
+      path: '/districts'
+      fullPath: '/districts/'
+      preLoaderRoute: typeof DistrictsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/districts/$slug': {
+      id: '/districts/$slug'
+      path: '/districts/$slug'
+      fullPath: '/districts/$slug'
+      preLoaderRoute: typeof DistrictsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/invoke-tool/$tool': {
