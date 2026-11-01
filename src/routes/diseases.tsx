@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export const Route = createFileRoute("/diseases")({
   head: () => ({
     meta: [
-      { title: "Disease Intelligence Hub — Krish Sense" },
+      { title: "Disease Intelligence Hub — DHRUVA" },
       { name: "description", content: "Comprehensive India-wide crop disease library with identification, prevention, and treatment protocols." },
     ],
   }),

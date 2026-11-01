@@ -10,7 +10,7 @@ import heroImg from "@/assets/heroes/paddy-future.jpg";
 export const Route = createFileRoute("/paddy-future")({
   head: () => ({
     meta: [
-      { title: "The Future of Paddy — Krish Sense" },
+      { title: "The Future of Paddy — DHRUVA" },
       { name: "description", content: "Yield, price, climate and technology outlook for India's paddy crop through 2030." },
     ],
   }),

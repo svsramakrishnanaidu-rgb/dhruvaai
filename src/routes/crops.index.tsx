@@ -11,7 +11,7 @@ import { MapPin, Filter, X } from "lucide-react";
 export const Route = createFileRoute("/crops/")({
   head: () => ({
     meta: [
-      { title: "Crop Library — Krish Sense" },
+      { title: "Crop Library — DHRUVA" },
       { name: "description", content: "The full crop encyclopaedia: filter by district, category, season, water, soil and profitability." },
     ],
   }),

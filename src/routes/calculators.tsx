@@ -22,7 +22,7 @@ import heroImg from "@/assets/heroes/calculators.jpg";
 export const Route = createFileRoute("/calculators")({
   head: () => ({
     meta: [
-      { title: "Farm Calculators — Krish Sense" },
+      { title: "Farm Calculators — DHRUVA" },
       { name: "description", content: "Fertilizer, seed rate, water, profit, yield, pesticide and land calculators grounded in ICAR, FAO-56, CACP and GoI reference data." },
     ],
   }),

@@ -7,7 +7,7 @@ export default defineTool({
   name: "list_crops",
   title: "List crops",
   description:
-    "List crops in the Krish Sense catalogue with optional text, category, season or district filters. Returns slug, name, season, soil, water need, profit % and expected yield.",
+    "List crops in the DHRUVA catalogue with optional text, category, season or district filters. Returns slug, name, season, soil, water need, profit % and expected yield.",
   inputSchema: {
     query: z.string().optional().describe("Free-text match on crop or scientific name."),
     category: z.string().optional().describe("Category such as Cereal, Pulse, Millet, Oilseed, Cash, Spice, Vegetable, Fruit."),

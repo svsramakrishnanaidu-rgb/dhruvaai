@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Sprout, Github, Twitter, Youtube } from "lucide-react";
+import dhruvaLogo from "@/assets/dhruva-logo.png.asset.json";
+import { Github, Twitter, Youtube } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
 export function Footer() {
@@ -10,11 +11,11 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <div className="flex items-center gap-2">
-              <div className="grid h-9 w-9 place-items-center rounded-full bg-web-emerald/20">
-                <Sprout className="h-5 w-5 text-web-gold" />
+              <div className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-web-emerald/20">
+                <img src={dhruvaLogo.url} alt="" aria-hidden className="h-9 w-9 object-cover" />
               </div>
               <span className="font-[Unbounded] text-lg font-black text-web-mist">
-                Krish <span className="text-web-gold">Sense</span>
+                DHRUVA
               </span>
             </div>
             <p className="mt-3 max-w-xs text-[11px] font-bold uppercase tracking-widest text-web-sage">
@@ -46,7 +47,7 @@ export function Footer() {
           />
         </div>
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-web-leaf/10 pt-6 text-[10px] font-black uppercase tracking-widest text-web-sage sm:flex-row">
-          <p>© {new Date().getFullYear()} Krish Sense. Created by Mr. SRK.</p>
+          <p>© {new Date().getFullYear()} DHRUVA. Created by Mr. SRK.</p>
           <div className="flex items-center gap-3">
             <a href="#" aria-label="GitHub" className="text-web-sage hover:text-web-gold transition-colors"><Github className="h-4 w-4" /></a>
             <a href="#" aria-label="Twitter" className="text-web-sage hover:text-web-gold transition-colors"><Twitter className="h-4 w-4" /></a>

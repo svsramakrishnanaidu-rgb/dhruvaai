@@ -306,7 +306,7 @@ export function locationSettingsHint(kind: "services" | "permission"): string {
   if (isAndroid()) {
     return kind === "services"
       ? "Swipe down the quick settings panel and turn on Location, then tap Try again."
-      : "Open Settings → Apps → Krish Sense → Permissions → Location → Allow, then tap Try again.";
+      : "Open Settings → Apps → DHRUVA → Permissions → Location → Allow, then tap Try again.";
   }
   if (isIOS()) {
     return kind === "services"

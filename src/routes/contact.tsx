@@ -8,7 +8,7 @@ import heroImg from "@/assets/heroes/contact.jpg";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Krish Sense" },
+      { title: "Contact — DHRUVA" },
       { name: "description", content: "Get in touch — say hello, request a district, or share feedback." },
     ],
   }),

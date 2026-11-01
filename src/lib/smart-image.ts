@@ -1,5 +1,5 @@
 /**
- * Intelligent image pipeline for Krish Sense.
+ * Intelligent image pipeline for DHRUVA.
  * Uses Pollinations AI (Flux model) for context-aware, high-quality imagery
  * across the entire application.
  */

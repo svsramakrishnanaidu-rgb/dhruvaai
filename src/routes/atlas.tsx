@@ -19,7 +19,7 @@ import { ManualLocationPicker, type ManualPlace } from "@/components/ManualLocat
 export const Route = createFileRoute("/atlas")({
   head: () => ({
     meta: [
-      { title: "National Soil Testing Atlas — Krish Sense" },
+      { title: "National Soil Testing Atlas — DHRUVA" },
       {
         name: "description",
         content: "Premium interactive atlas of soil testing centers across India with real-time GPS tracking and service filtering.",

@@ -52,7 +52,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: { error: any; reset: () => void }) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
@@ -84,19 +84,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#111111" },
+      { name: "theme-color", content: "#171717" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "format-detection", content: "telephone=no" },
-      { title: "Krish Sense — Smart Agricultural Advisory Platform" },
+      { title: "DHRUVA — Smart Agricultural Advisory Platform" },
       { name: "description", content: "Cinematic crop advisory: trending crops, live weather, market prices, fertilizer calculator and disease library for Indian farmers." },
       { name: "author", content: "Bhaskar, Ravi, Ramakrishna, Vinay" },
-      { property: "og:title", content: "Krish Sense — Smart Agricultural Advisory Platform" },
+      { property: "og:title", content: "DHRUVA — Smart Agricultural Advisory Platform" },
       { property: "og:description", content: "Cinematic crop advisory: trending crops, live weather, market prices, fertilizer calculator and disease library for Indian farmers." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Krish Sense — Smart Agricultural Advisory Platform" },
+      { name: "twitter:title", content: "DHRUVA — Smart Agricultural Advisory Platform" },
       { name: "twitter:description", content: "Cinematic crop advisory: trending crops, live weather, market prices, fertilizer calculator and disease library for Indian farmers." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2e9d4641-a461-4a68-ae35-cf51b71e4f2a" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2e9d4641-a461-4a68-ae35-cf51b71e4f2a" },
@@ -104,6 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {

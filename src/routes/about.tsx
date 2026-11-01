@@ -6,7 +6,7 @@ import heroImg from "@/assets/heroes/about.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Krish Sense" },
+      { title: "About — DHRUVA" },
       { name: "description", content: "Built by Bhaskar, Ravi, Ramakrishna and Vinay — a team obsessed with cinematic, science-backed advisory for Indian farmers." },
     ],
   }),
@@ -22,7 +22,7 @@ function About() {
         image={heroImg}
         eyebrow="About"
         title="Every farmer, an agronomist."
-        description="Krish Sense is a cinematic, image-first advisory platform. Every crop is a self-contained playbook — from land preparation to market — so a farmer in Guntur never sees data meant for Anantapur."
+        description="DHRUVA is a cinematic, image-first advisory platform. Every crop is a self-contained playbook — from land preparation to market — so a farmer in Guntur never sees data meant for Anantapur."
       />
       <div className="mx-auto max-w-4xl px-6 py-16">
 

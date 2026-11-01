@@ -1,8 +1,9 @@
 "use client";
+import dhruvaLogo from "@/assets/dhruva-logo.png.asset.json";
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  Menu, X, Search, Moon, Sun, Sprout,
+  Menu, X, Search, Moon, Sun,
   Home, LineChart, MapPin, Leaf, TrendingUp, RefreshCw, ShieldAlert,
   Calculator, Layers, Store, CloudSun, Landmark, Music2,
 } from "lucide-react";
@@ -92,12 +93,10 @@ export function Navbar({ onSearchOpen }: { onSearchOpen: () => void }) {
             scrolled ? "web-glass shadow-elegant" : "web-glass border-web-leaf/20"
           }`}
         >
-          <Link to="/" aria-label="Krish Sense home" className="flex shrink-0 items-center gap-2 pr-1 sm:pr-2">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-web-emerald to-web-leaf shadow-lg shadow-web-emerald/30">
-              <Sprout className="h-5 w-5 text-web-mist" aria-hidden />
-            </div>
+          <Link to="/" aria-label="DHRUVA home" className="flex shrink-0 items-center gap-2 pr-1 sm:pr-2">
+            <img src={dhruvaLogo.url} alt="" aria-hidden className="h-9 w-9 shrink-0 rounded-full object-cover shadow-lg" />
             <span className="hidden font-display text-lg font-bold tracking-tight xs:inline sm:inline">
-              Krish <span className="web-text-gold">Sense</span>
+              DHRUVA
             </span>
           </Link>
 
