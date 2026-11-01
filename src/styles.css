@@ -66,39 +66,39 @@
   --radius: 1.15rem;
 
   /* Premium Cinematic Palette — Modern Luxury */
-  --bg-1: #0A0A0A;
-  --bg-2: #121212;
-  --bg-3: #1A1A1A;
-  --bg-4: #242424;
-  --bg-5: #2E2E2E;
+  --bg-1: #171717;
+  --bg-2: #171717;
+  --bg-3: #171717;
+  --bg-4: #1F1F1F;
+  --bg-5: #292929;
 
   /* Refined Gold & Metallic Accents */
-  --gold-1: #E5C366;
-  --gold-2: #D4AF37;
-  --gold-3: #B8860B;
-  --bronze: #8C6239;
-  --copper: #A57C5B;
+  --gold-1: #FFF21A;
+  --gold-2: #FFF21A;
+  --gold-3: #FFF21A;
+  --bronze: #A66BFF;
+  --copper: #A66BFF;
 
   --profit: #22C55E;
   --loss: #EF4444;
   --amber: #FBBF24;
   --info: #60A5FA;
 
-  --background: #0A0A0A;
+  --background: #171717;
   --foreground: #F8FAFC;
 
-  --card: rgba(26, 26, 26, 0.6);
+  --card: rgba(23, 23, 23, 0.6);
   --card-foreground: #F8FAFC;
-  --popover: #121212;
+  --popover: #171717;
   --popover-foreground: #F8FAFC;
 
-  --primary: #E5C366;                        /* Soft Gold */
+  --primary: #FFF21A;                        /* Soft Gold */
   --primary-foreground: #0A0A0A;
   --secondary: #1E293B;
   --secondary-foreground: #F8FAFC;
   --muted: #1A1A1A;
   --muted-foreground: #94A3B8;
-  --accent: #FDE047;                         /* Highlight Gold */
+  --accent: #FFF21A;                         /* Highlight Gold */
   --accent-foreground: #0A0A0A;
 
   --destructive: #7F1D1D;
@@ -106,36 +106,36 @@
 
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.05);
-  --ring: #E5C366;
+  --ring: #FFF21A;
 
   /* Semantic hues repurposed */
   --leaf: #4ADE80;
-  --sunrise: #FDE047;
+  --sunrise: #FFF21A;
   --sky: #E2E8F0;
   --loam: #B45309;
   --monsoon: #60A5FA;
 
-  --glass-bg: rgba(18, 18, 18, 0.7);
-  --glass-border: rgba(229, 195, 102, 0.2);
+  --glass-bg: rgba(23, 23, 23, 0.7);
+  --glass-border: rgba(255, 242, 26, 0.2);
   --shadow-glow:
-    0 0 50px -10px rgba(229, 195, 102, 0.3),
-    0 0 25px -10px rgba(253, 224, 71, 0.2);
+    0 0 50px -10px rgba(255, 242, 26, 0.3),
+    0 0 25px -10px rgba(255, 242, 26, 0.2);
   --shadow-elegant:
     0 25px 50px -12px rgba(0, 0, 0, 0.7),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   --gradient-hero:
-    radial-gradient(1200px 700px at 15% 10%, rgba(229, 195, 102, 0.08), transparent 70%),
-    radial-gradient(1000px 600px at 85% 20%, rgba(180, 83, 9, 0.06), transparent 70%),
+    radial-gradient(1200px 700px at 15% 10%, rgba(255, 242, 26, 0.08), transparent 70%),
+    radial-gradient(1000px 600px at 85% 20%, rgba(166, 107, 255, 0.06), transparent 70%),
     linear-gradient(180deg, #0A0A0A 0%, #121212 100%);
-  --gradient-primary: linear-gradient(135deg, #E5C366 0%, #D4AF37 100%);
-  --gradient-gold: linear-gradient(135deg, #FDE047, #E5C366 50%, #D4AF37);
+  --gradient-primary: linear-gradient(135deg, #FFF21A 0%, #FFF21A 100%);
+  --gradient-gold: linear-gradient(135deg, #FFF21A, #FFF21A 50%, #FFF21A);
   --gradient-cool: linear-gradient(135deg, #1E293B, #0F172A);
   --gradient-aurora: conic-gradient(from 180deg at 50% 50%,
-    rgba(229, 195, 102, 0.4),
-    rgba(253, 224, 71, 0.4),
-    rgba(180, 83, 9, 0.3),
+    rgba(255, 242, 26, 0.4),
+    rgba(255, 242, 26, 0.4),
+    rgba(166, 107, 255, 0.3),
     rgba(226, 232, 240, 0.1),
-    rgba(229, 195, 102, 0.4));
+    rgba(255, 242, 26, 0.4));
 
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -150,20 +150,20 @@
 
 
   /* Midnight Forest Palette (Website-Only) */
-  --web-bg-midnight: #071A12;
-  --web-bg-forest: #0D2B1D;
-  --web-emerald: #176B45;
-  --web-leaf: #56A96B;
-  --web-sage: #94B89A;
-  --web-gold: #D4A84B;
-  --web-sand: #D8C8A8;
+  --web-bg-midnight: #171717;
+  --web-bg-forest: #171717;
+  --web-emerald: #A66BFF;
+  --web-leaf: #A66BFF;
+  --web-sage: #A66BFF;
+  --web-gold: #FFF21A;
+  --web-sand: #A66BFF;
   --web-mist: #F1F5F0;
 
   /* Glass Depth System (Website-Only) */
-  --web-glass-1: rgba(7, 26, 18, 0.42);
-  --web-glass-2: rgba(7, 26, 18, 0.55);
+  --web-glass-1: rgba(23, 23, 23, 0.42);
+  --web-glass-2: rgba(23, 23, 23, 0.55);
   --web-glass-blur: 40px;
-  --web-glass-border: rgba(212, 168, 75, 0.22);
+  --web-glass-border: rgba(166, 107, 255, 0.22);
 }
 
 @utility web-glass {
@@ -178,7 +178,7 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 8px rgba(212, 168, 75, 0.3));
+  filter: drop-shadow(0 0 8px rgba(166, 107, 255, 0.3));
 }
 
 
@@ -190,19 +190,19 @@
   --card-foreground: #F5F5F5;
   --popover: #1F1F1F;
   --popover-foreground: #F5F5F5;
-  --primary: #D4AF37;
+  --primary: #FFF21A;
   --primary-foreground: #111111;
   --secondary: #2F2F2F;
   --secondary-foreground: #F5F5F5;
   --muted: #232323;
   --muted-foreground: #B5B5B5;
-  --accent: #F1C75B;
+  --accent: #FFF21A;
   --accent-foreground: #111111;
   --border: rgba(255,255,255,0.10);
   --input: rgba(255,255,255,0.08);
-  --ring: #D4AF37;
+  --ring: #FFF21A;
   --glass-bg: color-mix(in oklab, #1F1F1F 78%, transparent);
-  --glass-border: rgba(212, 175, 55, 0.22);
+  --glass-border: rgba(166, 107, 255, 0.22);
 }
 
 @utility glass {
@@ -221,7 +221,7 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 24px rgba(212, 175, 55, 0.25);
+  text-shadow: 0 0 24px rgba(166, 107, 255, 0.25);
 }
 
 @utility card-elegant {
@@ -247,7 +247,7 @@
 }
 
 @utility gold-border {
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  border: 1px solid rgba(166, 107, 255, 0.35);
 }
 
 @utility btn-gold {
@@ -255,13 +255,13 @@
   color: #111111;
   font-weight: 700;
   letter-spacing: 0.02em;
-  box-shadow: 0 8px 24px -8px rgba(212, 175, 55, 0.55), inset 0 1px 0 rgba(255,255,255,0.25);
+  box-shadow: 0 8px 24px -8px rgba(166, 107, 255, 0.55), inset 0 1px 0 rgba(255,255,255,0.25);
   transition: transform .25s var(--ease-out-expo), box-shadow .25s ease, filter .25s ease;
   &:hover { filter: brightness(1.05); box-shadow: 0 12px 32px -8px rgba(241, 199, 91, 0.7), inset 0 1px 0 rgba(255,255,255,0.35); transform: translateY(-1px); }
 }
 
 @utility metallic-text {
-  background: linear-gradient(180deg, #F1C75B 0%, #D4AF37 45%, #8b6b1f 100%);
+  background: linear-gradient(180deg, #FFF21A 0%, #FFF21A 45%, #A66BFF 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -865,7 +865,7 @@ html.is-touch .menu-scroll { overscroll-behavior: contain; }
 
 :root {
   --ks-font-scale: 1;
-  --ks-glow: #F1C75B;
+  --ks-glow: #FFF21A;
 }
 html { font-size: calc(100% * var(--ks-font-scale)); }
 
