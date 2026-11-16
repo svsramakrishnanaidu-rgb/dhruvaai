@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/assets/dhruva-banner.svg" width="100%" alt="DHRUVA AI — smart agricultural advisory"/>
+
 # DHRUVA AI
 
 **Farm smarter. See further. Grow better.**
@@ -96,6 +98,8 @@ flowchart TD
 | [package.json](package.json) | Dependencies and development commands |
 
 ## Data quality and safety
+
+See [SECURITY.md](SECURITY.md) for private vulnerability reporting and release safeguards.
 
 - Treat crop guidance, fertilizer estimates, disease information and market prices as informational, not guaranteed recommendations.
 - Verify agricultural inputs against local soil tests, product labels, qualified agricultural extension advice and current official sources. Do not rely on an unvalidated AI diagnosis for pesticide selection.
