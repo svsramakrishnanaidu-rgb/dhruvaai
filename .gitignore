@@ -30,3 +30,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local environment secrets (does not untrack existing files)
+.env
+.env.*
+!.env.example
+!.env.sample
