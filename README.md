@@ -133,7 +133,7 @@ Built with [Lovable](https://lovable.dev). The original design requirements are 
 
 The existing application metadata credits **Bhaskar, Ravi, Ramakrishna and Vinay**.
 
-[GitHub repository](https://github.com/svsramakrishnanaidu-rgb/dhruvaai) · [Lovable web app](https://dhruvaai.lovable.app/) · [Developer portfolio](https://github.com/svsramakrishnanaidu-rgb/bsr-learning)
+[GitHub repository](https://github.com/svsramakrishnanaidu-rgb/dhruvaai) · [Lovable web app](https://dhruvaai.lovable.app/) · [Developer portfolio](https://github.com/svsramakrishnanaidu-rgb)
 
 The hosted link comes from the original project README; current availability has not been verified.
 
