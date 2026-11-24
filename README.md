@@ -138,3 +138,7 @@ The existing application metadata credits **Bhaskar, Ravi, Ramakrishna and Vinay
 The hosted link comes from the original project README; current availability has not been verified.
 
 <div align="center"><sub>Technology for informed agricultural decisions · Built with care · Verify before acting</sub></div>
+
+## Engineering guide
+
+[Explore working mechanisms, architecture diagrams and acceptance criteria](ENGINEERING_GUIDE.md). The guide distinguishes documented functionality from proposed improvements and tests that still require execution.
